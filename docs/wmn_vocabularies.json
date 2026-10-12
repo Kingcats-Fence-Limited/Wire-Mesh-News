@@ -77,32 +77,32 @@
    "rows": [
     [
      "fencing",
-     "Fencing systems",
-     "围栏系统",
+     "Fencing & perimeter security",
+     "围栏与周界安防",
      1
     ],
     [
      "reinforcement",
-     "Reinforcement & civil",
-     "加固与土木",
+     "Construction & civil engineering mesh",
+     "建筑与土木工程网",
      2
     ],
     [
      "filtration",
-     "Filtration & screening",
-     "过滤与筛分",
+     "Filtration, screening & process mesh",
+     "过滤、筛分与工业用网",
      3
     ],
     [
      "access",
-     "Access & walkway",
-     "通道与踏步",
+     "Grating, walkways & architectural metal",
+     "格栅、通道与建筑金属",
      4
     ],
     [
      "materials_services",
-     "Materials & services",
-     "材料与服务",
+     "Wire, materials & services",
+     "线材、材料与服务",
      5
     ]
    ]
@@ -344,7 +344,7 @@
      "architectural_mesh",
      "Architectural & decorative mesh",
      "建筑装饰网",
-     "filtration",
+     "access",
      "Facade mesh; Cable mesh; Metal fabric; Ring mesh"
     ],
     [
