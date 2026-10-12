@@ -39,6 +39,10 @@ export type Article = {
   correction?: { date: string; text: string };
   sponsor?: string; // company name when type === "sponsored"
   featured?: boolean;
+  /** Home hero: the word(s) in the title to highlight in a red block */
+  highlight?: string;
+  /** Home hero slot: 1 = top story, 2/3 = side tiles */
+  hero?: 1 | 2 | 3;
   series?: { slug: string; part: number };
   marketSeries?: string[]; // market series codes this article explains
 };

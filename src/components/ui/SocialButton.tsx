@@ -50,21 +50,15 @@ type Props = {
 export function SocialButton({ id, href, label, tone = "dark", size = 42, className }: Props) {
   const meta = SOCIALS.find((s) => s.id === id)!;
   const external = !(href ?? meta.href).startsWith("/");
+  const dark = tone === "dark";
   return (
     <a
       href={href ?? meta.href}
       aria-label={label ?? meta.label}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className={clsx(
-        "group inline-flex shrink-0 items-center justify-center rounded-full border transition-colors duration-150",
-        "hover:border-red hover:bg-red hover:text-white active:border-red active:bg-red active:text-white focus-visible:border-red focus-visible:bg-red focus-visible:text-white",
-        tone === "dark" && "border-line-dark bg-dark-2 text-[#E8E9ED]",
-        tone === "light" && "border-line bg-white text-ink",
-        size === 42 ? "h-[42px] w-[42px]" : "h-[38px] w-[38px]",
-        className,
-      )}
-      style={{ WebkitTapHighlightColor: "transparent" }}
+      className={clsx("soc", !dark && "soc-light", className)}
+      style={{ width: size, height: size, ...(dark ? {} : { background: "#FFFFFF", borderColor: "var(--line)", color: "var(--ink)" }), WebkitTapHighlightColor: "transparent" }}
     >
       <SocialGlyph id={id} size={size === 42 ? 17 : 15} />
     </a>
@@ -73,7 +67,7 @@ export function SocialButton({ id, href, label, tone = "dark", size = 42, classN
 
 export function SocialRow({ tone = "dark", size = 42, className }: { tone?: "dark" | "light"; size?: 42 | 38; className?: string }) {
   return (
-    <div className={clsx("flex items-center gap-2.5", className)}>
+    <div className={className} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       {SOCIALS.map((s) => (
         <SocialButton key={s.id} id={s.id} tone={tone} size={size} />
       ))}

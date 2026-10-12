@@ -42,7 +42,7 @@ export const NAV_RESOURCES = [
 ];
 
 export const FOOTER_COLUMNS = [
-  { title: "Sections", links: EDITORIAL_SECTIONS.map((s) => ({ label: s.label, href: `/${s.slug}/` })) },
+  { title: "Sections", links: [...EDITORIAL_SECTIONS.map((s) => ({ label: s.label, href: `/${s.slug}/` })), { label: "Opinion & Letters", href: "/letters/" }] },
   {
     title: "Resources",
     links: [

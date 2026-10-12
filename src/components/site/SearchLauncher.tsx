@@ -77,7 +77,7 @@ export function SearchLauncher() {
   );
 }
 
-function SearchOverlay({ onClose }: { onClose: () => void }) {
+export function SearchOverlay({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [debounced, setDebounced] = useState("");

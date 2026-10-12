@@ -51,6 +51,7 @@ const seeds: Seed[] = [
     topics: ["anti-dumping-tracker"],
     mesh: "weld",
     featured: true,
+    hero: 2,
     takeaways: ["Definitive duty of 31.7% applies to consignments cleared from 3 November", "Two producers hold individual rates below 20%; the certificate of origin decides", "Stock already in bonded warehouses is assessed at the provisional rate"],
     marketSeries: ["wire_rod_eu", "hrc_eu"],
     body: [
@@ -84,6 +85,7 @@ const seeds: Seed[] = [
     topics: ["perimeter-security"],
     mesh: "weld",
     featured: true,
+    hero: 3,
     takeaways: ["Coating weight was specified bath-side; acceptance measured on site", "The gap was 12 g/m², inside tolerance once the method was agreed", "Write the measurement location into the contract, not just the number"],
     body: [
       P("The contract said galvanised to <a class=\"std-link\" href=\"/standards/en-10244-2\">EN 10244-2</a> class A. The factory certificate said the same. The site inspector's gauge said something else, and for nine days the project sat on a question that should have been settled on page one of the specification."),
@@ -159,6 +161,8 @@ const seeds: Seed[] = [
     topics: ["perimeter-security"],
     mesh: "weldQ",
     featured: true,
+    hero: 1,
+    highlight: "coating",
     appliesTo: ["Welded panel fencing", "Chain link fabric", "358 / prison mesh", "Perimeter & security"],
     takeaways: ["Fix the threat level first; it sets the opening", "Diameter buys stiffness, not life — coating buys life", "Specify coating by weight and measurement location, never by the word 'galvanised'"],
     body: [
@@ -245,6 +249,10 @@ export function bySubsection(section: SectionCode, sub: string) {
 }
 export function latest(limit = 10, exclude: string[] = []) {
   return ARTICLES.filter((a) => editorial(a) && !exclude.includes(a.slug)).slice(0, limit);
+}
+export function heroSet() {
+  const h = (n: 1 | 2 | 3) => ARTICLES.find((a) => a.hero === n)!;
+  return [h(1), h(2), h(3)];
 }
 export function featured() {
   return ARTICLES.filter((a) => a.featured && editorial(a));

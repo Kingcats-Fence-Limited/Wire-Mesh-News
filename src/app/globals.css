@@ -233,3 +233,10 @@
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 }
+
+/* Board ports: reset the site body defaults back to the browser defaults the canvas was designed against. */
+.site, [class^="b-"] { font-size: 16px; line-height: normal; font-weight: 400; }
+.site .grid > *, .site .flex > *, [class^="b-"] .grid > *, [class^="b-"] .flex > * { min-width: auto; }
+/* Board ports reference the Google Fonts family names; alias them to the self-hosted variable fonts. */
+.site .h, .site .num, .site .sec h2, [class^="b-"] .h, [class^="b-"] .num { font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', sans-serif; font-variation-settings: "opsz" 96; }
+.site .mono, [class^="b-"] .mono { font-family: 'Manrope Variable', 'Manrope', sans-serif; }
