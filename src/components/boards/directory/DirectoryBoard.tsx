@@ -1,8 +1,8 @@
-/* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. Paid listings are off in Phase 1 (board note), so that block is not rendered. */
+/* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. The sponsored block is physically separated from the editorial list and always labelled. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
-import { MoreFilters } from "./MoreFilters";
-import { COMPANIES } from "@/lib/content/directory";
+import { FilterBar } from "./FilterBar";
+import { COMPANIES, SPONSORED } from "@/lib/content/directory";
 import { ARTICLES } from "@/lib/content/articles";
 import { APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, CATEGORY_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
 import { fmtDateShort } from "@/lib/site";
@@ -123,39 +123,27 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 </section>
 {/* 筛选条 + 列表 */}
 <section style={{ paddingBottom: "52px" }} className="wrap">
-<div style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "hidden" }}>
-<div style={{ background: "var(--ink)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-<span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
-<a href="#apps" className="fchip">Application{sp.app && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></a>
-<span style={{ fontSize: "10px", fontWeight: "700", letterSpacing: ".06em", color: "#6E7384" }} className="mono util">= SAME VOCABULARY AS THE APPLICATIONS SECTION</span>
-<details style={{ position: "relative" }}>
-<summary className="fchip" style={{ listStyle: "none" }}>Region{sp.region && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
-<div style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", zIndex: 20, background: "#FFFFFF", color: "var(--ink)", border: "1px solid var(--line)", borderRadius: "12px", padding: "10px", display: "flex", flexDirection: "column", gap: "4px", minWidth: "220px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}>
-{REGION.map((r) => { const n = countBy((c) => regionOf(c.country) === r.code); return n ? <Link key={r.code} href={toggle("region", r.code)} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "7px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: sp.region === r.code ? 800 : 600, background: sp.region === r.code ? "var(--paper)" : undefined }}>{r.labelEn}<span className="mono" style={{ color: "var(--grey)" }}>{n}</span></Link> : null; })}
-</div>
-</details>
-<details style={{ position: "relative" }}>
-<summary className="fchip" style={{ listStyle: "none" }}>Product{sp.category && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
-<div style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", zIndex: 20, background: "#FFFFFF", color: "var(--ink)", border: "1px solid var(--line)", borderRadius: "12px", padding: "10px", display: "flex", flexDirection: "column", gap: "4px", minWidth: "220px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}>
-{CATEGORY.map((c) => <Link key={c.code} href={toggle("category", c.code)} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "7px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: sp.category === c.code ? 800 : 600, background: sp.category === c.code ? "var(--paper)" : undefined }}>{c.labelEn}<span className="mono" style={{ color: "var(--grey)" }}>{countBy((x) => x.categories.includes(c.code))}</span></Link>)}
-</div>
-</details>
-<MoreFilters resetHref="/directory/" rows={[
-  { label: "MATERIAL", ticks: MATERIALS.map(([k, l]) => ({ label: l, href: toggle("material", k), on: sp.material === k, count: countBy((c) => !!c.materials?.includes(k as never)) })) },
-  { label: "PRODUCT", ticks: CATEGORY.map((c) => ({ label: c.labelEn, href: toggle("category", c.code), on: sp.category === c.code, count: countBy((x) => x.categories.includes(c.code)) })) },
-  { label: "PROFILE", ticks: [
-    { label: "Claimed", href: href({ claimed: sp.claimed === "1" ? undefined : "1" }), on: sp.claimed === "1", count: countBy((c) => c.claimed) },
-    { label: "Has photos", href: href({ photos: sp.photos === "1" ? undefined : "1" }), on: sp.photos === "1", count: countBy((c) => c.productCards.some((p) => p.photos > 0)) },
-    { label: "In our coverage", href: href({ covered: sp.covered === "1" ? undefined : "1" }), on: sp.covered === "1", count: countBy((c) => art(c) > 0) },
-  ] },
-]} />
-<div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
-<span style={{ fontSize: "12.5px", fontWeight: "800", color: "#FFFFFF" }} className="mono">{list.length}<span style={{ color: "var(--grey-2)", fontWeight: "700" }}> COMPANIES</span></span>
-<div role="group" aria-label="Sort" className="seg">
+<FilterBar
+  count={list.length}
+  resetHref="/directory/"
+  menus={[
+    { key: "app", label: "Application", wide: true, note: "Primary axis — each company carries at most two application areas, assigned by editors.", items: APPLICATION_AREA.map((a) => ({ label: a.labelEn, sub: APP_SUB[a.code], href: toggle("app", a.code), on: sp.app === a.code, count: countBy((c) => c.applications.includes(a.code)) })) },
+    { key: "region", label: "Region", items: REGION.map((r) => ({ label: r.labelEn, href: toggle("region", r.code), on: sp.region === r.code, count: countBy((c) => regionOf(c.country) === r.code) })).filter((x) => x.count > 0) },
+    { key: "category", label: "Product", items: CATEGORY.map((c) => ({ label: c.labelEn, href: toggle("category", c.code), on: sp.category === c.code, count: countBy((x) => x.categories.includes(c.code)) })) },
+  ]}
+  rows={[
+    { label: "MATERIAL", ticks: MATERIALS.map(([k, l]) => ({ label: l, href: toggle("material", k), on: sp.material === k, count: countBy((c) => !!c.materials?.includes(k as never)) })) },
+    { label: "PRODUCT", ticks: CATEGORY.map((c) => ({ label: c.labelEn, href: toggle("category", c.code), on: sp.category === c.code, count: countBy((x) => x.categories.includes(c.code)) })) },
+    { label: "PROFILE", ticks: [
+      { label: "Claimed", href: href({ claimed: sp.claimed === "1" ? undefined : "1" }), on: sp.claimed === "1", count: countBy((c) => c.claimed) },
+      { label: "Has photos", href: href({ photos: sp.photos === "1" ? undefined : "1" }), on: sp.photos === "1", count: countBy((c) => c.productCards.some((p) => p.photos > 0)) },
+      { label: "In our coverage", href: href({ covered: sp.covered === "1" ? undefined : "1" }), on: sp.covered === "1", count: countBy((c) => art(c) > 0) },
+    ] },
+  ]}
+  sort={<div role="group" aria-label="Sort" className="seg">
 <Link href={href({ sort: undefined })} className={sort === "az" ? "on" : undefined}>A&#8211;Z</Link><Link href={href({ sort: "covered" })} className={sort === "covered" ? "on" : undefined}>Most covered</Link><Link href={href({ sort: "recent" })} className={sort === "recent" ? "on" : undefined}>Recent</Link>
-</div>
-</div>
-</div>
+</div>}
+>
 {active.length > 0 && (
 <div style={{ background: "var(--paper-2)", padding: "12px 16px", display: "flex", alignItems: "center", gap: "9px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)", marginRight: "2px" }} className="mono">ACTIVE</span>
@@ -164,7 +152,63 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <span style={{ marginLeft: "auto", fontSize: "12px" }} className="meta util">Filters are written to the address bar — share the link as it is</span>
 </div>
 )}
+</FilterBar>
+{/* 付费展示位：独立成块，不进自然列表，不影响排序 */}
+{SPONSORED.length > 0 && (
+<div style={{ marginTop: "26px", border: "2px dashed #C9CCD6", borderRadius: "16px", padding: "18px 20px", background: "var(--paper-2)" }}>
+<div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "14px" }}>
+<span style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--ink)", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 10px", borderRadius: "4px" }} className="badge">SPONSORED LISTING</span>
+<span style={{ fontSize: "12px" }} className="meta">Paid placement · kept apart from the editorial list and never affects its order</span>
+<Link href="/policies/directory-listing-policy/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".08em", color: "var(--red)" }}>WHY AM I SEEING THIS? &#8594;</Link>
 </div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px" }} className="g3">
+{SPONSORED.map((sx) => (
+<a key={sx.name} href={sx.url} rel={sx.open ? undefined : "sponsored noopener"} target={sx.open ? undefined : "_blank"} style={{ borderColor: "#C9CCD6" }} className="card">
+<span style={{ background: "var(--slate)" }} className="band"><svg width="100%" height="8" style={{ display: "block", color: "#FFFFFF", opacity: ".35" }} aria-hidden="true"><rect width="100%" height="8" fill="url(#pGrate)" /></svg></span>
+<div className="cbody">
+<div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
+<span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><svg width="52" height="52" style={{ position: "absolute", inset: "0", color: "#C9CCD6" }} aria-hidden="true"><rect width="52" height="52" fill="url(#pGrate)" /></svg><span style={{ position: "relative", fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }} className="mono">LOGO</span></span>
+<span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{sx.role.toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{sx.name}</span></span>
+<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{sx.country}</span><span style={{ background: "#EDEEF2", color: "var(--slate)" }} className="cert">SPONSOR</span></span>
+</div>
+<p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>{sx.blurb}</p>
+<div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>{sx.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
+<div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--line-soft)", paddingTop: "13px" }}>
+<span style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--grey)" }} className="mono">{sx.open ? "ENQUIRE →" : "PAID PLACEMENT"}</span>
+<span className="go"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+</div>
+</div>
+</a>
+))}
+<div style={{ gridColumn: `span ${Math.max(1, 3 - SPONSORED.length)}`, display: "grid", gridTemplateColumns: SPONSORED.length >= 2 ? "1fr" : "1fr 1fr", gap: "18px" }} className="g2">
+<div style={{ borderLeft: "4px solid #1E6B35", padding: "18px 20px", display: "block" }} className="card">
+<div style={{ fontSize: "15px", marginBottom: "10px" }} className="h">Free, for every company</div>
+<ul style={{ margin: "0", paddingLeft: "17px", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.8", color: "var(--fg-3)" }}>
+<li>Listed, and shown in the list and in search</li>
+<li>After claiming: your own profile text, product photos and contact details</li>
+<li>Certification badges (certificate copy submitted and checked)</li>
+<li>Links to and from our reporting</li>
+<li><b>Position</b>: alphabetical, by coverage or by update date — never by payment</li>
+</ul>
+</div>
+<div style={{ borderLeft: "4px solid var(--slate)", padding: "18px 20px", display: "block" }} className="card">
+<div style={{ fontSize: "15px", marginBottom: "10px" }} className="h">What a sponsorship buys</div>
+<ul style={{ margin: "0", paddingLeft: "17px", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.8", color: "var(--fg-3)" }}>
+<li>This <b>separate placement</b>, always marked SPONSORED</li>
+<li>Your own wording and one outbound button</li>
+<li>Extra product-photo and video slots</li>
+<li>A fixed slot on the directory page and the related section pages</li>
+<li><b>Not for sale</b>: list order, editorial coverage, certification badges, removal of competitors</li>
+</ul>
+</div>
+</div>
+</div>
+<div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "14px", paddingTop: "13px", borderTop: "1px solid var(--line)" }}>
+<span style={{ color: "var(--red)", fontWeight: "800", flexShrink: "0" }}>!</span>
+<p style={{ margin: "0", fontSize: "11.5px", lineHeight: "1.65" }} className="meta">Three rules: <b style={{ color: "var(--ink)" }}>paid placements sit apart from the editorial list</b>, never mixed in or queued ahead; <b style={{ color: "var(--ink)" }}>the SPONSORED mark is always shown</b> and cannot be hidden; <b style={{ color: "var(--ink)" }}>payment changes no editorial order</b> and triggers no coverage. Placements are capped per page; when they are sold, no more are added. Enquiries: <Link href="/advertise/" style={{ color: "var(--red)", fontWeight: 800 }}>Advertise &amp; Partner</Link>.</p>
+</div>
+</div>
+)}
 {/* 企业卡片：全部等宽 */}
 <div id="apps" style={{ display: "flex", alignItems: "center", gap: "12px", margin: "26px 0 14px" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)" }} className="mono">ALL COMPANIES &#183; {sort === "az" ? "A–Z" : sort === "covered" ? "MOST COVERED" : "RECENTLY UPDATED"}</span>

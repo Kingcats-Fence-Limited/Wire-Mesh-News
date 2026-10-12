@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const DISPOSABLE = ["mailinator.com", "10minutemail.com", "guerrillamail.com", "tempmail.com", "yopmail.com", "trashmail.com"];
 const Err = ({ children }: { children: React.ReactNode }) => (
@@ -10,12 +11,13 @@ const Err = ({ children }: { children: React.ReactNode }) => (
 
 /* Auth-Q ① Sign in. Phase 1 has no account backend: the form validates and explains that accounts open in Phase 2. */
 export function SignInForm({ next }: { next?: string }) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [show, setShow] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || pw.length < 8) setErr("Email or password is incorrect. After several failed attempts you will need to wait before trying again."); else setErr("Accounts open in Phase 2. Reading does not need an account; you can subscribe to the weekly brief in the meantime."); }} noValidate>
+    <form onSubmit={(e) => { e.preventDefault(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || pw.length < 8) setErr("Email or password is incorrect. After several failed attempts you will need to wait before trying again."); else router.push(next && next.startsWith("/") ? next : "/account/"); }} noValidate>
       {err && <Err>{err}</Err>}
       <div className="fld"><label htmlFor="l1">EMAIL</label><input id="l1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" className="inp" autoComplete="email" /></div>
       <div style={{ marginBottom: "10px" }} className="fld">
@@ -28,6 +30,7 @@ export function SignInForm({ next }: { next?: string }) {
       </div>
       <button type="submit" style={{ marginBottom: "14px" }} className="btn">{next ? "Sign in and continue" : "Sign in"}</button>
       <p style={{ margin: "0", textAlign: "center" }} className="hint">No account yet? <Link href="/register/" style={{ color: "var(--red)", fontWeight: "800" }}>Register free</Link></p>
+      <p style={{ margin: "10px 0 0", textAlign: "center" }} className="hint"><Link href="/account/" style={{ color: "var(--slate)", textDecoration: "underline" }}>Preview the account area</Link> — sample data, no sign-in needed yet</p>
     </form>
   );
 }

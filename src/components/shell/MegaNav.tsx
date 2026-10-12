@@ -64,9 +64,15 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
   const [open, setOpen] = useState<string | null>(null);
   const enterT = useRef<number | null>(null);
   const leaveT = useRef<number | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const [narrowLeft, setNarrowLeft] = useState(0);
   function show(code: string) {
     if (leaveT.current) window.clearTimeout(leaveT.current);
     enterT.current = window.setTimeout(() => setOpen(code), open ? 0 : 120);
+  }
+  function place(el: HTMLElement) {
+    const wrap = navRef.current?.getBoundingClientRect();
+    if (wrap) setNarrowLeft(Math.max(0, Math.min(el.getBoundingClientRect().left - wrap.left - 22, wrap.width - 64 - 600)));
   }
   function hide() {
     if (enterT.current) window.clearTimeout(enterT.current);
@@ -84,7 +90,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
 
   return (
     <div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "#FFFFFF", position: "relative", zIndex: 40 }} onMouseLeave={hide}>
-      <nav className="wrap" aria-label="Primary" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
+      <nav ref={navRef} className="wrap" aria-label="Primary" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
         {data.sections.map((s) => (
           <Link key={s.code} href={s.href} style={navLink(open === s.code || (!open && active === s.code))} aria-expanded={open === s.code} aria-haspopup="true" onMouseEnter={() => show(s.code)} onFocus={() => show(s.code)} onClick={() => setOpen(null)}>
             {s.label}
@@ -94,7 +100,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
         ))}
         <span style={{ width: "1px", height: "18px", background: "var(--line)" }}></span>
         {[["directory", "Directory", "/directory/"], ["events", "Events", "/events/"], ["standards", "Standards", "/standards/"]].map(([code, label, href]) => (
-          <Link key={code} href={href} style={{ color: open === code ? "var(--red)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={() => show(code)} onFocus={() => show(code)} onClick={() => setOpen(null)}>{label}</Link>
+          <Link key={code} href={href} style={{ color: open === code ? "var(--red)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={(e) => { place(e.currentTarget); show(code); }} onFocus={(e) => { place(e.currentTarget); show(code); }} onClick={() => setOpen(null)}>{label}</Link>
         ))}
       </nav>
 
@@ -174,7 +180,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
               </div>
             )}
             {narrow && (
-              <div style={{ pointerEvents: "auto", display: "inline-grid", gridTemplateColumns: "auto auto 230px", gap: "26px", padding: "20px 22px 22px", background: "#FFFFFF", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 14px 14px", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", marginLeft: "-22px" }}>
+              <div style={{ pointerEvents: "auto", display: "inline-grid", gridTemplateColumns: "auto auto 230px", gap: "26px", padding: "20px 22px 22px", background: "#FFFFFF", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 14px 14px", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", marginLeft: `${narrowLeft}px`, maxWidth: "calc(100% - 28px)" }}>
                 <div>
                   <div className="colhd"><span style={{ fontSize: "14px" }} className="h">Directory</span></div>
                   {[["list", "Browse companies", "/directory/"], ["shield", "Standards Index", "/standards/"], ["plus", "Suggest a listing", "/contact/?subject=directory"]].map(([ic, l, h]) => (

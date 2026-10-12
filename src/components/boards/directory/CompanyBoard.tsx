@@ -130,7 +130,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <span style={{ fontSize: "16px", color: "#FFFFFF" }} className="h">Contact details</span>
 </div>
 <div style={{ padding: "20px", position: "relative" }}>
-<div aria-hidden="true" style={{ filter: "blur(5px)", userSelect: "none", opacity: ".5" }}>
+<div aria-hidden="true" style={{ position: "absolute", inset: "20px", filter: "blur(5px)", userSelect: "none", opacity: ".5", overflow: "hidden" }}>
 <div style={{ display: "flex", flexDirection: "column", gap: "11px", fontSize: "14px", fontWeight: "700" }}>
 <span>sales@example.com</span>
 <span>+00 000 0000 0000</span>
@@ -138,11 +138,11 @@ export function CompanyBoard({ c }: { c: Company }) {
 <span>Contact: Name, Title</span>
 </div>
 </div>
-<div style={{ position: "absolute", inset: "0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "11px", padding: "20px", background: "rgba(255,255,255,.72)", textAlign: "center" }}>
+<div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "11px", padding: "8px 0 4px", textAlign: "center" }}>
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2" /><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" /></svg>
 <div style={{ fontSize: "14.5px", fontWeight: "800", lineHeight: "1.4" }}>Sign in to see contact details</div>
 <p style={{ margin: "0", lineHeight: "1.55", maxWidth: "230px" }} className="meta">Contact details are behind sign-in to stop them being scraped for bulk marketing. Registration is free.</p>
-<Link href={`/directory/${c.slug}/contact/`} style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 22px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center", marginTop: "2px" }}>Sign in to view</Link>
+<Link href={`/signin/?next=${encodeURIComponent(`/directory/${c.slug}/`)}`} style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 22px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center", marginTop: "2px" }}>Sign in to view</Link>
 <Link href="/register/" style={{ fontSize: "12.5px", fontWeight: "800", color: "var(--red)" }}>Register free</Link>
 </div>
 </div>
