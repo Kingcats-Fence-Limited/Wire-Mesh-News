@@ -136,6 +136,9 @@ export function ArticleBoard({ a }: { a: Article }) {
 <SubscribeModal />
 </aside>
 <article data-article="" style={{ minWidth: "0" }} className="body">
+<details className="mobtoc"><summary><span>ON THIS PAGE · {toc.length + (a.sources?.length ? 1 : 0)}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg></summary>
+<div>{toc.map((t) => <a key={t.id} href={`#${t.id}`} className="tocl">{t.text}</a>)}{a.sources && a.sources.length > 0 && <a href="#sources" className="tocl">Sources</a>}</div>
+</details>
 {(a.appliesTo || stds.length > 0) && (
 <div style={{ display: "flex", gap: "16px", background: "var(--paper)", borderLeft: "4px solid var(--red)", borderRadius: "0 12px 12px 0", padding: "18px 22px", marginBottom: "32px", flexWrap: "wrap" }}>
 <div style={{ flex: "1 1 200px" }}>

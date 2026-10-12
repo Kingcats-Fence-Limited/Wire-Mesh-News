@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { FollowStandard } from "./FollowStandard";
+import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { STANDARDS, getStandardByNo } from "@/lib/content/standards";
 import { byStandard } from "@/lib/content/articles";
 import { COMPANIES } from "@/lib/content/directory";
@@ -72,20 +73,20 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "hidden", marginBottom: "22px" }}>
 <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
-<a href="#bodies" className="fchip">Body{sp.body && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></a>
-<a href="#bodies" className="fchip">Subject{sp.subject && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></a>
-<Link href={toggle("status", "current")} className="fchip ghost">{sp.status ? `Status: ${STATUS[sp.status as StandardStatus]?.[0] ?? sp.status} ✕` : "Status: Any"}</Link>
+<DropMenu label="Body" items={bodies.map((b) => ({ label: bodyOf(b)?.prefix ?? b.toUpperCase(), href: toggle("body", b), on: sp.body === b, count: STANDARDS.filter((x) => x.body === b).length }))} />
+<DropMenu label="Subject" items={subjects.map((x) => ({ label: subjectLabel(x), href: toggle("subject", x), on: sp.subject === x, count: STANDARDS.filter((y) => y.subject === x).length }))} />
+<Link href={toggle("status", "current")} scroll={false} className="fchip ghost">{sp.status ? `Status: ${STATUS[sp.status as StandardStatus]?.[0] ?? sp.status} ✕` : "Status: Any"}</Link>
 <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
 <span style={{ fontSize: "12.5px", fontWeight: "800" }} className="mono">{list.length}<span style={{ color: "var(--grey-2)", fontWeight: "700" }}> STANDARDS</span></span>
-<div role="group" aria-label="Sort" className="seg"><Link href={href({ sort: undefined })} className={sort === "number" ? "on" : undefined}>By number</Link><Link href={href({ sort: "subject" })} className={sort === "subject" ? "on" : undefined}>By subject</Link><Link href={href({ sort: "changed" })} className={sort === "changed" ? "on" : undefined}>Recently changed</Link></div>
+<div role="group" aria-label="Sort" className="seg"><Link href={href({ sort: undefined })} scroll={false} className={sort === "number" ? "on" : undefined}>By number</Link><Link href={href({ sort: "subject" })} scroll={false} className={sort === "subject" ? "on" : undefined}>By subject</Link><Link href={href({ sort: "changed" })} scroll={false} className={sort === "changed" ? "on" : undefined}>Recently changed</Link></div>
 </div>
 </div>
 <div id="bodies" style={{ background: "var(--paper-2)", padding: "11px 16px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)", marginRight: "2px" }} className="mono">BODIES</span>
-{bodies.map((b) => <Link key={b} href={toggle("body", b)} className={`badge ${sp.body === b ? "on" : "wd"}`}>{bodyOf(b)?.prefix ?? b.toUpperCase()}</Link>)}
+{bodies.map((b) => <Link key={b} href={toggle("body", b)} scroll={false} className={`badge ${sp.body === b ? "on" : "wd"}`}>{bodyOf(b)?.prefix ?? b.toUpperCase()}</Link>)}
 <span style={{ width: "1px", height: "18px", background: "var(--line)", margin: "0 6px" }}></span>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)" }} className="mono">SUBJECTS</span>
-{subjects.map((s) => <Link key={s} href={toggle("subject", s)} className={`badge ${sp.subject === s ? "on" : "wd"}`}>{subjectLabel(s)}</Link>)}
+{subjects.map((s) => <Link key={s} href={toggle("subject", s)} scroll={false} className={`badge ${sp.subject === s ? "on" : "wd"}`}>{subjectLabel(s)}</Link>)}
 {(sp.body || sp.subject || sp.status || sp.q) && <Link href="/standards/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: 800, color: "var(--red-text)", letterSpacing: ".06em" }}>CLEAR</Link>}
 </div>
 </div>
@@ -148,10 +149,7 @@ export function StandardBoard({ s }: { s: Standard }) {
 <div style={{ fontSize: "17px", fontWeight: "700", color: "var(--on-dark-2)", marginTop: "6px", maxWidth: "620px" }}>{s.title}</div>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-end" }}>
-<div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-<FollowStandard id={s.slug} count={s.followers} />
-<a href={s.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--red)", color: "#FFFFFF", minHeight: "46px", padding: "0 20px", borderRadius: "999px", fontSize: "14px", fontWeight: "800" }}>Buy the official text ↗</a>
-</div>
+<FollowStandard id={s.slug} count={s.followers} buy={<a href={s.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--red)", color: "#FFFFFF", minHeight: "46px", padding: "0 20px", borderRadius: "999px", fontSize: "14px", fontWeight: "800" }}>Buy the official text ↗</a>} />
 </div>
 </div>
 </div>

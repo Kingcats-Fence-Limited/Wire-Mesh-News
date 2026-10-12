@@ -28,3 +28,4 @@
 .b-cat .lead{grid-template-columns:1fr 1fr !important}
 .b-cat .g2{grid-template-columns:1fr 1fr !important}
 }
+.b-cat .sub.on, .b-cat .sub.on *{color:var(--on-ink) !important}

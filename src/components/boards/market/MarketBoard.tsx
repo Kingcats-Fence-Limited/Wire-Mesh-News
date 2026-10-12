@@ -36,6 +36,21 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <section style={{ paddingTop: "30px", paddingBottom: "50px" }} className="wrap"><div className="card" style={{ maxWidth: "720px" }}><div className="h" style={{ fontSize: "20px", marginBottom: "8px" }}>Market data goes live once the data agreements are signed.</div><p className="meta" style={{ margin: 0, fontSize: "14px" }}>Until then this page shows no figures — not placeholders, not estimates.</p></div></section>
 ) : (
 <section style={{ paddingTop: "30px", paddingBottom: "50px" }} className="wrap">
+{/* Mobile-M ⑫: series as 2-up cards on phones */}
+<div className="mcards">
+{MARKET_SERIES.map((s) => {
+  const dir = s.changePct === null ? "fl" : s.changePct > 0 ? "up" : s.changePct < 0 ? "dn" : "fl";
+  const arrow = s.changePct === null ? "" : s.changePct > 0 ? "▲" : s.changePct < 0 ? "▼" : "▬";
+  const down = s.state === "unavailable", stale = s.state === "stale";
+  return (
+<Link key={s.code} href={`/market-data/?series=${s.code}#chart`} className={`mcard${s.code === sel.code ? " on" : ""}`}>
+<span className="mono" style={{ display: "block", fontSize: "10.5px", fontWeight: 800, letterSpacing: ".08em", color: "var(--slate)", marginBottom: "6px" }}>{s.name.toUpperCase()} · {s.unit}</span>
+<span className="h" style={{ display: "block", fontSize: "24px", letterSpacing: "-.04em" }}>{down ? "—" : fmtNum(s.latest!, s.latest! % 1 ? 1 : 0)}</span>
+<span className={`mono ${dir}`} style={{ display: "block", fontSize: "12px", fontWeight: 800, marginTop: "4px" }}>{s.changePct === null ? "—" : `${arrow} ${Math.abs(s.changePct).toFixed(1)}%`}{stale && <span className="badge warn" style={{ marginLeft: "8px", fontSize: "9px" }}>STALE</span>}{down && <span className="badge bad" style={{ marginLeft: "8px", fontSize: "9px" }}>UNAVAILABLE</span>}</span>
+</Link>
+  );
+})}
+</div>
 <div className="tablewrap">
 <table style={{ marginBottom: "12px" }}>
 <thead><tr><th style={{ width: "24%" }}>SERIES</th><th>UNIT</th><th>LATEST</th><th>&#916;</th><th>&#916; %</th><th>AS OF</th><th style={{ width: "20%" }}>SOURCE</th><th>LICENCE</th></tr></thead>
@@ -87,7 +102,7 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "14px" }} className="g3">
 {items.map((a, i) => (
 <Link key={a.slug} href={articleHref(a)} style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
-<span style={{ display: "block", aspectRatio: "16/9", borderRadius: "10px", background: ["linear-gradient(135deg, #2A2B36, var(--ink))", "linear-gradient(135deg, #3A3B47, #1C1D26)", "linear-gradient(135deg, #2F3040, var(--ink))"][i % 3], position: "relative", overflow: "hidden" }}><span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, opacity: .55, ...demoBg(a.slug) }} /></span>
+<span style={{ display: "block", aspectRatio: "16/9", borderRadius: "10px", background: ["linear-gradient(135deg, #2A2B36, var(--surface-dark))", "linear-gradient(135deg, #3A3B47, #1C1D26)", "linear-gradient(135deg, #2F3040, var(--surface-dark))"][i % 3], position: "relative", overflow: "hidden" }}><span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, opacity: .55, ...demoBg(a.slug) }} /></span>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".08em" }} className="mono meta">{(a.type === "analysis" ? "ANALYSIS" : sectionByCode(a.section)?.label.toUpperCase())} · {fmtDateShort(a.date)}</span>
 <span style={{ fontSize: "15.5px", lineHeight: "1.2" }} className="h">{a.title}</span>
 </Link>

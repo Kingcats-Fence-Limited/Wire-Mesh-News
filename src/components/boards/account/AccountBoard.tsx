@@ -40,7 +40,7 @@ export function AccountBoard() {
 <span style={{ width: "46px", height: "46px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "16px", fontWeight: "800", flexShrink: "0" }}>{DEMO.initials}</span>
 <div style={{ minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: "800" }}>{DEMO.name}</div><div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "3px" }}><span style={{ background: "var(--ink)", color: "var(--on-ink)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "3px 7px", borderRadius: "4px" }}>PRO</span><span className="meta">since {DEMO.since}</span></div></div>
 </div>
-<div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+<div className="navlist" style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
 <a href="#settings" className="navi">Profile</a>
 <a href="#submissions" className="navi on">My submissions<span className="ct">5</span></a>
 <a href="#comments" className="navi">My comments<span className="ct">3</span></a>

@@ -27,3 +27,9 @@
 .b-acct .row{flex-direction:column}
 .b-acct .row > div:last-child{flex-direction:row !important;flex-wrap:wrap}
 }
+@media (max-width:600px){
+.b-acct .navlist{display:grid !important;grid-template-columns:1fr 1fr;gap:8px !important}
+.b-acct .navi{border:1px solid var(--line);border-radius:12px;min-height:52px;font-size:13.5px;padding:0 12px}
+.b-acct .navi .ct{margin-left:auto}
+.b-acct h1{font-size:32px !important}
+}

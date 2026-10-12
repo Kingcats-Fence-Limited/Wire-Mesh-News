@@ -30,7 +30,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ position: "relative", paddingTop: "32px", paddingBottom: "32px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "20px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / <Link href="/directory/" style={{ color: "var(--grey-2)" }}>Directory</Link> / <Link href={`/directory/?category=${c.categories[0]}`} style={{ color: "var(--grey-2)" }}>{cats[0]}</Link> / <span style={{ color: "#FFFFFF", fontWeight: "800" }}>{c.name}</span></nav>
 <div style={{ display: "flex", gap: "24px", alignItems: "flex-start", flexWrap: "wrap" }}>
-<div style={{ width: "96px", height: "96px", borderRadius: "18px", background: "var(--card)", flexShrink: "0", overflow: "hidden" }}><img src={logoSrc(c.slug)} alt={`${c.name} logo`} width="96" height="96" style={{ display: "block", width: "96px", height: "96px" }} /></div>
+<div style={{ width: "96px", height: "96px", borderRadius: "18px", background: "var(--card)", flexShrink: "0", overflow: "hidden" }}><img src={logoSrc(c.slug)} alt={`${c.name} logo`} width="96" height="96" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} /></div>
 <div style={{ flex: "1 1 440px", display: "flex", flexDirection: "column", gap: "11px" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "11px", flexWrap: "wrap" }}>
 <h1 style={{ margin: "0", fontSize: "42px", letterSpacing: "-.05em", color: "#FFFFFF", lineHeight: "1.02" }} className="h">{c.name}</h1>

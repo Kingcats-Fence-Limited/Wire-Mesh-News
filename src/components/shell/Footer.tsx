@@ -4,18 +4,17 @@ import { SocialRow } from "@/components/ui/SocialButton";
 import { FOOTER_COLUMNS, SITE } from "@/lib/site";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { CookieSettingsButton } from "./CookieBanner";
+import { FooterCol } from "./FooterCol";
 import { FooterNewsletter } from "./FooterNewsletter";
 
 export function Footer() {
   const year = new Date().getFullYear();
-  const colStyle = { display: "flex", flexDirection: "column" as const, gap: "10px", fontSize: "13.5px", fontWeight: "500" };
-  const head = { fontWeight: "800", fontSize: "11.5px", letterSpacing: ".12em", color: "#FFFFFF", marginBottom: "3px" };
   return (
     <>
       <div style={{ height: "4px", background: "var(--red)" }}></div>
       <footer id="site-footer" style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
         <svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "#1E2029" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pChain)" /></svg>
-        <div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg, rgba(21,22,28,.72), var(--ink) 72%)" }}></div>
+        <div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg, rgba(21,22,28,.72), var(--surface-dark) 72%)" }}></div>
         <span className="h" aria-hidden="true" style={{ position: "absolute", left: "50%", transform: "translateX(-42%)", bottom: "-62px", fontSize: "190px", letterSpacing: "-.06em", color: "#1C1D26", lineHeight: "1", whiteSpace: "nowrap" }}>wire mesh news</span>
         <div className="wrap" style={{ position: "relative", paddingTop: "28px", paddingBottom: "26px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "32px", borderBottom: "1px solid var(--line-dark)", flexWrap: "wrap" }}>
           <div style={{ maxWidth: "430px" }}>
@@ -40,11 +39,10 @@ export function Footer() {
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "16px" }}><SocialRow /></div>
           </div>
           {FOOTER_COLUMNS.map((col) => (
-            <div key={col.title} style={colStyle}>
-              <span style={head}>{col.title.toUpperCase()}</span>
+            <FooterCol key={col.title} title={col.title}>
               {col.links.map((l) => <Link key={l.href} href={l.href} style={{ color: "var(--grey-3)" }}>{l.label}</Link>)}
               {col.title === "Policies" && <CookieSettingsButton style={{ border: 0, background: "transparent", padding: 0, font: "inherit", color: "#FFFFFF", textDecoration: "underline", cursor: "pointer", textAlign: "left" }} />}
-            </div>
+            </FooterCol>
           ))}
         </div>
         <div className="wrap" style={{ position: "relative", paddingTop: "16px", paddingBottom: "18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", flexWrap: "wrap" }}>

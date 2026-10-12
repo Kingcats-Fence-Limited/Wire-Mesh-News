@@ -24,3 +24,12 @@
 .b-mkt .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .b-mkt .tablewrap table{min-width:720px}
 }
+
+.b-mkt .mcards{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.b-mkt .mcard{position:relative;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:var(--card);color:var(--ink)}
+.b-mkt .mcard::before{content:"";position:absolute;left:-1px;top:-1px;width:7px;height:7px;border-radius:999px;background:var(--red)}
+.b-mkt .mcard.on{border-color:var(--ink)}
+@media (max-width:600px){
+.b-mkt .mcards{display:grid}
+.b-mkt .tablewrap{display:none}
+}

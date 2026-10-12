@@ -1,6 +1,7 @@
 /* Ported 1:1 from canvas board Search-K: /search?q= with the same result types, badges and highlighting as the overlay (SearchOv-W). */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
+import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { search, snippet, highlight, type SearchDoc, type SearchType } from "@/lib/search";
 import { EDITORIAL_SECTIONS } from "@/lib/site";
 import "@/styles/board-srch.css";
@@ -73,16 +74,15 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 {q && (<>
 <div className="chips" style={{ display: "flex", gap: "9px", flexWrap: "wrap", alignItems: "center", marginBottom: "12px" }}>
 <span style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)", marginRight: "3px", minWidth: "62px" }} className="meta">TYPE</span>
-{TYPES.map((t) => <Link key={t.k} href={href({ type: t.k })} className={`chip${type === t.k ? " on" : ""}`}>{t.label} <span className="n">{countType(t.k)}</span></Link>)}
+{TYPES.map((t) => <Link key={t.k} href={href({ type: t.k })} scroll={false} className={`chip${type === t.k ? " on" : ""}`}>{t.label} <span className="n">{countType(t.k)}</span></Link>)}
 </div>
 <div className="chips" style={{ display: "flex", gap: "9px", flexWrap: "wrap", alignItems: "center", paddingBottom: "22px", borderBottom: "1px solid var(--line)" }}>
 <span style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)", marginRight: "3px", minWidth: "62px" }} className="meta">SECTION</span>
-<Link href={href({ section: undefined })} className={`chip${section ? "" : " on"}`}>All</Link>
-{EDITORIAL_SECTIONS.map((s) => <Link key={s.code} href={href({ section: s.code })} className={`chip${section === s.code ? " on" : ""}`}>{s.label}</Link>)}
+<Link href={href({ section: undefined })} scroll={false} className={`chip${section ? "" : " on"}`}>All</Link>
+{EDITORIAL_SECTIONS.map((s) => <Link key={s.code} href={href({ section: s.code })} scroll={false} className={`chip${section === s.code ? " on" : ""}`}>{s.label}</Link>)}
 <span style={{ width: "1px", height: "24px", background: "var(--line)", margin: "0 4px" }}></span>
-<details style={{ position: "relative" }}><summary className="chip" style={{ listStyle: "none", cursor: "pointer" }}>{time[1]}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
-<div style={{ position: "absolute", left: 0, top: "calc(100% + 6px)", zIndex: 20, background: "var(--card)", border: "1px solid var(--line)", borderRadius: "12px", padding: "8px", display: "flex", flexDirection: "column", gap: "2px", minWidth: "180px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}>{TIME.map((t) => <Link key={t[0]} href={href({ time: t[0] })} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: time[0] === t[0] ? 800 : 600, background: time[0] === t[0] ? "var(--paper)" : undefined }}>{t[1]}</Link>)}</div></details>
-<span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "date" ? undefined : "date" })} className="chip">{sort === "date" ? "Newest" : "Relevance"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
+<DropMenu className="chip" label={time[1]} minWidth={200} items={TIME.map((t) => ({ label: t[1], href: href({ time: t[0] }), on: time[0] === t[0] }))} />
+<span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "date" ? undefined : "date" })} scroll={false} className="chip">{sort === "date" ? "Newest" : "Relevance"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
 </div>
 </>)}
 </section>
@@ -111,9 +111,9 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 <div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}>
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "10px" }}>WIDEN THE SEARCH</div>
 <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "13.5px", fontWeight: "700" }}>
-<Link href={href({ type: "all" })} style={{ display: "flex", justifyContent: "space-between" }}><span>All types</span><span className="meta">{raw.filter((d) => (!section || d.section === section) && within(d)).length} results &#8594;</span></Link>
-<Link href={href({ time: undefined })} style={{ display: "flex", justifyContent: "space-between" }}><span>Any time</span><span className="meta">{raw.filter((d) => (type === "all" || d.type === type) && (!section || d.section === section)).length} results &#8594;</span></Link>
-<Link href={href({ section: undefined })} style={{ display: "flex", justifyContent: "space-between" }}><span>All sections</span><span className="meta">{raw.filter((d) => (type === "all" || d.type === type) && within(d)).length} results &#8594;</span></Link>
+<Link href={href({ type: "all" })} scroll={false} style={{ display: "flex", justifyContent: "space-between" }}><span>All types</span><span className="meta">{raw.filter((d) => (!section || d.section === section) && within(d)).length} results &#8594;</span></Link>
+<Link href={href({ time: undefined })} scroll={false} style={{ display: "flex", justifyContent: "space-between" }}><span>Any time</span><span className="meta">{raw.filter((d) => (type === "all" || d.type === type) && (!section || d.section === section)).length} results &#8594;</span></Link>
+<Link href={href({ section: undefined })} scroll={false} style={{ display: "flex", justifyContent: "space-between" }}><span>All sections</span><span className="meta">{raw.filter((d) => (type === "all" || d.type === type) && within(d)).length} results &#8594;</span></Link>
 </div>
 </div>
 </div>
@@ -144,7 +144,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 <div style={{ border: "1px solid var(--line)", borderRadius: "14px", padding: "20px" }}>
 <div style={{ fontSize: "17px", marginBottom: "11px" }} className="h">Results by type</div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px", fontWeight: "700" }}>
-{TYPES.slice(1).map((t) => <span key={t.k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ display: "flex", alignItems: "center", gap: "8px" }}><span className={`tp ${t.tp}`}>{t.badge}</span><Link href={href({ type: t.k })}>{t.label}</Link></span><span className="meta">{countType(t.k)}</span></span>)}
+{TYPES.slice(1).map((t) => <span key={t.k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ display: "flex", alignItems: "center", gap: "8px" }}><span className={`tp ${t.tp}`}>{t.badge}</span><Link href={href({ type: t.k })} scroll={false}>{t.label}</Link></span><span className="meta">{countType(t.k)}</span></span>)}
 </div>
 </div>
 <div style={{ border: "1px solid var(--line)", borderRadius: "14px", padding: "20px" }}>

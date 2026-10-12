@@ -14,6 +14,7 @@ const Chev = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" s
 export function FilterBar({ menus, rows, resetHref, count, sort, children }: { menus: Menu[]; rows: { label: string; ticks: Tick[] }[]; resetHref: string; count: number; sort: React.ReactNode; children?: React.ReactNode }) {
   const [open, setOpen] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
+  const activeCount = menus.reduce((n, m) => n + m.items.filter((x) => x.on).length, 0) + rows.reduce((n, r) => n + r.ticks.filter((t) => t.on).length, 0);
 
   useEffect(() => {
     if (!open) return;
@@ -33,7 +34,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
 
   return (
     <div ref={root} style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "visible" }}>
-      <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0" }}>
+      <div className="toolbar" style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0" }}>
         <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
         {menus.map((m, i) => {
           const n = m.items.filter((x) => x.on).length;
@@ -48,7 +49,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
                   <div role="menu" className="ddmenu" style={{ minWidth: m.wide ? "340px" : "280px" }}>
                     {m.note && <div className="ddnote">{m.note}</div>}
                     {m.items.map((it) => (
-                      <Link key={it.href} href={it.href} role="menuitemradio" aria-checked={it.on} className={`dditem${it.on ? " on" : ""}`} onClick={() => setOpen(null)}>
+                      <Link key={it.href} href={it.href} scroll={false} role="menuitemradio" aria-checked={it.on} className={`dditem${it.on ? " on" : ""}`} onClick={() => setOpen(null)}>
                         <span className="sq" aria-hidden="true" />
                         <span style={{ minWidth: 0, flex: "1 1 auto" }}>
                           <span style={{ display: "block" }}>{it.label}</span>
@@ -64,10 +65,13 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
             </div>
           );
         })}
+        <button type="button" className="fchip mobfilter" aria-expanded={open === "sheet"} onClick={() => setOpen(open === "sheet" ? null : "sheet")}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>Filter{activeCount > 0 && <span className="mono cnt">{activeCount}</span>}
+        </button>
         <button type="button" className={`fchip ghost${open === "more" ? " open" : ""}`} aria-expanded={open === "more"} onClick={() => setOpen(open === "more" ? null : "more")}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>More filters
         </button>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
+        <div className="sortwrap" style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
           <span style={{ fontSize: "12.5px", fontWeight: "800", color: "#FFFFFF" }} className="mono">{count}<span style={{ color: "var(--grey-2)", fontWeight: "700" }}> {count === 1 ? "COMPANY" : "COMPANIES"}</span></span>
           {sort}
         </div>
@@ -82,7 +86,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
                 {rows.map((r) => (
                   <div key={r.label} style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                     <span style={{ width: "86px", flexShrink: "0", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey)" }} className="mono">{r.label}</span>
-                    {r.ticks.map((t) => <Link key={t.label} href={t.href} className={`tickchip${t.on ? " on" : ""}`}><span className="sq"></span>{t.label}<span className="c">{t.count}</span></Link>)}
+                    {r.ticks.map((t) => <Link key={t.label} href={t.href} scroll={false} className={`tickchip${t.on ? " on" : ""}`}><span className="sq"></span>{t.label}<span className="c">{t.count}</span></Link>)}
                   </div>
                 ))}
               </div>
@@ -96,6 +100,37 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
         )}
       </div>
       {children}
+      {open === "sheet" && (
+        <div className="sheetwrap" role="dialog" aria-modal="true" aria-label="Filters">
+          <button type="button" className="sheetscrim" aria-label="Close" onClick={() => setOpen(null)} />
+          <div className="sheet">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "14px" }}>
+              <span className="h" style={{ fontSize: "18px" }}>Filters</span>
+              <button type="button" onClick={() => setOpen(null)} aria-label="Close" style={{ width: "36px", height: "36px", border: "1px solid var(--line)", borderRadius: "999px", background: "var(--card)", color: "var(--ink)", fontSize: "15px", cursor: "pointer" }}>✕</button>
+            </div>
+            {menus.map((m) => (
+              <div key={m.key} style={{ marginBottom: "14px" }}>
+                <div className="mono" style={{ fontSize: "10.5px", fontWeight: 800, letterSpacing: ".12em", color: "var(--grey)", marginBottom: "8px" }}>{m.label.toUpperCase()}</div>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {m.items.map((it) => <Link key={it.href} href={it.href} scroll={false} className={`tickchip${it.on ? " on" : ""}`} onClick={() => setOpen(null)}><span className="sq"></span>{it.label}<span className="c">{it.count}</span></Link>)}
+                </div>
+              </div>
+            ))}
+            {rows.filter((r) => r.label !== "PRODUCT").map((r) => (
+              <div key={r.label} style={{ marginBottom: "14px" }}>
+                <div className="mono" style={{ fontSize: "10.5px", fontWeight: 800, letterSpacing: ".12em", color: "var(--grey)", marginBottom: "8px" }}>{r.label}</div>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {r.ticks.map((t) => <Link key={t.label} href={t.href} scroll={false} className={`tickchip${t.on ? " on" : ""}`} onClick={() => setOpen(null)}><span className="sq"></span>{t.label}<span className="c">{t.count}</span></Link>)}
+                </div>
+              </div>
+            ))}
+            <div style={{ display: "flex", gap: "10px", paddingTop: "12px", borderTop: "1px solid var(--line)" }}>
+              <Link href={resetHref} className="chip" onClick={() => setOpen(null)}>Reset</Link>
+              <button type="button" onClick={() => setOpen(null)} style={{ flex: "1 1 auto", minHeight: "44px", border: 0, borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "14px", fontWeight: 800, cursor: "pointer" }}>Show {count} {count === 1 ? "company" : "companies"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

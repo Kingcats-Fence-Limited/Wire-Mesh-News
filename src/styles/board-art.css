@@ -34,8 +34,15 @@
 .b-art .socl:hover{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
 .b-art .readbar{position:fixed;left:0;right:0;top:0;height:3px;background:transparent;z-index:60;pointer-events:none}
 .b-art .readbar > div{height:3px;background:var(--red)}
+.b-art .mobtoc{display:none;border:1px solid var(--line);border-radius:12px;margin:0 0 22px;background:var(--card)}
+.b-art .mobtoc summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--slate)}
+.b-art .mobtoc summary::-webkit-details-marker{display:none}
+.b-art .mobtoc[open] summary svg{transform:rotate(180deg)}
+.b-art .mobtoc > div{padding:0 16px 10px}
 @media (max-width:980px){
-.b-art .toc, .b-art .side{display:none}
+.b-art .toc{display:none}
+.b-art .side{position:static !important;max-width:560px}
+.b-art .mobtoc{display:block}
 .b-art .cols, .b-art .g3, .b-art .g2, .b-art .cmt{grid-template-columns:1fr !important}
 .b-art h1.title{font-size:34px !important}
 .b-art .dek{font-size:17px !important}

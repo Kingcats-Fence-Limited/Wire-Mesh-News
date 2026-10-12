@@ -26,7 +26,8 @@
 @media (max-width:600px){
   .b-cook .banner{padding:18px 16px;gap:14px}
   .b-cook .banner > div:last-child{width:100%}
-  .b-cook .banner .btn{flex:1 1 auto;min-width:0 !important}
+  .b-cook .banner .btn{flex:1 1 40%;min-width:0 !important}
+  .b-cook .banner .btn:last-child{flex-basis:100%}
   .b-cook.prefwrap{padding:0}
   .b-cook .pref{max-height:100vh;border-radius:14px 14px 0 0;padding:22px 16px}
 }

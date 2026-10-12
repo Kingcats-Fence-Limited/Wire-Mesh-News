@@ -105,7 +105,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 {APPLICATION_AREA.map((a) => {
   const on = sp.app === a.code;
   return (
-<Link key={a.code} href={toggle("app", a.code)} className={`cat${on ? " on" : ""}`}>
+<Link key={a.code} href={toggle("app", a.code)} scroll={false} className={`cat${on ? " on" : ""}`}>
 <svg aria-hidden="true" style={{ color: on ? "#FFFFFF" : "var(--line-2)", opacity: on ? ".22" : undefined }} className="pat"><rect width="120" height="120" fill={`url(#${APP_PAT[a.code]})`} /></svg>
 <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke={on ? "#FFFFFF" : "var(--red)"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ position: "relative" }}><path d={APP_ICON[a.code]} /></svg>
 <span style={{ fontSize: "16px", position: "relative" }} className="h">{a.labelEn}</span>
@@ -118,7 +118,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 {/* 副轴：产品与服务 */}
 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--line)" }}>
 <span style={{ fontSize: "13px", letterSpacing: ".06em", color: "var(--grey)", flexShrink: "0" }} className="h">BY PRODUCT</span>
-{CATEGORY.map((c) => <Link key={c.code} href={toggle("category", c.code)} className={`chip${sp.category === c.code ? " on" : ""}`}>{c.labelEn}<span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">{countBy((x) => x.categories.includes(c.code))}</span></Link>)}
+{CATEGORY.map((c) => <Link key={c.code} href={toggle("category", c.code)} scroll={false} className={`chip${sp.category === c.code ? " on" : ""}`}>{c.labelEn}<span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">{countBy((x) => x.categories.includes(c.code))}</span></Link>)}
 </div>
 <p style={{ margin: "9px 0 0", fontSize: "11.5px", lineHeight: "1.55" }} className="meta">&#8220;Who makes steel grating?&#8221; is answered on this row. The product axis also stays in More filters and on every company card.</p>
 </section>
@@ -142,7 +142,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
     ] },
   ]}
   sort={<div role="group" aria-label="Sort" className="seg">
-<Link href={href({ sort: undefined })} className={sort === "az" ? "on" : undefined}>A&#8211;Z</Link><Link href={href({ sort: "covered" })} className={sort === "covered" ? "on" : undefined}>Most covered</Link><Link href={href({ sort: "recent" })} className={sort === "recent" ? "on" : undefined}>Recent</Link>
+<Link href={href({ sort: undefined })} scroll={false} className={sort === "az" ? "on" : undefined}>A&#8211;Z</Link><Link href={href({ sort: "covered" })} scroll={false} className={sort === "covered" ? "on" : undefined}>Most covered</Link><Link href={href({ sort: "recent" })} scroll={false} className={sort === "recent" ? "on" : undefined}>Recent</Link>
 </div>}
 >
 {active.length > 0 && (

@@ -1,6 +1,7 @@
 /* Ported 1:1 from canvas board Letters-LT: ① index (Letters / Columns tabs), ② single letter, column page in the same frame. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
+import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { CopyLink } from "@/components/boards/article/CopyLink";
 import { LETTERS, COLUMNS, getLetter, getAuthor } from "@/lib/content/people";
 import { getArticle } from "@/lib/content/articles";
@@ -52,20 +53,19 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 <p style={{ margin: "0", fontSize: "15.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>Short, signed letters from people who specify, buy, test and make wire mesh — and an occasional column from outside the newsroom. Every writer is identified to the editor, even when published without a name.</p>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-end" }}>
-<div className="seg"><Link href={href({ tab: undefined })} className={tab === "letters" ? "on" : undefined}>Letters <span style={{ fontWeight: "700", opacity: ".7" }} className="mono">{LETTERS.length}</span></Link>{COLUMNS.length > 0 && <Link href={href({ tab: "columns" })} className={tab === "columns" ? "on" : undefined}>Columns <span style={{ fontWeight: "700", color: tab === "columns" ? undefined : "var(--grey)" }} className="mono">{COLUMNS.length}</span></Link>}</div>
+<div className="seg"><Link href={href({ tab: undefined })} scroll={false} className={tab === "letters" ? "on" : undefined}>Letters <span style={{ fontWeight: "700", opacity: ".7" }} className="mono">{LETTERS.length}</span></Link>{COLUMNS.length > 0 && <Link href={href({ tab: "columns" })} scroll={false} className={tab === "columns" ? "on" : undefined}>Columns <span style={{ fontWeight: "700", color: tab === "columns" ? undefined : "var(--grey)" }} className="mono">{COLUMNS.length}</span></Link>}</div>
 <Link href="/policies/comment-policy/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>LETTERS POLICY →</Link>
 </div>
 </section>
 {tab === "letters" && (
 <div style={{ paddingTop: "16px", paddingBottom: "16px", borderBottom: "1px solid var(--line)", display: "flex", gap: "9px", flexWrap: "wrap", alignItems: "center" }} className="wrap chips">
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)", marginRight: "3px" }} className="meta">REPLYING TO</span>
-<Link href={href({ section: undefined })} className={`chip${sp.section ? "" : " on"}`}>All sections</Link>
-{EDITORIAL_SECTIONS.filter((s) => LETTERS.some((l) => l.replyTo.section === s.code)).map((s) => <Link key={s.code} href={toggle("section", s.code)} className={`chip${sp.section === s.code ? " on" : ""}`}>{s.label}</Link>)}
+<Link href={href({ section: undefined })} scroll={false} className={`chip${sp.section ? "" : " on"}`}>All sections</Link>
+{EDITORIAL_SECTIONS.filter((s) => LETTERS.some((l) => l.replyTo.section === s.code)).map((s) => <Link key={s.code} href={toggle("section", s.code)} scroll={false} className={`chip${sp.section === s.code ? " on" : ""}`}>{s.label}</Link>)}
 <span style={{ width: "1px", height: "22px", background: "var(--line)", margin: "0 4px" }}></span>
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)", marginRight: "3px" }} className="meta">WRITER</span>
-<details style={{ position: "relative" }}><summary className="chip" style={{ listStyle: "none", cursor: "pointer" }}>{sp.role ?? "Any role"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
-<div style={{ position: "absolute", left: 0, top: "calc(100% + 6px)", zIndex: 20, background: "var(--card)", border: "1px solid var(--line)", borderRadius: "12px", padding: "8px", display: "flex", flexDirection: "column", gap: "2px", minWidth: "220px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}><Link href={href({ role: undefined })} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: sp.role ? 600 : 800 }}>Any role</Link>{roles.map((r) => <Link key={r} href={toggle("role", r)} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: sp.role === r ? 800 : 600, background: sp.role === r ? "var(--paper)" : undefined }}>{r}</Link>)}</div></details>
-<span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "newest" ? "oldest" : undefined })} className="chip">{sort === "newest" ? "Newest" : "Oldest"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
+<DropMenu className="chip" label={sp.role ?? "Any role"} items={[{ label: "Any role", href: href({ role: undefined }), on: !sp.role }, ...roles.map((r) => ({ label: r, href: href({ role: r }), on: sp.role === r }))]} />
+<span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "newest" ? "oldest" : undefined })} scroll={false} className="chip">{sort === "newest" ? "Newest" : "Oldest"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
 </div>
 )}
 <section style={{ paddingTop: "10px", paddingBottom: "40px", display: "grid", gridTemplateColumns: "minmax(0,1fr) 320px", gap: "44px", alignItems: "start" }} className="wrap cols">
