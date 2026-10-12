@@ -6,13 +6,14 @@ import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { STANDARDS, getStandardByNo } from "@/lib/content/standards";
 import { byStandard } from "@/lib/content/articles";
 import { COMPANIES } from "@/lib/content/directory";
-import { STANDARDS_BODY, STANDARD_SUBJECT_BY_CODE } from "@/data/vocab";
+import { STANDARDS_BODY, STANDARD_SUBJECT_BY_CODE, STANDARD_STATUS } from "@/data/vocab";
 import { articleHref, fmtDate, fmtDateShort, sectionByCode } from "@/lib/site";
 import type { Standard, StandardStatus } from "@/lib/content/types";
 import "@/styles/board-std.css";
 
 export type StdParams = { body?: string; subject?: string; status?: string; sort?: string; q?: string };
-const STATUS: Record<StandardStatus, [string, string]> = { current: ["CURRENT", "cur"], under_review: ["UNDER REVIEW", "rev"], withdrawn: ["WITHDRAWN", "wd"], draft: ["DRAFT", "dft"] };
+const BADGE: Record<string, string> = { cur: "cur", rev: "rev", dft: "dft", new: "cur", wd: "wd", sup: "wd" };
+const STATUS: Record<StandardStatus, [string, string]> = Object.fromEntries(STANDARD_STATUS.map((s) => [s.code, [s.label.toUpperCase(), BADGE[s.badge] ?? "wd"]])) as Record<StandardStatus, [string, string]>;
 const bodyOf = (code: string) => STANDARDS_BODY.find((b) => b.code === code);
 const subjectLabel = (code: string) => STANDARD_SUBJECT_BY_CODE[code]?.labelEn ?? code;
 const lastChecked = STANDARDS.map((s) => s.checked).sort().at(-1)!;

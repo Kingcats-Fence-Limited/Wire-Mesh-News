@@ -4,7 +4,7 @@ import { Shell } from "@/components/shell/Shell";
 import { FilterBar } from "./FilterBar";
 import { COMPANIES, SPONSORED } from "@/lib/content/directory";
 import { ARTICLES } from "@/lib/content/articles";
-import { APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, CATEGORY_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
+import { MATERIAL_GROUP, APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, CATEGORY_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
 import { fmtDateShort } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-dir.css";
@@ -22,7 +22,7 @@ const APP_ICON: Record<string, string> = {
 const APP_PAT: Record<string, string> = { architecture: "pWoven", industrial_security: "pChain", agriculture: "pWeld", energy_environment: "pPerf", sports_lifestyle: "pExp" };
 const APP_SUB: Record<string, string> = { architecture: "Façade mesh, bridge screens, gabion walls", industrial_security: "Site perimeters, anti-climb, machine guarding", agriculture: "Livestock fencing, poultry netting, crop support", energy_environment: "Solar sites, screening and filtration, dust", sports_lifestyle: "Ball courts, pools, gardens" };
 const CAT_PAT: Record<string, string> = { fencing: "pWeld", reinforcement: "pChainL", filtration: "pWoven", access: "pGrate", materials_services: "pPerf" };
-const MATERIALS: [string, string][] = [["carbon_steel", "Carbon steel"], ["stainless", "Stainless"], ["other_alloys", "Other alloys"]];
+const MATERIALS: [string, string][] = MATERIAL_GROUP.map((m) => [m.code, m.labelEn]);
 const regionOf = (alpha2: string) => COUNTRY_BY_CODE[alpha2]?.region;
 const PER = 12;
 

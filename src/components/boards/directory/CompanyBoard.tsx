@@ -3,11 +3,13 @@ import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { COMPANIES, upcomingEvents } from "@/lib/content/directory";
 import { byCompany } from "@/lib/content/articles";
-import { CATEGORY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, COUNTRY_BY_CODE, SUBDIVISION_BY_CODE, PROCESS_BY_CODE, REGION_BY_CODE, CERTIFICATION_TYPE_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
+import { EMPLOYEE_RANGE_BY_CODE, VERIFICATION_LABEL_BY_CODE, CERTIFICATION_ISSUER, CATEGORY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, COUNTRY_BY_CODE, SUBDIVISION_BY_CODE, PROCESS_BY_CODE, REGION_BY_CODE, CERTIFICATION_TYPE_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
 import { fmtDate, fmtDateShort, articleHref, subsectionLabel } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-co.css";
 import { demoBg, logoSrc } from "@/lib/demo";
+
+const issuerName = (v?: string) => !v ? "" : CERTIFICATION_ISSUER.find((i) => i.code === v || i.name.toLowerCase() === v.toLowerCase())?.name ?? v;
 
 export function CompanyBoard({ c }: { c: Company }) {
   const country = COUNTRY_BY_CODE[c.country]?.name ?? c.country;
@@ -89,7 +91,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 {c.certifications.map((x) => x.verified ? (
 <div key={x.type} className="certcard">
 <span className="certmark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /><path d="m8.9 12 2.1 2.1 4.1-4.3" /></svg></span>
-<div style={{ minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "3px" }}>{certLabel(x.type)}</div><div style={{ lineHeight: "1.5" }} className="meta">{x.no && <>Certificate {x.no} &#183; </>}{x.issuer}{x.expires && <><br />Valid to {fmtDate(x.expires)}</>}</div><div className="src">Verified against the certifier&#8217;s database{c.verifiedAt && `, ${fmtDate(c.verifiedAt)}`}</div></div>
+<div style={{ minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "3px" }}>{certLabel(x.type)}</div><div style={{ lineHeight: "1.5" }} className="meta">{x.no && <>Certificate {x.no} &#183; </>}{issuerName(x.issuer)}{x.expires && <><br />Valid to {fmtDate(x.expires)}</>}</div><div className="src">Verified against the certifier&#8217;s database{c.verifiedAt && `, ${fmtDate(c.verifiedAt)}`}</div></div>
 </div>
 ) : (
 <div key={x.type} style={{ opacity: ".72" }} className="certcard">
@@ -109,7 +111,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div className="fact"><dt>Headquarters</dt><dd>{place}<span className="src">Source: company website</span></dd></div>
 <div className="fact"><dt>Product categories</dt><dd>{cats.join("; ")}<span className="src">Classified by editors from the product list</span></dd></div>
 {c.processes && <div className="fact"><dt>Process capability</dt><dd>{c.processes.map((p) => PROCESS_BY_CODE[p]?.labelEn ?? p).join("; ")}<span className="src">Source: product catalogue and interview</span></dd></div>}
-{c.employees && <div className="fact"><dt>Employees</dt><dd>{c.employees.replace(/_/g, "–").replace("plus", "+")}<span className="selfr">SELF-REPORTED</span><span className="src">Stated by the company, not independently verified</span></dd></div>}
+{c.employees && <div className="fact"><dt>Employees</dt><dd>{EMPLOYEE_RANGE_BY_CODE[c.employees]?.label ?? c.employees}<span className="selfr">{VERIFICATION_LABEL_BY_CODE.self_reported?.label.toUpperCase() ?? "SELF-REPORTED"}</span><span className="src">Stated by the company, not independently verified</span></dd></div>}
 <div style={{ borderBottom: "0" }} className="fact"><dt>Export markets</dt><dd>{c.exportMarkets?.length ? c.exportMarkets.map((r) => REGION_BY_CODE[r]?.labelEn ?? r).join("; ") : "—"}{c.exportMarkets?.length ? <span className="selfr">SELF-REPORTED</span> : null}<span className="src">{c.exportMarkets?.length ? "Stated by the company, not independently verified" : "No verifiable information"}</span></dd></div>
 </dl>
 <div style={{ background: "var(--paper)", borderLeft: "4px solid var(--ink)", borderRadius: "0 10px 10px 0", padding: "15px 20px", marginBottom: "36px" }}>
