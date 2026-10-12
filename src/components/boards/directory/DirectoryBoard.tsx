@@ -228,8 +228,8 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 </div>
 {photos > 0 && (
 <div style={{ display: "flex", gap: "6px" }}>
-<span className="ph2" style={{ height: "58px", ...demoBg(c.slug) }}></span>
-<span className="ph2" style={{ height: "58px", ...demoBg(c.slug, 5) }}></span>
+<span className="ph2" style={{ height: "58px", ...demoBg(c.products[0] ?? c.slug) }}></span>
+<span className="ph2" style={{ height: "58px", ...demoBg(c.products[1] ?? c.slug, c.products[1] ? 0 : 5) }}></span>
 <span style={{ background: "var(--ink)", color: "var(--on-ink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11.5px", fontWeight: "800" }} className="ph2">{photos > 2 ? `+${photos - 2} photos` : `${photos} photos`}</span>
 </div>
 )}

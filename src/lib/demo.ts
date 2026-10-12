@@ -1,8 +1,29 @@
-/** Original demo imagery (public/demo, generated in-house — no third-party assets). Picked by a stable hash so each slug keeps its picture. */
-export const DEMO_COUNT = 12;
+/** Original demo imagery (public/demo, generated in-house — no third-party assets).
+ *  Picked by keywords in the seed (slug / title / product name) so the picture matches the subject;
+ *  otherwise by a stable hash so each item keeps its picture. */
+export const DEMO_COUNT = 16;
+const KEY: [RegExp, number][] = [
+  [/gabion|rockfall|slope|retaining|mattress|coastal/, 3],
+  [/grating|grate|walkway|tread|stair|trench|handrail|platform|load-table/, 4],
+  [/chain-?link|cyclone|diamond/, 2],
+  [/razor|barbed|anti-?climb|358|prison|high-security|perimeter|security|airport|data-centre|threat/, 14],
+  [/rebar|reinforc|concrete|brick|plaster|slab/, 13],
+  [/filter|filtration|clean-?room|disc|cartridge|sinter/, 15],
+  [/stainless|304|316|woven|cloth|screen|sieve|wedge/, 16],
+  [/perforat/, 6],
+  [/expanded|fa[cç]ade|cladding|architectur/, 7],
+  [/zinc|galvan|coat|powder|wire-rod|rod|drawn|coil|smelter|premium/, 8],
+  [/container|freight|shipping|export|import|duty|dumping|tariff|232|trade|customs|packing|lead-time/, 11],
+  [/price|market|cost|q[1-4]|index|chart|steady|demand|outlook|survey/, 12],
+  [/machine|plant|line|commission|factory|weld|flatness|shear|production|manufactur|show|expo|inspection|certificate|audit|tender/, 10],
+  [/fence|fencing|post|footing|gate|livestock|farm|solar|site|ball-court|sport|pool|garden/, 9],
+  [/mesh|panel|welded|opening|diameter|gauge|tolerance/, 1],
+];
 export function demoIndex(seed: string, offset = 0) {
+  const s = seed.toLowerCase();
+  if (offset === 0) for (const [re, n] of KEY) if (re.test(s)) return n;
   let h = 7;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
   return ((h + offset) % DEMO_COUNT) + 1;
 }
 export const demoSrc = (seed: string, offset = 0) => `/demo/wm-${String(demoIndex(seed, offset)).padStart(2, "0")}.jpg`;

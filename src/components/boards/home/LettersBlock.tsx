@@ -2,6 +2,7 @@
 import Link from "next/link";
 import type { Column, Letter } from "@/lib/content/types";
 import { daysAgo } from "@/lib/site";
+import { initials } from "@/lib/initials";
 
 const sectionSlug: Record<string, string> = { news: "news", market_insights: "market-insights", applications: "applications", technical_guides: "technical-guides", buying_guides: "buying-guides" };
 
@@ -59,7 +60,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
 <Link href={`/letters/columns/${column.slug}/`} className="h" style={{ display: "block", fontSize: "21px", lineHeight: "1.2", marginBottom: "12px" }}>{column.title}</Link>
 <p className="meta" style={{ margin: "0 0 14px", fontSize: "13px", lineHeight: "1.6" }}>{column.summary}</p>
 <div style={{ display: "flex", alignItems: "center", gap: "11px", paddingTop: "13px", borderTop: "1px solid var(--line-soft)" }}>
-<span style={{ width: "38px", height: "38px", borderRadius: "999px", background: "var(--line)", flexShrink: "0" }}></span>
+<span style={{ width: "38px", height: "38px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 800, letterSpacing: "-.02em" }}>{initials(column.author.name)}</span>
 <span style={{ minWidth: "0" }}><span style={{ display: "block", fontSize: "13.5px", fontWeight: "800" }}>{column.author.name}</span><span className="meta" style={{ display: "block", fontSize: "11.5px" }}>{column.author.title} &#183; {column.author.org}</span></span>
 </div>
 <p className="meta" style={{ margin: "12px 0 0", fontSize: "11px", lineHeight: "1.55", color: "var(--grey)" }}>The author&#8217;s own view, not the editors&#8217;. Disclosure: {column.author.disclosure}</p>

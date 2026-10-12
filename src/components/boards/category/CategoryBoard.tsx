@@ -11,6 +11,7 @@ import { SECTION_INTRO, articleHref, fmtDate, fmtDateShort, subsectionLabel } fr
 import type { Article, SectionCode } from "@/lib/content/types";
 import "@/styles/board-cat.css";
 import { demoBg } from "@/lib/demo";
+import { initials } from "@/lib/initials";
 
 type Sub = { code: string; label: string; slug: string };
 
@@ -101,7 +102,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 {/* 编辑的话 */}
 <section style={{ paddingBottom: "36px" }} className="wrap">
 <div style={{ background: "var(--paper)", borderLeft: "5px solid var(--red)", borderRadius: "0 14px 14px 0", padding: "22px 26px", display: "flex", gap: "20px", alignItems: "flex-start", flexWrap: "wrap" }}>
-<span style={{ width: "46px", height: "46px", borderRadius: "999px", background: "var(--line)", flexShrink: "0" }}></span>
+<span style={{ width: "46px", height: "46px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: 800, letterSpacing: "-.02em" }}>{initials(editor.name)}</span>
 <div style={{ flex: "1 1 420px" }}>
 <div style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--slate)", marginBottom: "7px" }}>FROM THE EDITOR</div>
 <p style={{ margin: "0 0 7px", fontSize: "15.5px", fontWeight: "500", lineHeight: "1.6" }}>{note}</p>

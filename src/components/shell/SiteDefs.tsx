@@ -45,11 +45,11 @@ export function SiteDefs() {
 <path d="M0 9L8 0H24L32 9L24 18H8Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
 </pattern>
 {/* 线径渐变分隔带用：由疏到密 */}
-<pattern id="pG1" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M0 0H30M0 0V30" stroke="currentColor" strokeWidth="2.6" fill="none" /></pattern>
-<pattern id="pG2" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M0 0H22M0 0V22" stroke="currentColor" strokeWidth="2" fill="none" /></pattern>
-<pattern id="pG3" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M0 0H16M0 0V16" stroke="currentColor" strokeWidth="1.5" fill="none" /></pattern>
-<pattern id="pG4" width="11" height="11" patternUnits="userSpaceOnUse"><path d="M0 0H11M0 0V11" stroke="currentColor" strokeWidth="1.1" fill="none" /></pattern>
-<pattern id="pG5" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 0H7M0 0V7" stroke="currentColor" strokeWidth=".8" fill="none" /></pattern>
+<pattern id="pG1" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M0 0H30M0 0V30" stroke="#6E7384" strokeWidth="2.6" fill="none" /></pattern>
+<pattern id="pG2" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M0 0H22M0 0V22" stroke="#7D8292" strokeWidth="2" fill="none" /></pattern>
+<pattern id="pG3" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M0 0H16M0 0V16" stroke="#8A8F9E" strokeWidth="1.5" fill="none" /></pattern>
+<pattern id="pG4" width="11" height="11" patternUnits="userSpaceOnUse"><path d="M0 0H11M0 0V11" stroke="#9A9FB0" strokeWidth="1.1" fill="none" /></pattern>
+<pattern id="pG5" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 0H7M0 0V7" stroke="#A7ABB8" strokeWidth=".8" fill="none" /></pattern>
 <linearGradient id="fadeR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="var(--surface-dark)" stopOpacity="1" /><stop offset=".55" stopColor="var(--surface-dark)" stopOpacity="0" /></linearGradient>
 <linearGradient id="fadeD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--surface-dark)" stopOpacity="0" /><stop offset="1" stopColor="var(--surface-dark)" stopOpacity="1" /></linearGradient>
 </defs>
