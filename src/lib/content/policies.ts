@@ -89,7 +89,7 @@ export const POLICIES: Policy[] = [
       "What we show and where it comes from. Each fact on a company profile is labelled: VERIFIED means our editors checked it against a named source on a given date; SELF-REPORTED means the company supplied it and we have not independently confirmed it. Certifications are shown only when the company has provided a copy of the certificate and we have checked it; they are removed automatically on expiry.",
       "Claiming a profile. A company may claim its profile using an email address at its own domain. Claimed companies can maintain their description, product range, photos and contact details; changes are reviewed before they go live. Company type, related coverage and editorial notes remain under our control. Certification details are locked after submission and can only be changed by contacting us.",
       "What we will not publish: capacity, market share or performance figures without a verifiable third-party source; claims about competitors; promotional copy.",
-      "Removal and corrections. Write to {directory email}. We do not remove companies because they dislike our coverage. We correct factual errors under our Corrections Policy.",
+      "Removal and corrections. Write to hello@wiremeshnews.com. We do not remove companies because they dislike our coverage. We correct factual errors under our Corrections Policy.",
       "Related companies. Companies related to our publisher carry a visible relationship label and are listed under the same rules as everyone else."
     ],
     "sections": [],
@@ -103,7 +103,7 @@ export const POLICIES: Policy[] = [
       "All content on wiremeshnews.com is © Wire Mesh News or its licensors. You may quote short extracts with attribution and a link. You may not republish articles in full, scrape the site, or redistribute market data or company information from it.",
       "Standards. We summarise standards in our own words and link to the issuing bodies. We do not host or distribute standards texts. Buy them from the issuer.",
       "Market data shown on this site is licensed from third parties and may not be copied, redistributed or exported.",
-      "If you believe content on this site infringes your copyright, send a notice to {legal email} containing: the work you own; the URL of the material; your contact details; a statement that you believe in good faith the use is unauthorised; and your signature. We act on valid notices within 5 working days and notify the person who posted the material, who may send a counter-notice."
+      "If you believe content on this site infringes your copyright, send a notice to hello@wiremeshnews.com containing: the work you own; the URL of the material; your contact details; a statement that you believe in good faith the use is unauthorised; and your signature. We act on valid notices within 5 working days and notify the person who posted the material, who may send a counter-notice."
     ],
     "sections": [],
     "draft": false
@@ -114,7 +114,7 @@ export const POLICIES: Policy[] = [
     "inShort": "What personal data we collect, why, how long we keep it, and your rights. Final text to be settled by counsel.",
     "paras": [],
     "sections": [
-      "Controller: {运营主体全称}, {注册地址}, {privacy email}. 与 About 一致",
+      "Controller: {运营主体全称}, {注册地址}, hello@wiremeshnews.com. 与 About 一致",
       "What we collect and why: account (email, name, password hash); profile you choose to make public; submissions, comments, letters, messages you send to companies; subscription and billing (via payment processor — we do not store card numbers); analytics only with consent; server logs for security",
       "Legal bases (GDPR): contract (account, subscription), consent (analytics, marketing email, public profile), legitimate interest (security, fraud prevention, editorial record)",
       "Sharing: payment processor, email provider, hosting, analytics (only with consent), the single company you choose to contact via the contact form. No sale of personal data. No advertising networks",
