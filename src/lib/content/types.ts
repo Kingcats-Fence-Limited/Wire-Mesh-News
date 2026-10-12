@@ -75,6 +75,9 @@ export type Company = {
   legalName?: string;
   orgType: string; // organisation_type code
   categories: string[]; // category codes
+  /** Editorial: up to two application areas (application_area codes), judged from covered projects. */
+  applications: string[];
+  materials?: ("carbon_steel" | "stainless" | "other_alloys")[];
   products: string[]; // product codes
   processes?: string[];
   country: string; // alpha2
