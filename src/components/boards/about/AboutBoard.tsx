@@ -25,7 +25,6 @@ export function AboutBoard() {
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Launched</span><b>{SITE.launched}</b></div>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Language</span><b>English only</b></div>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Region</span><b>{SITE.operator.region}</b></div>
-<div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Operated by</span><b>{SITE.operator.legalName}</b></div>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Contact</span><b>{SITE.email}</b></div>
 </div>
 </div>
@@ -35,22 +34,20 @@ export function AboutBoard() {
 <section style={{ paddingTop: "40px", paddingBottom: "46px" }} className="wrap">
 <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 330px", gap: "52px", alignItems: "start" }} className="cols">
 <div>
-{/* 运营主体披露 */}
-<div id="ownership" style={{ border: "2px solid var(--red)", borderRadius: "16px", padding: "26px 30px", marginBottom: "38px" }}>
-<div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "14px", flexWrap: "wrap" }}>
-<span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 11px", borderRadius: "5px" }}>OWNERSHIP DISCLOSURE</span>
-<span style={{ fontSize: "20px" }} className="h">Who runs this site</span>
+{/* 运营主体披露：按政策要求写明，但不作为页面重点 */}
+<div id="ownership" style={{ background: "var(--paper)", borderRadius: "14px", padding: "20px 24px", marginBottom: "38px" }}>
+<div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "10px", flexWrap: "wrap" }}>
+<span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)" }}>DISCLOSURE</span>
+<span style={{ fontSize: "17px" }} className="h">Independence and ownership</span>
 </div>
-<div style={{ fontSize: "16px" }} className="body">
-<p style={{ fontSize: "16px", marginBottom: "14px" }}>Wire Mesh News is published and operated by <b>{SITE.operator.legalName}</b>, a manufacturer in the wire mesh and fencing industry. We think readers have a right to know that, so it is written here rather than buried in the terms.</p>
-<p style={{ fontSize: "16px", marginBottom: "14px" }}>That raises an obvious question: can a publication run by a manufacturer cover the industry fairly? Our answer is to fix the rules in writing rather than rely on promises:</p>
-<div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "15px", fontWeight: "500", lineHeight: "1.6" }}>
-<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>Content involving Kingcats is published under <b>exactly the same</b> review standard as any other company&#8217;s, with no automatic right to publication.</span></div>
-<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>When the operator is mentioned in a story, the relationship is stated in the text.</span></div>
-<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>Directory listing and order are <b>never paid for</b>; the operator is treated like every other company in the Directory.</span></div>
-<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>Commercial content is always labelled Sponsored Content or Advertisement.</span></div>
+<div style={{ fontSize: "15px" }} className="body">
+<p style={{ fontSize: "15px", marginBottom: "10px" }}>Wire Mesh News is an independent trade publication. It is operated by {SITE.operator.legalName}, which also has commercial interests in the industry we cover. We state that here because readers should know it, and we keep the newsroom separate from those interests by rule, not by promise:</p>
+<div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "14.5px", fontWeight: "500", lineHeight: "1.6" }}>
+<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>Every company, the operator included, is covered under the same review standard, with no right to publication.</span></div>
+<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>Where the operator appears in a story, the relationship is stated in the text.</span></div>
+<div style={{ display: "flex", gap: "11px" }}><span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>·</span><span>Directory listing and order are never paid for, and commercial content is always labelled Sponsored Content or Advertisement.</span></div>
 </div>
-<p style={{ fontSize: "15px", margin: "16px 0 0", color: "var(--slate)" }}>If you believe a story breaks any of these rules, tell us through <Link href="/policies/corrections/" style={{ color: "var(--red-text)", fontWeight: "800", textDecoration: "underline" }}>Corrections</Link>.</p>
+<p style={{ fontSize: "14px", margin: "12px 0 0", color: "var(--slate)" }}>If you believe a story breaks these rules, tell us through <Link href="/policies/corrections/" style={{ color: "var(--red-text)", fontWeight: "800", textDecoration: "underline" }}>Corrections</Link>.</p>
 </div>
 </div>
 {/* 我们写什么 */}
@@ -92,7 +89,7 @@ export function AboutBoard() {
 <nav style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }} aria-label="On this page">
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--slate)", marginBottom: "12px" }}>ON THIS PAGE</div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14.5px", fontWeight: "700" }}>
-<a href="#ownership" style={{ color: "var(--red-text)" }}>Ownership disclosure</a><a href="#what">What we cover</a><a href="#principles">How we work</a><a href="#team">Who writes it</a>
+<a href="#ownership">Independence</a><a href="#what">What we cover</a><a href="#principles">How we work</a><a href="#team">Who writes it</a>
 </div>
 </nav>
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", padding: "22px" }}>

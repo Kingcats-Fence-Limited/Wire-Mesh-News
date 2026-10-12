@@ -41,7 +41,6 @@ export function ContactBoard({ subject }: { subject?: string }) {
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey-2)", marginBottom: "13px" }}>PUBLICATION DETAILS</div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px", fontWeight: "500" }}>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Publication</span><b>{SITE.name}</b></div>
-<div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Operated by</span><Link href="/about/" style={{ color: "#FFFFFF", fontWeight: "800", textDecoration: "underline" }}>See About</Link></div>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Region</span><b>{SITE.operator.region}</b></div>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Email</span><b>{SITE.email}</b></div>
 {SITE.phone && <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--grey-3)" }}>Phone</span><b>{SITE.phone}</b></div>}
