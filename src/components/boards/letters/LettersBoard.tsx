@@ -8,6 +8,7 @@ import { getArticle } from "@/lib/content/articles";
 import { EDITORIAL_SECTIONS, sectionByCode, articleHref, fmtDate, fmtDateShort, SITE } from "@/lib/site";
 import type { Letter, Column } from "@/lib/content/types";
 import "@/styles/board-let.css";
+import { initials } from "@/lib/initials";
 
 export type LetParams = { tab?: string; section?: string; role?: string; sort?: string; page?: string };
 const Env = ({ size = 20 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--grey)" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="M3 6.5h18v11H3z" /><path d="m3 7 9 6 9-6" /></svg>;
@@ -107,7 +108,7 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 </div>
 {columns.map((c) => (
 <article key={c.slug} className="letter">
-<span style={{ width: "46px", height: "46px", borderRadius: "999px", background: "var(--line)", flexShrink: "0" }}></span>
+<span style={{ width: "46px", height: "46px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: 800, letterSpacing: "-.02em" }}>{initials(c.author.name)}</span>
 <div style={{ minWidth: "0", flex: "1 1 auto" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "9px", flexWrap: "wrap", marginBottom: "7px" }}>
 <span className="kick"><i></i>COLUMN</span>
@@ -130,7 +131,7 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 <span style={{ fontSize: "13px", letterSpacing: ".08em", color: "var(--grey)" }} className="h">COLUMNS</span>
 <span style={{ border: "1.5px solid var(--line)", borderRadius: "4px", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".12em", padding: "4px 8px", color: "var(--slate)" }}>OPINION</span>
 </div>
-{columns.slice(0, 3).map((c) => <Link key={c.slug} href={`/letters/columns/${c.slug}/`} style={{ display: "flex", gap: "11px", alignItems: "flex-start", padding: "10px 0", borderTop: "1px solid var(--line-soft)" }}><span style={{ width: "36px", height: "36px", borderRadius: "999px", background: "var(--line)", flexShrink: "0" }}></span><span style={{ minWidth: "0" }}><span style={{ display: "block", fontSize: "15px", lineHeight: "1.25", marginBottom: "3px" }} className="h">{c.title}</span><span style={{ fontSize: "11.5px" }} className="meta">{c.author.name} · {c.author.title} · {c.author.org}</span></span></Link>)}
+{columns.slice(0, 3).map((c) => <Link key={c.slug} href={`/letters/columns/${c.slug}/`} style={{ display: "flex", gap: "11px", alignItems: "flex-start", padding: "10px 0", borderTop: "1px solid var(--line-soft)" }}><span style={{ width: "36px", height: "36px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 800, letterSpacing: "-.02em" }}>{initials(c.author.name)}</span><span style={{ minWidth: "0" }}><span style={{ display: "block", fontSize: "15px", lineHeight: "1.25", marginBottom: "3px" }} className="h">{c.title}</span><span style={{ fontSize: "11.5px" }} className="meta">{c.author.name} · {c.author.title} · {c.author.org}</span></span></Link>)}
 <Link href="/letters/?tab=columns" style={{ display: "block", paddingTop: "12px", borderTop: "1px solid var(--line-soft)", fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>ALL COLUMNS →</Link>
 <p style={{ margin: "10px 0 0", fontSize: "11px", lineHeight: "1.55", color: "var(--grey)" }} className="meta">Columns are written by outside authors under their own name, job title and organisation, with a disclosure of interests. The newsroom does not write columns.</p>
 </div>
@@ -217,7 +218,7 @@ export function ColumnBoard({ c }: { c: Column }) {
 <h1 style={{ margin: "0 0 10px", fontSize: "32px", letterSpacing: "-.045em", lineHeight: "1.14" }} className="h">{c.title}</h1>
 <p style={{ margin: "0 0 16px", fontSize: "16px", fontWeight: 500, lineHeight: 1.6, color: "var(--slate)" }}>{c.summary}</p>
 <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", marginBottom: "22px", flexWrap: "wrap" }}>
-<span style={{ width: "40px", height: "40px", borderRadius: "999px", background: "var(--line)", flexShrink: "0" }}></span>
+<span style={{ width: "40px", height: "40px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 800, letterSpacing: "-.02em" }}>{initials(c.author.name)}</span>
 <span style={{ minWidth: "0", flex: "1 1 240px" }}><span style={{ display: "block", fontSize: "14px", fontWeight: "800" }}>{c.author.name}</span><span style={{ display: "block", fontSize: "12px" }} className="meta">{c.author.title} · {c.author.org}</span></span>
 <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}><a href={`mailto:?subject=${encodeURIComponent(c.title)}&body=${encodeURIComponent(url)}`} style={{ minHeight: "34px", fontSize: "12px" }} className="chip">Share</a><CopyLink url={url} /></span>
 </div>

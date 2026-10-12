@@ -62,7 +62,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }} className="g4">
 {c.productCards.slice(0, 3).map((p) => (
 <div key={p.name} style={{ border: "1px solid var(--line)", borderRadius: "14px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-<div style={{ borderRadius: "0", aspectRatio: "4/3", ...demoBg(c.slug + p.name) }} className="ph"></div>
+<div style={{ borderRadius: "0", aspectRatio: "4/3", ...demoBg(p.name) }} className="ph"></div>
 <div style={{ padding: "16px 17px", display: "flex", flexDirection: "column", gap: "7px", flex: "1 1 auto" }}>
 <span style={{ fontSize: "16.5px" }} className="h">{p.name}</span>
 <span style={{ lineHeight: "1.5" }} className="meta">{p.spec}</span>

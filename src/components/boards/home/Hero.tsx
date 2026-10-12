@@ -4,6 +4,7 @@ import type { Article } from "@/lib/content/types";
 import { articleHref, fmtDateShort, subsectionLabel, sectionByCode } from "@/lib/site";
 import { getAuthor } from "@/lib/content/people";
 import { demoBg } from "@/lib/demo";
+import { initials } from "@/lib/initials";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp", g1: "pG1", g2: "pG2", g3: "pG3", g4: "pG4", g5: "pG5" };
 const CYCLE = ["pPerf", "pChain", "pWoven", "pWeld", "pGrate", "pExp", "pWeldQ"];
@@ -40,7 +41,7 @@ export function Hero({ top, side, brief, date }: { top: Article; side: [Article,
 <span className="h heroh" style={{ display: "block", fontSize: "46px", letterSpacing: "-.05em", lineHeight: "1", marginBottom: "14px", maxWidth: "620px" }}><Title a={top} /></span>
 <span className="herodek" style={{ display: "block", fontSize: "16px", fontWeight: "500", lineHeight: "1.5", color: "var(--on-dark-2)", maxWidth: "560px", marginBottom: "16px" }}>{top.dek}</span>
 <span style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-<span style={{ display: "flex", alignItems: "center", gap: "9px" }}><span style={{ width: "32px", height: "32px", borderRadius: "999px", background: "var(--line-dark)", boxShadow: "0 0 0 2px var(--red)", flexShrink: "0" }}></span><span style={{ fontSize: "13.5px", fontWeight: "800" }}>{author?.name}</span></span>
+<span style={{ display: "flex", alignItems: "center", gap: "9px" }}><span style={{ width: "32px", height: "32px", borderRadius: "999px", background: "var(--surface-dark-2)", color: "#FFFFFF", boxShadow: "0 0 0 2px var(--red)", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800, letterSpacing: "-.02em" }}>{initials(author?.name ?? "")}</span><span style={{ fontSize: "13.5px", fontWeight: "800" }}>{author?.name}</span></span>
 <span className="mono" style={{ fontSize: "12px", fontWeight: "700", color: "#B9BCC6" }}>{fmtDateShort(top.date)} 2026 &#183; {top.readMin} MIN READ</span>
 <span className="herocta" style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--card)", color: "var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "44px", borderRadius: "999px" }}>Read the story<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
 </span>
