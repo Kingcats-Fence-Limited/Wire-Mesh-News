@@ -4,7 +4,7 @@
 
 export type Category = { code: string; labelEn: string; labelZh: string; sort: string };
 
-export const CATEGORY = [{"code":"fencing","labelEn":"Fencing systems","labelZh":"围栏系统","sort":"1"},{"code":"reinforcement","labelEn":"Reinforcement & civil","labelZh":"加固与土木","sort":"2"},{"code":"filtration","labelEn":"Filtration & screening","labelZh":"过滤与筛分","sort":"3"},{"code":"access","labelEn":"Access & walkway","labelZh":"通道与踏步","sort":"4"},{"code":"materials_services","labelEn":"Materials & services","labelZh":"材料与服务","sort":"5"}] as const satisfies readonly Category[];
+export const CATEGORY = [{"code":"fencing","labelEn":"Fencing & perimeter security","labelZh":"围栏与周界安防","sort":"1"},{"code":"reinforcement","labelEn":"Construction & civil engineering mesh","labelZh":"建筑与土木工程网","sort":"2"},{"code":"filtration","labelEn":"Filtration, screening & process mesh","labelZh":"过滤、筛分与工业用网","sort":"3"},{"code":"access","labelEn":"Grating, walkways & architectural metal","labelZh":"格栅、通道与建筑金属","sort":"4"},{"code":"materials_services","labelEn":"Wire, materials & services","labelZh":"线材、材料与服务","sort":"5"}] as const satisfies readonly Category[];
 
 export type CategoryCode = (typeof CATEGORY)[number]["code"];
 

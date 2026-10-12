@@ -4,13 +4,13 @@ import { Shell } from "@/components/shell/Shell";
 import { FilterBar } from "./FilterBar";
 import { COMPANIES, SPONSORED } from "@/lib/content/directory";
 import { ARTICLES } from "@/lib/content/articles";
-import { APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, CATEGORY_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
+import { APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, CATEGORY_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
 import { fmtDateShort } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-dir.css";
 import { demoBg, logoSrc } from "@/lib/demo";
 
-export type DirParams = { app?: string; category?: string; region?: string; material?: string; claimed?: string; photos?: string; covered?: string; sort?: string; page?: string; q?: string };
+export type DirParams = { app?: string; category?: string; product?: string; region?: string; material?: string; claimed?: string; photos?: string; covered?: string; sort?: string; page?: string; q?: string };
 
 const APP_ICON: Record<string, string> = {
   architecture: "M3 21h18M5 21V9l7-5 7 5v12M10 21v-6h4v6",
@@ -30,7 +30,7 @@ export function filterCompanies(sp: DirParams) {
   const q = (sp.q ?? "").toLowerCase();
   const art = (c: Company) => ARTICLES.filter((a) => a.companies?.includes(c.slug)).length;
   let list = COMPANIES.filter((c) =>
-    (!sp.app || c.applications.includes(sp.app)) && (!sp.category || c.categories.includes(sp.category)) && (!sp.region || regionOf(c.country) === sp.region) &&
+    (!sp.app || c.applications.includes(sp.app)) && (!sp.category || c.categories.includes(sp.category)) && (!sp.product || c.products.includes(sp.product)) && (!sp.region || regionOf(c.country) === sp.region) &&
     (!sp.material || c.materials?.includes(sp.material as never)) && (sp.claimed !== "1" || c.claimed) && (sp.photos !== "1" || c.productCards.some((p) => p.photos > 0)) && (sp.covered !== "1" || art(c) > 0) &&
     (!q || `${c.name} ${c.city} ${COUNTRY_BY_CODE[c.country]?.name ?? ""} ${c.products.map((p) => PRODUCT_BY_CODE[p]?.labelEn ?? p).join(" ")} ${c.summary}`.toLowerCase().includes(q)));
   list = [...list].sort((a, b) => (sp.sort === "covered" ? art(b) - art(a) || a.name.localeCompare(b.name) : sp.sort === "recent" ? (a.updated < b.updated ? 1 : -1) : a.name.localeCompare(b.name)));
@@ -55,6 +55,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   const active: { label: string; href: string }[] = [
     sp.app && { label: APPLICATION_AREA_BY_CODE[sp.app]?.labelEn ?? sp.app, href: href({ app: undefined }) },
     sp.category && { label: CATEGORY_BY_CODE[sp.category]?.labelEn ?? sp.category, href: href({ category: undefined }) },
+    sp.product && { label: PRODUCT_BY_CODE[sp.product]?.labelEn ?? sp.product, href: href({ product: undefined }) },
     sp.region && { label: REGION.find((r) => r.code === sp.region)?.labelEn ?? sp.region, href: href({ region: undefined }) },
     sp.material && { label: MATERIALS.find((m) => m[0] === sp.material)?.[1] ?? sp.material, href: href({ material: undefined }) },
     sp.claimed === "1" && { label: "Claimed", href: href({ claimed: undefined }) },
@@ -124,7 +125,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   menus={[
     { key: "app", label: "Application", wide: true, note: "Primary axis — each company carries at most two application areas, assigned by editors.", items: APPLICATION_AREA.map((a) => ({ label: a.labelEn, sub: APP_SUB[a.code], href: toggle("app", a.code), on: sp.app === a.code, count: countBy((c) => c.applications.includes(a.code)) })) },
     { key: "region", label: "Region", items: REGION.map((r) => ({ label: r.labelEn, href: toggle("region", r.code), on: sp.region === r.code, count: countBy((c) => regionOf(c.country) === r.code) })).filter((x) => x.count > 0) },
-    { key: "category", label: "Product", note: "Five product families — what a company mainly makes", items: CATEGORY.map((c) => ({ label: c.labelEn, href: toggle("category", c.code), on: sp.category === c.code, count: countBy((x) => x.categories.includes(c.code)) })) },
+    { key: "product", label: "Product", note: "The full product vocabulary, grouped by family — the same list companies use for their product range", items: [], groups: CATEGORY.map((cat) => ({ title: cat.labelEn, items: PRODUCT.filter((pr) => pr.category === cat.code).map((pr) => ({ label: pr.labelEn, href: toggle("product", pr.code), on: sp.product === pr.code, count: countBy((c) => c.products.includes(pr.code)) })) })) },
   ]}
   rows={[
     { label: "MATERIAL", ticks: MATERIALS.map(([k, l]) => ({ label: l, href: toggle("material", k), on: sp.material === k, count: countBy((c) => !!c.materials?.includes(k as never)) })) },
