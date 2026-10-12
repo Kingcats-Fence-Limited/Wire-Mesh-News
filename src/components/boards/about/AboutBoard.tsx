@@ -57,13 +57,15 @@ export function AboutBoard() {
 <h2 style={{ margin: "0", fontSize: "28px" }} id="what" className="h">What we cover</h2>
 <div className="sechd"></div>
 <div className="body">
-<p>The first phase concentrates on four fields: fencing and gates, industrial security, filtration and screening, and engineering mesh. Content is organised in five sections — News, Market Insights, Applications, Technical Guides and Buying Guides.</p>
+<p>Coverage spans the five product families of the wire mesh industry: Perimeter &amp; Security, Infrastructure &amp; Geotechnical, Filtration &amp; Process, Architectural &amp; Structural, and Materials &amp; Services. Content is organised in five sections — News, Market Insights, Applications, Technical Guides and Buying Guides.</p>
 <p>Technical content states the conditions it applies under; news records when something happened and when it was published. We do not publish market-size, price-trend, certification or capability claims without evidence. AI tools help with research, but every piece is checked by an editor before publication and nothing is published automatically.</p>
 </div>
-<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", margin: "6px 0 38px" }} className="cols">
-<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "16px", marginBottom: "5px" }} className="h">Fencing &amp; gates</div><div style={{ lineHeight: "1.5" }} className="meta">Fencing systems, gates, anti-climb mesh</div></div>
-<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "16px", marginBottom: "5px" }} className="h">Industrial &amp; security</div><div style={{ lineHeight: "1.5" }} className="meta">Industrial sites and perimeter protection</div></div>
-<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "16px", marginBottom: "5px" }} className="h">Filtration &amp; screening</div><div style={{ lineHeight: "1.5" }} className="meta">Filter media and screens</div></div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "14px", margin: "6px 0 38px" }} className="cols g5">
+<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "15px", marginBottom: "5px" }} className="h">Perimeter &amp; Security</div><div style={{ lineHeight: "1.5" }} className="meta">Fencing systems, anti-climb mesh, gates, posts and barriers</div></div>
+<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "15px", marginBottom: "5px" }} className="h">Infrastructure &amp; Geotechnical</div><div style={{ lineHeight: "1.5" }} className="meta">Reinforcing mesh, gabions, slope protection and mining mesh</div></div>
+<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "15px", marginBottom: "5px" }} className="h">Filtration &amp; Process</div><div style={{ lineHeight: "1.5" }} className="meta">Woven cloth, filters, screens, perforated and expanded metal</div></div>
+<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "15px", marginBottom: "5px" }} className="h">Architectural &amp; Structural</div><div style={{ lineHeight: "1.5" }} className="meta">Grating, treads, trench covers, handrail and architectural mesh</div></div>
+<div style={{ background: "var(--paper)", borderRadius: "12px", padding: "18px" }}><div style={{ fontSize: "15px", marginBottom: "5px" }} className="h">Materials &amp; Services</div><div style={{ lineHeight: "1.5" }} className="meta">Wire rod and drawn wire, coating, machinery, testing and consulting</div></div>
 </div>
 {/* 编辑原则 */}
 <h2 style={{ margin: "0", fontSize: "28px" }} id="principles" className="h">How we work</h2>
