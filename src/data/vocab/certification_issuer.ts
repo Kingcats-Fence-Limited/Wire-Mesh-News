@@ -1,0 +1,11 @@
+// AUTO-GENERATED from docs/Wire_Mesh_News_Vocabularies.xlsx — do not edit by hand.
+// 发证/认可机构。选 other 转人工；编辑可扩充。
+// Used in: Claim 编辑台 Certifications ISSUER
+
+export type CertificationIssuer = { code: string; name: string; country: string; note: string };
+
+export const CERTIFICATION_ISSUER = [{"code":"sgs","name":"SGS","country":"CH","note":""},{"code":"tuv_sud","name":"TÜV SÜD","country":"DE","note":""},{"code":"tuv_rheinland","name":"TÜV Rheinland","country":"DE","note":""},{"code":"tuv_nord","name":"TÜV NORD","country":"DE","note":""},{"code":"bureau_veritas","name":"Bureau Veritas","country":"FR","note":""},{"code":"dnv","name":"DNV","country":"NO","note":""},{"code":"intertek","name":"Intertek","country":"GB","note":""},{"code":"bsi","name":"BSI Group","country":"GB","note":""},{"code":"lrqa","name":"LRQA","country":"GB","note":""},{"code":"dekra","name":"DEKRA","country":"DE","note":""},{"code":"ul_solutions","name":"UL Solutions","country":"US","note":""},{"code":"csa_group","name":"CSA Group","country":"CA","note":""},{"code":"nsf","name":"NSF","country":"US","note":""},{"code":"abs_qe","name":"ABS Quality Evaluations","country":"US","note":""},{"code":"kiwa","name":"Kiwa","country":"NL","note":""},{"code":"applus","name":"Applus+","country":"ES","note":""},{"code":"eurofins","name":"Eurofins","country":"LU","note":""},{"code":"cqc","name":"CQC 中国质量认证中心","country":"CN","note":""},{"code":"ccic","name":"CCIC 中国检验认证集团","country":"CN","note":""},{"code":"cti","name":"CTI 华测检测","country":"CN","note":""},{"code":"cqm","name":"CQM 方圆标志认证","country":"CN","note":""},{"code":"bv_china","name":"Bureau Veritas China","country":"CN","note":""},{"code":"jqa","name":"JQA","country":"JP","note":""},{"code":"krs","name":"Korean Register","country":"KR","note":""},{"code":"bis","name":"BIS (Bureau of Indian Standards)","country":"IN","note":""},{"code":"saiglobal","name":"SAI Global","country":"AU","note":""},{"code":"lpcb_bre","name":"BRE / LPCB","country":"GB","note":"安防等级"},{"code":"other","name":"Other — manual review","country":"","note":""}] as const satisfies readonly CertificationIssuer[];
+
+export type CertificationIssuerCode = (typeof CERTIFICATION_ISSUER)[number]["code"];
+
+export const CERTIFICATION_ISSUER_BY_CODE: Readonly<Record<string, CertificationIssuer>> = Object.fromEntries(CERTIFICATION_ISSUER.map((r) => [r.code, r]));

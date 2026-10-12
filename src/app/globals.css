@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+/* Dark mode is attribute-driven (data-theme) so the footer toggle and the
+   system preference can both drive it; see ThemeScript in layout. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — source: docs/HANDOFF.md §3 (extracted from canvas)  */
+/* ------------------------------------------------------------------ */
+:root {
+  /* brand */
+  --ink: #15161c;
+  --red: #e5242f;
+  --red-deep: #c41822;
+  --red-text: #e5242f; /* becomes #FF4A54 in dark mode */
+
+  /* surfaces */
+  --bg: #ffffff;
+  --paper: #f6f6f8;
+  --paper-2: #fafafb;
+  --surface-dark: #15161c;
+  --surface-dark-2: #1c1e27;
+  --surface-dark-3: #23242e;
+
+  /* text */
+  --fg: #15161c;
+  --fg-2: #23242e;
+  --fg-3: #2c2e39;
+  --slate: #555a6b;
+  --grey: #8a8f9e;
+  --grey-2: #9a9fb0;
+  --grey-3: #a7abb8;
+  --grey-4: #b4b8c2;
+  --grey-5: #7d8292;
+  --on-dark: #ffffff;
+  --on-dark-2: #d8d9e0;
+
+  /* lines */
+  --line: #e6e6ec;
+  --line-soft: #ecedf1;
+  --line-2: #d8d9e0;
+  --line-dark: #2a2c36;
+
+  /* status */
+  --st-current-bg: #f0f7f2;
+  --st-current-fg: #1e6b35;
+  --st-review-bg: #fff4e2;
+  --st-review-fg: #8a5a08;
+  --st-withdrawn-bg: #f2f3f5;
+  --st-withdrawn-fg: #6e7384;
+  --st-draft-bg: #fff1f2;
+  --st-draft-fg: #c41822;
+  --st-red-bg: #fde8e9;
+
+  /* misc */
+  --mark: #ffe8b0;
+  --up: #1e6b35;
+  --down: #c41822;
+  --flat: #8a8f9e;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --red-text: #ff4a54;
+  --bg: #0e0f14;
+  --paper: #15161c;
+  --paper-2: #1a1b23;
+  --fg: #f2f2f5;
+  --fg-2: #e3e4ea;
+  --fg-3: #d8d9e0;
+  --slate: #a7abb8;
+  --grey: #8a8f9e;
+  --line: #2a2c36;
+  --line-soft: #23242e;
+  --line-2: #33353f;
+  --st-current-bg: #15261b;
+  --st-review-bg: #2b2311;
+  --st-withdrawn-bg: #1f2027;
+  --st-draft-bg: #2b1518;
+  --st-red-bg: #2b1518;
+  --mark: #4a3d12;
+  color-scheme: dark;
+}
+
+@theme inline {
+  /* fonts */
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope Variable", "Manrope", ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* colors → tailwind utilities (bg-ink, text-slate, border-line …) */
+  --color-ink: var(--ink);
+  --color-red: var(--red);
+  --color-red-deep: var(--red-deep);
+  --color-red-text: var(--red-text);
+  --color-bg: var(--bg);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-dark: var(--surface-dark);
+  --color-dark-2: var(--surface-dark-2);
+  --color-dark-3: var(--surface-dark-3);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-slate: var(--slate);
+  --color-grey: var(--grey);
+  --color-grey-2: var(--grey-2);
+  --color-grey-3: var(--grey-3);
+  --color-grey-4: var(--grey-4);
+  --color-grey-5: var(--grey-5);
+  --color-on-dark: var(--on-dark);
+  --color-on-dark-2: var(--on-dark-2);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-line-2: var(--line-2);
+  --color-line-dark: var(--line-dark);
+  --color-mark: var(--mark);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-flat: var(--flat);
+
+  /* radii */
+  --radius-badge: 4px;
+  --radius-input: 10px;
+  --radius-card: 14px;
+  --radius-card-lg: 16px;
+  --radius-phone: 26px;
+
+  /* container */
+  --container-site: 1240px;
+
+  /* breakpoints: ≥1200 three columns · 900–1199 two · <900 one */
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1400px;
+
+  /* letter spacing used by headings / kickers */
+  --tracking-display: -0.04em;
+  --tracking-display-tight: -0.045em;
+  --tracking-kicker: 0.12em;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  mark { background: var(--mark); color: inherit; padding: 0 1px; border-radius: 2px; }
+  :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 2px; }
+  button { font-family: inherit; }
+  input, select, textarea { font-family: inherit; font-size: inherit; }
+  ::selection { background: var(--ink); color: #fff; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilities that encode design rules                                   */
+/* ------------------------------------------------------------------ */
+@utility font-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.12;
+  font-variation-settings: "opsz" 96;
+}
+
+/* All numerals site-wide: Manrope with tabular figures (replaces monospace). */
+@utility num {
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1, "ss01" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+@utility meta {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--slate);
+}
+
+@utility wrap {
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: 32px;
+  @media (max-width: 900px) { padding-inline: 16px; }
+}
+
+@utility tap {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Standard number auto-link style (Article-C .std) */
+@utility std-link {
+  font-weight: 800;
+  color: var(--fg);
+  border-bottom: 1.5px dotted var(--red);
+  padding-bottom: 1px;
+  white-space: nowrap;
+  &:hover { color: var(--red-text); border-bottom-style: solid; }
+}
+
+/* Hide scrollbars on horizontal chip rows (mobile) */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}

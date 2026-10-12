@@ -1,0 +1,166 @@
+{
+"organisation_type": [
+"code",
+"label_en",
+"label_zh",
+"note"
+],
+"category": [
+"code",
+"label_en",
+"label_zh",
+"sort"
+],
+"product": [
+"code",
+"label_en",
+"label_zh",
+"category",
+"synonyms"
+],
+"material": [
+"code",
+"label_en",
+"label_zh",
+"group"
+],
+"material_group": [
+"code",
+"label_en",
+"label_zh"
+],
+"surface_treatment": [
+"code",
+"label_en",
+"label_zh"
+],
+"process": [
+"code",
+"label_en",
+"label_zh"
+],
+"application_area": [
+"code",
+"label_en",
+"label_zh",
+"scenarios_en",
+"pattern"
+],
+"region": [
+"code",
+"label_en",
+"label_zh"
+],
+"country": [
+"alpha2",
+"alpha3",
+"name",
+"official_name",
+"dial_code",
+"region",
+"subdivision_required"
+],
+"subdivision": [
+"country",
+"code",
+"name",
+"type",
+"parent_code"
+],
+"employee_range": [
+"code",
+"label"
+],
+"year_founded": [
+"year"
+],
+"certification_type": [
+"code",
+"label",
+"kind",
+"note"
+],
+"certification_issuer": [
+"code",
+"name",
+"country",
+"note"
+],
+"standards_body": [
+"code",
+"name",
+"region",
+"prefix"
+],
+"standard_status": [
+"code",
+"label",
+"badge"
+],
+"standard_subject": [
+"code",
+"label_en",
+"label_zh"
+],
+"section": [
+"code",
+"label",
+"slug"
+],
+"subsection": [
+"section",
+"code",
+"label"
+],
+"article_type": [
+"code",
+"label",
+"note"
+],
+"event_type": [
+"code",
+"label"
+],
+"user_role": [
+"code",
+"label",
+"how_granted"
+],
+"submission_status": [
+"code",
+"label"
+],
+"comment_status": [
+"code",
+"label"
+],
+"claim_status": [
+"code",
+"label"
+],
+"message_status": [
+"code",
+"label"
+],
+"verification_label": [
+"code",
+"label",
+"display"
+],
+"contact_subject": [
+"code",
+"label",
+"routes_to"
+],
+"enquiry_subject": [
+"code",
+"label"
+],
+"ad_slot": [
+"code",
+"label",
+"size",
+"pages",
+"cap_note"
+]
+}

@@ -1,0 +1,11 @@
+// AUTO-GENERATED from docs/Wire_Mesh_News_Vocabularies.xlsx — do not edit by hand.
+// 标准发布机构（Standards Index 的 BODY 筛选）。
+// Used in: Standards Index BODY 筛选 · 单条标准页
+
+export type StandardsBody = { code: string; name: string; region: string; prefix: string };
+
+export const STANDARDS_BODY = [{"code":"iso","name":"ISO — International Organization for Standardization","region":"international","prefix":"ISO"},{"code":"iec","name":"IEC","region":"international","prefix":"IEC"},{"code":"cen","name":"CEN — European Committee for Standardization","region":"europe","prefix":"EN"},{"code":"astm","name":"ASTM International","region":"north_america","prefix":"ASTM"},{"code":"ansi","name":"ANSI","region":"north_america","prefix":"ANSI"},{"code":"aashto","name":"AASHTO","region":"north_america","prefix":"AASHTO"},{"code":"bsi","name":"BSI — British Standards","region":"europe","prefix":"BS"},{"code":"din","name":"DIN — German Institute for Standardization","region":"europe","prefix":"DIN"},{"code":"afnor","name":"AFNOR","region":"europe","prefix":"NF"},{"code":"uni","name":"UNI (Italy)","region":"europe","prefix":"UNI"},{"code":"sac","name":"SAC — Standardization Administration of China","region":"east_asia","prefix":"GB"},{"code":"jis","name":"JISC — Japanese Industrial Standards","region":"east_asia","prefix":"JIS"},{"code":"kats","name":"KATS — Korean Standards","region":"east_asia","prefix":"KS"},{"code":"bis_in","name":"BIS — Bureau of Indian Standards","region":"south_asia","prefix":"IS"},{"code":"sa_nz","name":"Standards Australia / Standards New Zealand","region":"oceania","prefix":"AS/NZS"},{"code":"csa_std","name":"CSA Group (standards)","region":"north_america","prefix":"CSA"},{"code":"sabs","name":"SABS (South Africa)","region":"africa","prefix":"SANS"},{"code":"gost","name":"GOST R (Russia) / EASC","region":"europe","prefix":"GOST"},{"code":"saso","name":"SASO (Saudi Arabia)","region":"middle_east","prefix":"SASO"},{"code":"tse","name":"TSE (Turkey)","region":"middle_east","prefix":"TS"}] as const satisfies readonly StandardsBody[];
+
+export type StandardsBodyCode = (typeof STANDARDS_BODY)[number]["code"];
+
+export const STANDARDS_BODY_BY_CODE: Readonly<Record<string, StandardsBody>> = Object.fromEntries(STANDARDS_BODY.map((r) => [r.code, r]));
