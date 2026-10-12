@@ -88,10 +88,13 @@
 .b-dir .sortwrap{margin-left:auto}
 }
 @media (max-width:600px){
-.b-dir .toolbar{flex-wrap:nowrap;padding:10px 12px}
-.b-dir .sortwrap{gap:8px}
-.b-dir .sortwrap > .mono > span{display:none}
-.b-dir .seg a{padding:0 9px;font-size:11.5px;min-height:30px;white-space:nowrap}
+.b-dir .toolbar{padding:12px 14px;gap:12px;flex-wrap:wrap;align-items:center}
+.b-dir .toolbar > .mono:first-child{display:none}
+.b-dir .mobfilter{min-height:42px;padding:0 16px;font-size:14px}
+.b-dir .sortwrap{display:contents !important}
+.b-dir .sortwrap > .mono{margin-left:auto;font-size:12.5px;white-space:nowrap}
+.b-dir .sortwrap .seg{flex:1 1 100%;display:flex;width:100%;margin-top:2px}
+.b-dir .sortwrap .seg a{flex:1 1 0;justify-content:center;text-align:center;min-height:38px;font-size:12.5px;padding:0 6px}
 }
 .b-dir .cat.on, .b-dir .cat.on *{color:var(--on-ink) !important}
 /* product row: two-column wide menu on desktop, horizontal scroll on phones */

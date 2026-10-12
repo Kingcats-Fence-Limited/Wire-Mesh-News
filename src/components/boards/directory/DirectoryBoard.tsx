@@ -102,7 +102,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <span style={{ flex: "1 1 0", height: "2px", background: "var(--ink)" }}></span>
 <span style={{ fontSize: "12px" }} className="meta util">Same five areas as the Applications section — articles and listings cross-link</span>
 </div>
-<p style={{ margin: "0 0 16px", fontSize: "11.5px", lineHeight: "1.55" }} className="meta">Each company carries at most <b style={{ color: "var(--ink)" }}>two</b> primary areas, assigned by editors from the projects we have covered, not self-declared. For what a company makes, use the product row below.</p>
+<p style={{ margin: "0 0 16px", fontSize: "11.5px", lineHeight: "1.55" }} className="meta">Each company carries at most <b style={{ color: "var(--ink)" }}>two</b> primary areas, assigned by editors from the projects we have covered, not self-declared. For what a company makes, open the Product filter.</p>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "14px" }} className="g5">
 {APPLICATION_AREA.map((a) => {
   const on = sp.app === a.code;
@@ -117,12 +117,6 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   );
 })}
 </div>
-{/* 副轴：产品与服务 */}
-<div className="prodrow" style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--line)" }}>
-<span style={{ fontSize: "13px", letterSpacing: ".06em", color: "var(--grey)", flexShrink: "0" }} className="h">BY PRODUCT</span>
-{products.map((pr) => <Link key={pr.code} href={toggle("product", pr.code)} scroll={false} className={`chip${sp.product === pr.code ? " on" : ""}`}>{pr.labelEn}<span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">{pr.n}</span></Link>)}
-</div>
-<p style={{ margin: "9px 0 0", fontSize: "11.5px", lineHeight: "1.55" }} className="meta">&#8220;Who makes steel grating?&#8221; is answered on this row. Product families (fencing, reinforcement, filtration, access, materials) are under More filters; every company card shows its products.</p>
 </section>
 {/* 筛选条 + 列表 */}
 <section style={{ paddingBottom: "52px" }} className="wrap">
