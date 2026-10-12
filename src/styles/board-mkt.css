@@ -1,0 +1,23 @@
+/* Market-X board classes (scoped). */
+.b-mkt .h{letter-spacing:-.04em;line-height:1.1}
+.b-mkt .up{color:#1E6B35}
+.b-mkt .dn{color:var(--red-deep)}
+.b-mkt .fl{color:var(--grey)}
+.b-mkt .badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.1em;padding:5px 9px;border-radius:4px}
+.b-mkt table{width:100%;border-collapse:collapse;font-size:13px}
+.b-mkt th{background:var(--ink);color:#FFFFFF;text-align:left;font-size:10.5px;font-weight:800;letter-spacing:.1em;padding:11px 13px}
+.b-mkt td{padding:11px 13px;border-bottom:1px solid var(--line);font-weight:500;color:var(--fg-2);vertical-align:top;line-height:1.55}
+.b-mkt tr:nth-child(even) td{background:var(--paper-2)}
+.b-mkt tr.on td{background:#FFF1F2}
+.b-mkt .card{border:1px solid var(--line);border-radius:14px;padding:20px 22px;background:#FFFFFF}
+.b-mkt .ok{background:#F0F7F2;color:#1E6B35}
+.b-mkt .warn{background:#FFF4E2;color:#8A5A08}
+.b-mkt .bad{background:#FFF1F2;color:var(--red-deep)}
+.b-mkt .pill{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;background:#FFFFFF;font-family:inherit;cursor:pointer;color:var(--ink)}
+.b-mkt .pill.on{background:var(--ink);color:#FFFFFF;border-color:var(--ink)}
+.b-mkt ul{margin:0;padding-left:18px}
+.b-mkt li{font-size:13px;font-weight:500;line-height:1.75;color:var(--fg-3)}
+.b-mkt .tablewrap{overflow-x:auto}
+@media (max-width:900px){
+.b-mkt .cols, .b-mkt .g3{grid-template-columns:1fr !important}
+}
