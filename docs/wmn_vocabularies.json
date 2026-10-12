@@ -77,32 +77,32 @@
    "rows": [
     [
      "fencing",
-     "Fencing",
-     "围栏",
+     "Perimeter Solutions",
+     "周界解决方案",
      1
     ],
     [
      "reinforcement",
-     "Construction",
-     "建筑工程",
+     "Infrastructure Solutions",
+     "基础设施解决方案",
      2
     ],
     [
      "filtration",
-     "Industrial",
-     "工业用网",
+     "Process & Separation",
+     "工艺与分离",
      3
     ],
     [
      "access",
-     "Grating",
-     "格栅",
+     "Structural & Architectural",
+     "结构与建筑",
      4
     ],
     [
      "materials_services",
-     "Wire & services",
-     "线材与服务",
+     "Materials & Services",
+     "材料与服务",
      5
     ]
    ]
