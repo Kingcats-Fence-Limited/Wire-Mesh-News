@@ -11,7 +11,7 @@ export const SITE = {
   operator: { legalName: "KINGCATS FENCE LIMITED", region: "United States" },
   launched: 2026,
   /** Operator phone / WhatsApp (shown in footer, About, Contact, Advertise). */
-  phone: "+86 182 3018 3999",
+  phone: "+1 415 430 7914",
   clocks: [
     { label: "Shanghai", tz: "Asia/Shanghai" },
     { label: "Hamburg", tz: "Europe/Berlin" },
