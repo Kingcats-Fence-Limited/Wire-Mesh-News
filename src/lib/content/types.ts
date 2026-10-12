@@ -1,5 +1,6 @@
 /** Content model for Phase 1 (local mock data). Codes reference src/data/vocab. */
-import type { MeshId } from "@/components/ui/Mesh";
+/** Mesh pattern ids (SiteDefs: pChain, pChainL, pWeld, pWeldQ, pWoven, pGrate, pPerf, pExp, pG1–pG5). */
+export type MeshId = "chain" | "chainL" | "weld" | "weldQ" | "woven" | "grate" | "perf" | "exp" | "g1" | "g2" | "g3" | "g4" | "g5";
 
 export type SectionCode = "news" | "market_insights" | "applications" | "technical_guides" | "buying_guides";
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { ArticleBody } from "./ArticleBody";
 import { ReadBar } from "./ReadBar";
+import { SubscribeModal } from "@/components/boards/subscribe/SubscribeModal";
 import { SideNewsletter } from "./SideNewsletter";
 import { CopyLink } from "./CopyLink";
 import { SocialGlyph } from "@/components/ui/SocialButton";
@@ -133,8 +134,9 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 </div>
 <ReadBar readMin={a.readMin} />
+<SubscribeModal />
 </aside>
-<article style={{ minWidth: "0" }} className="body">
+<article data-article="" style={{ minWidth: "0" }} className="body">
 {(a.appliesTo || stds.length > 0) && (
 <div style={{ display: "flex", gap: "16px", background: "var(--paper)", borderLeft: "4px solid var(--red)", borderRadius: "0 12px 12px 0", padding: "18px 22px", marginBottom: "32px", flexWrap: "wrap" }}>
 <div style={{ flex: "1 1 200px" }}>

@@ -4,8 +4,8 @@ import "@fontsource-variable/manrope";
 import "./globals.css";
 import "@/styles/boards-common.css";
 import { ThemeScript } from "@/components/theme/ThemeScript";
-import { CookieBanner } from "@/components/site/CookieBanner";
-import { BackToTop } from "@/components/site/BackToTop";
+import { CookieBanner } from "@/components/shell/CookieBanner";
+import { BackToTop } from "@/components/shell/BackToTop";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {

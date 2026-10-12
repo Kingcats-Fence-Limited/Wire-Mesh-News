@@ -2,7 +2,7 @@
 import Link from "next/link";
 import type { Block } from "@/lib/content/types";
 import { getStandardByNo } from "@/lib/content/standards";
-import { autoLinkStandards } from "@/components/site/ArticleBody";
+import { autoLinkStandards } from "@/lib/autolink";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp" };
 

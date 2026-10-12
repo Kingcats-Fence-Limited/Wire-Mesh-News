@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SocialRow } from "@/components/ui/SocialButton";
 import { FOOTER_COLUMNS, SITE } from "@/lib/site";
 import { ThemeSwitch } from "./ThemeSwitch";
-import { CookieSettingsButton } from "@/components/site/CookieBanner";
+import { CookieSettingsButton } from "./CookieBanner";
 import { FooterNewsletter } from "./FooterNewsletter";
 
 export function Footer() {
@@ -42,7 +42,7 @@ export function Footer() {
             <div key={col.title} style={colStyle}>
               <span style={head}>{col.title.toUpperCase()}</span>
               {col.links.map((l) => <Link key={l.href} href={l.href} style={{ color: "var(--grey-3)" }}>{l.label}</Link>)}
-              {col.title === "Policies" && <CookieSettingsButton className="footer-cookie" />}
+              {col.title === "Policies" && <CookieSettingsButton style={{ border: 0, background: "transparent", padding: 0, font: "inherit", color: "#FFFFFF", textDecoration: "underline", cursor: "pointer", textAlign: "left" }} />}
             </div>
           ))}
         </div>

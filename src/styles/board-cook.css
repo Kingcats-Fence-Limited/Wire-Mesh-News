@@ -1,0 +1,47 @@
+/* Cookie-Z — consent banner, preferences panel, back-to-top (board CSS, scoped) */
+.b-cook{margin:0;font-family:'Manrope Variable','Manrope','PingFang SC','Microsoft YaHei',sans-serif;color:var(--ink)}
+.b-cook a{color:var(--ink)}
+.b-cook .h{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.04em;line-height:1.12}
+.b-cook .mono{font-family:'Manrope Variable','Manrope',sans-serif;font-feature-settings:'tnum' 1;font-variant-numeric:tabular-nums}
+.b-cook .meta{font-size:12.5px;font-weight:500;color:var(--slate)}
+.b-cook .frame{background:#FFFFFF;border:1px solid var(--line);border-radius:14px}
+.b-cook .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:999px;border:2px solid var(--ink);background:var(--ink);color:#FFFFFF;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer}
+.b-cook .btn.out{background:#FFFFFF;color:var(--ink)}
+.b-cook .btn.link{border-color:transparent;background:transparent;color:var(--ink);text-decoration:underline;padding:0 10px}
+.b-cook .sw{width:46px;height:26px;border-radius:999px;background:var(--line-2);position:relative;flex-shrink:0;border:0;padding:0;cursor:pointer;display:block;transition:background .15s}
+.b-cook .sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:999px;background:#FFFFFF;display:block;transition:left .15s}
+.b-cook .sw.on{background:var(--ink)}
+.b-cook .sw.on i{left:23px}
+.b-cook .sw.lock{background:var(--line-soft);cursor:default}
+.b-cook .sw.lock i{left:23px;background:var(--grey-4)}
+.b-cook .sw.lock.off i{left:3px}
+.b-cook .catrow{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+.b-cook .catrow:last-child{border-bottom:0}
+.b-cook .banner{background:var(--ink);color:#FFFFFF;padding:22px 28px;display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.b-cook .banner .btn.out{border-color:#FFFFFF}
+.b-cook.cookroot{position:fixed;left:0;right:0;bottom:0;z-index:35}
+.b-cook .prefwrap{position:fixed;inset:0;z-index:36;display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.b-cook .prefscrim{position:absolute;inset:0;background:rgba(21,22,28,.42);border:0;padding:0;cursor:default}
+.b-cook .pref{position:relative;width:100%;max-width:720px;max-height:calc(100vh - 32px);overflow-y:auto;padding:26px 28px;box-shadow:0 30px 80px rgba(21,22,28,.3)}
+@media (max-width:600px){
+  .b-cook .banner{padding:18px 16px;gap:14px}
+  .b-cook .banner > div:last-child{width:100%}
+  .b-cook .banner .btn{flex:1 1 auto;min-width:0 !important}
+  .b-cook .prefwrap{padding:0}
+  .b-cook .pref{max-height:100vh;border-radius:14px 14px 0 0;padding:22px 16px}
+}
+/* back to top */
+.b-cook.btt{position:fixed;right:22px;z-index:34;transition:opacity .2s,transform .2s;display:inline-flex;align-items:center;justify-content:center;border:0;padding:0;background:transparent;cursor:pointer;color:#FFFFFF}
+.b-cook.btt.hide{opacity:0;pointer-events:none;transform:translateY(8px)}
+.b-cook.btt .disc{width:48px;height:48px;border-radius:999px;background:var(--ink);color:#FFFFFF;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -10px rgba(21,22,28,.6);gap:9px;font-size:13.5px;font-weight:800;font-family:inherit;transition:width .15s,padding .15s}
+.b-cook.btt .disc span{display:none}
+.b-cook.btt:hover .disc,.b-cook.btt:focus-visible .disc{width:auto;padding:0 18px}
+.b-cook.btt:hover .disc span,.b-cook.btt:focus-visible .disc span{display:inline}
+.b-cook.btt.ring .disc{width:38px;height:38px}
+.b-cook.btt.ring:hover .disc,.b-cook.btt.ring:focus-visible .disc{width:auto;padding:0 16px}
+.b-cook.btt .ringbox{position:relative;width:48px;height:48px;display:inline-flex;align-items:center;justify-content:center}
+.b-cook.btt:hover .ringbox,.b-cook.btt:focus-visible .ringbox{width:auto}
+.b-cook.btt:hover .ringbox svg.arc,.b-cook.btt:focus-visible .ringbox svg.arc{display:none}
+.b-cook.btt:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:999px}
+@media (max-width:600px){.b-cook.btt{right:16px}}
+@media (prefers-reduced-motion:reduce){.b-cook.btt{transition:none}}
