@@ -1,6 +1,7 @@
 /* Ported 1:1 from canvas board Events-F. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
+import { EVENT_TYPE } from "@/data/vocab";
 import { SectionNewsletter } from "@/components/boards/category/SectionNewsletter";
 import { EVENTS, upcomingEvents, COMPANIES } from "@/lib/content/directory";
 import { bySubsection } from "@/lib/content/articles";
@@ -11,7 +12,7 @@ import "@/styles/board-ev.css";
 import { demoBg } from "@/lib/demo";
 
 export type EvParams = { when?: string; region?: string; type?: string };
-const TYPE_LABEL = { trade_show: "Trade show", conference: "Conference", webinar: "Webinar" } as const;
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(EVENT_TYPE.map((t) => [t.code, t.label]));
 const REGION_GROUP: Record<string, string[]> = { asia: ["east_asia", "south_asia", "southeast_asia", "central_asia", "middle_east"], europe: ["europe"], north_america: ["north_america"] };
 const TODAY = "2026-10-12";
 
@@ -58,7 +59,7 @@ Subscribe to calendar
 <span style={{ width: "1px", height: "24px", background: "var(--line)", alignSelf: "center", margin: "0 5px" }}></span>
 <Link href={href({ region: undefined })} scroll={false} className="chip">All regions</Link><Link href={toggle("region", "asia")} scroll={false} className={`chip${sp.region === "asia" ? " on" : ""}`}>Asia</Link><Link href={toggle("region", "europe")} scroll={false} className={`chip${sp.region === "europe" ? " on" : ""}`}>Europe</Link><Link href={toggle("region", "north_america")} scroll={false} className={`chip${sp.region === "north_america" ? " on" : ""}`}>North America</Link>
 <span style={{ width: "1px", height: "24px", background: "var(--line)", alignSelf: "center", margin: "0 5px" }}></span>
-{(["trade_show", "conference", "webinar"] as const).map((t) => <Link key={t} href={toggle("type", t)} scroll={false} className={`chip${sp.type === t ? " on" : ""}`}>{TYPE_LABEL[t]}</Link>)}
+{EVENT_TYPE.map((t) => t.code).filter((t) => EVENTS.some((e) => e.type === t)).map((t) => <Link key={t} href={toggle("type", t)} scroll={false} className={`chip${sp.type === t ? " on" : ""}`}>{TYPE_LABEL[t]}</Link>)}
 </div>
 </section>
 {/* 重点展会 */}

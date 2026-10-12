@@ -1,14 +1,15 @@
 /* Ported 1:1 from canvas board Contact-O ①. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
+import { CONTACT_SUBJECT } from "@/data/vocab";
 import { SimpleForm } from "@/components/boards/shared/SimpleForm";
 import { SITE } from "@/lib/site";
 import "@/styles/board-contact.css";
 
-const REASONS: [string, string][] = [["editorial", "Editorial / news tip"], ["correction", "Correction"], ["submission", "Submission question"], ["advertising", "Advertising & partnerships"], ["event", "Event listing"], ["account", "Account & privacy"], ["other", "Other"]];
+const REASONS: [string, string][] = CONTACT_SUBJECT.map((c) => [c.code, c.label]);
 
 export function ContactBoard({ subject }: { subject?: string }) {
-  const def = REASONS.some(([k]) => k === subject) ? subject : "editorial";
+  const def = REASONS.some(([k]) => k === subject) ? subject : "editorial_tip";
   return (
     <Shell header="compact" board="b-contact">
 <section style={{ paddingTop: "30px", paddingBottom: "50px" }} className="wrap">

@@ -11,14 +11,14 @@ import { bySection, readNext } from "@/lib/content/articles";
 import { getAuthor, lettersFor } from "@/lib/content/people";
 import { getStandardByNo } from "@/lib/content/standards";
 import { getCompany } from "@/lib/content/directory";
-import { COUNTRY_BY_CODE } from "@/data/vocab";
+import { COUNTRY_BY_CODE, ARTICLE_TYPE } from "@/data/vocab";
 import { sectionByCode, subsectionLabel, subsectionSlug, fmtDate, articleHref, SITE, daysAgo } from "@/lib/site";
 import type { Article } from "@/lib/content/types";
 import "@/styles/board-art.css";
 import { demoBg, demoSrc } from "@/lib/demo";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp" };
-const TYPE_LABEL: Record<string, string> = { news: "NEWS", analysis: "ANALYSIS", guide: "DEEP DIVE", case_study: "CASE STUDY", sponsored: "SPONSORED CONTENT", column: "OPINION" };
+const TYPE_LABEL: Record<string, string> = { ...Object.fromEntries(ARTICLE_TYPE.map((t) => [t.code, t.label.toUpperCase()])), column: "OPINION" };
 const initials = (n: string) => n.split(/\s+/).map((x) => x[0]).join("").slice(0, 2).toUpperCase();
 
 export function ArticleBoard({ a }: { a: Article }) {

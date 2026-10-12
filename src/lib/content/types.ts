@@ -1,4 +1,5 @@
 /** Content model for Phase 1 (local mock data). Codes reference src/data/vocab. */
+import type { MaterialGroupCode } from "@/data/vocab";
 /** Mesh pattern ids (SiteDefs: pChain, pChainL, pWeld, pWeldQ, pWoven, pGrate, pPerf, pExp, pG1–pG5). */
 export type MeshId = "chain" | "chainL" | "weld" | "weldQ" | "woven" | "grate" | "perf" | "exp" | "g1" | "g2" | "g3" | "g4" | "g5";
 
@@ -78,7 +79,7 @@ export type Company = {
   categories: string[]; // category codes
   /** Editorial: up to two application areas (application_area codes), judged from covered projects. */
   applications: string[];
-  materials?: ("carbon_steel" | "stainless" | "other_alloys")[];
+  materials?: MaterialGroupCode[];
   products: string[]; // product codes
   processes?: string[];
   country: string; // alpha2
