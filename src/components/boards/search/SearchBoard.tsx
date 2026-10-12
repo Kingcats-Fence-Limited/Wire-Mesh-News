@@ -4,6 +4,7 @@ import { Shell } from "@/components/shell/Shell";
 import { search, snippet, highlight, type SearchDoc, type SearchType } from "@/lib/search";
 import { EDITORIAL_SECTIONS } from "@/lib/site";
 import "@/styles/board-srch.css";
+import { demoBg } from "@/lib/demo";
 
 export type SearchParamsT = { q?: string; type?: string; section?: string; time?: string; sort?: string; page?: string };
 const TYPES: { k: SearchType | "all"; label: string; badge: string; tp: string }[] = [
@@ -24,12 +25,12 @@ const TODAY = new Date("2026-10-12");
 function Thumb({ d }: { d: SearchDoc }) {
   const base = { width: "150px", aspectRatio: "4/3", borderRadius: "8px", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: "0" } as const;
   switch (d.type) {
-    case "standard": return <span style={{ ...base, background: "#FDE8E9", color: "var(--red-deep)" }}><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /><path d="m8.9 12 2.1 2.1 4-4.2" /></svg></span>;
-    case "letter": case "opinion": return <span style={{ ...base, background: "#FFF4E2", color: "#8A5A08" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="M3 6.5h18v11H3z" /><path d="m3 7 9 6 9-6" /></svg></span>;
-    case "company": return <span style={{ ...base, background: "var(--ink)", color: "#FFFFFF" }}><svg width="42" height="42" viewBox="0 0 120 120" aria-hidden="true"><use href="#w1" width="120" height="120" /></svg></span>;
+    case "standard": return <span style={{ ...base, background: "var(--st-red-bg)", color: "var(--red-deep)" }}><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /><path d="m8.9 12 2.1 2.1 4-4.2" /></svg></span>;
+    case "letter": case "opinion": return <span style={{ ...base, background: "var(--st-review-bg)", color: "var(--st-review-fg)" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true"><path d="M3 6.5h18v11H3z" /><path d="m3 7 9 6 9-6" /></svg></span>;
+    case "company": return <span style={{ ...base, background: "var(--surface-dark)", color: "#FFFFFF" }}><svg width="42" height="42" viewBox="0 0 120 120" aria-hidden="true"><use href="#w1" width="120" height="120" /></svg></span>;
     case "topic": return <span style={{ ...base, background: "var(--red)", color: "#FFFFFF" }} className="h"><span style={{ fontSize: "34px" }} className="h">T</span></span>;
-    case "event": return <span style={{ ...base, background: "#F0F7F2", color: "#1E6B35" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>;
-    default: return <span style={{ width: "150px", aspectRatio: "4/3" }} className="thumb"></span>;
+    case "event": return <span style={{ ...base, background: "var(--st-current-bg)", color: "var(--up)" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>;
+    default: return <span style={{ width: "150px", aspectRatio: "4/3", ...demoBg(d.href) }} className="thumb"></span>;
   }
 }
 
@@ -57,7 +58,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 <section style={{ paddingTop: "28px", paddingBottom: "0" }} className="wrap">
 <nav aria-label="Breadcrumb" className="meta" style={{ marginBottom: "16px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <b style={{ color: "var(--ink)" }}>Search</b></nav>
 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "20px", marginBottom: "16px" }}>
-<h1 style={{ margin: "0", fontSize: "34px", letterSpacing: "-.045em" }} className="h">Search<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0", fontSize: "34px", letterSpacing: "-.045em" }} className="h">Search<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <span style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px" }} className="meta util">Press <span className="kbd">/</span> anywhere for quick search</span>
 </div>
 <form action="/search/" method="get" style={{ display: "flex", alignItems: "center", gap: "12px", border: "2px solid var(--ink)", borderRadius: "999px", padding: "0 20px", minHeight: "56px", marginBottom: "18px" }}>
@@ -67,7 +68,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 {type !== "all" && <input type="hidden" name="type" value={type} />}
 {section && <input type="hidden" name="section" value={section} />}
 {q && <Link href="/search/" aria-label="Clear search" style={{ width: "34px", height: "34px", border: "0", borderRadius: "999px", background: "var(--paper)", color: "var(--slate)", fontSize: "15px", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>&#10005;</Link>}
-<button type="submit" style={{ minHeight: "42px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "14px", fontWeight: "800", padding: "0 22px", cursor: "pointer", flexShrink: "0" }}>Search</button>
+<button type="submit" style={{ minHeight: "42px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "14px", fontWeight: "800", padding: "0 22px", cursor: "pointer", flexShrink: "0" }}>Search</button>
 </form>
 {q && (<>
 <div className="chips" style={{ display: "flex", gap: "9px", flexWrap: "wrap", alignItems: "center", marginBottom: "12px" }}>
@@ -80,7 +81,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 {EDITORIAL_SECTIONS.map((s) => <Link key={s.code} href={href({ section: s.code })} className={`chip${section === s.code ? " on" : ""}`}>{s.label}</Link>)}
 <span style={{ width: "1px", height: "24px", background: "var(--line)", margin: "0 4px" }}></span>
 <details style={{ position: "relative" }}><summary className="chip" style={{ listStyle: "none", cursor: "pointer" }}>{time[1]}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
-<div style={{ position: "absolute", left: 0, top: "calc(100% + 6px)", zIndex: 20, background: "#FFFFFF", border: "1px solid var(--line)", borderRadius: "12px", padding: "8px", display: "flex", flexDirection: "column", gap: "2px", minWidth: "180px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}>{TIME.map((t) => <Link key={t[0]} href={href({ time: t[0] })} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: time[0] === t[0] ? 800 : 600, background: time[0] === t[0] ? "var(--paper)" : undefined }}>{t[1]}</Link>)}</div></details>
+<div style={{ position: "absolute", left: 0, top: "calc(100% + 6px)", zIndex: 20, background: "var(--card)", border: "1px solid var(--line)", borderRadius: "12px", padding: "8px", display: "flex", flexDirection: "column", gap: "2px", minWidth: "180px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}>{TIME.map((t) => <Link key={t[0]} href={href({ time: t[0] })} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: time[0] === t[0] ? 800 : 600, background: time[0] === t[0] ? "var(--paper)" : undefined }}>{t[1]}</Link>)}</div></details>
 <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "date" ? undefined : "date" })} className="chip">{sort === "date" ? "Newest" : "Relevance"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
 </div>
 </>)}
@@ -89,7 +90,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 {!q ? (
 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", maxWidth: "760px" }} className="g2">
 <div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}><div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "10px" }}>TRY</div><div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>{RELATED.default.map((s) => <Link key={s} href={`/search/?q=${encodeURIComponent(s)}`} style={{ minHeight: "34px", fontSize: "12.5px", fontWeight: "800" }} className="chip">{s}</Link>)}</div></div>
-<div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}><div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "10px" }}>WHAT IS SEARCHED</div><p className="meta" style={{ margin: 0, lineHeight: 1.6 }}>Articles, letters and columns, companies, standards, topics and events. Prices are not in search — licensed market series live on the <Link href="/market-data/" style={{ color: "var(--red)", fontWeight: 800 }}>Market data</Link> page.</p></div>
+<div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}><div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "10px" }}>WHAT IS SEARCHED</div><p className="meta" style={{ margin: 0, lineHeight: 1.6 }}>Articles, letters and columns, companies, standards, topics and events. Prices are not in search — licensed market series live on the <Link href="/market-data/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Market data</Link> page.</p></div>
 </div>
 ) : list.length === 0 ? (
 <div>
@@ -116,14 +117,14 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 </div>
 </div>
 </div>
-{filtersOn && <Link href={`/search/?q=${encodeURIComponent(q)}`} style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>CLEAR ALL FILTERS</Link>}
+{filtersOn && <Link href={`/search/?q=${encodeURIComponent(q)}`} style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>CLEAR ALL FILTERS</Link>}
 </div>
 ) : (
 <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 290px", gap: "40px", alignItems: "start" }} className="cols">
 <div>
 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "4px", paddingBottom: "10px", borderBottom: "3px solid var(--ink)" }}>
 <span style={{ fontSize: "14.5px", fontWeight: "700", color: "var(--slate)" }}><b style={{ color: "var(--ink)" }}>{list.length} result{list.length === 1 ? "" : "s"}</b> for &#8220;{q}&#8221;</span>
-{filtersOn && <Link href={`/search/?q=${encodeURIComponent(q)}`} style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>CLEAR FILTERS</Link>}
+{filtersOn && <Link href={`/search/?q=${encodeURIComponent(q)}`} style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>CLEAR FILTERS</Link>}
 </div>
 {slice.map((d) => {
   const [badge, tp] = BADGE[d.type];
@@ -155,7 +156,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 <div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}>
 <div style={{ fontSize: "14px", marginBottom: "8px" }} className="h">Looking for a price?</div>
 <p style={{ margin: "0 0 10px", lineHeight: "1.55" }} className="meta">Prices are not in search. Licensed market series live on one page.</p>
-<Link href="/market-data/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>MARKET DATA &#8594;</Link>
+<Link href="/market-data/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>MARKET DATA &#8594;</Link>
 </div>
 </aside>
 </div>

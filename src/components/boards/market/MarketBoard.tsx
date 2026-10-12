@@ -7,6 +7,7 @@ import { byMarketSeries, bySection } from "@/lib/content/articles";
 import { articleHref, fmtDateShort, fmtNum, sectionByCode } from "@/lib/site";
 import type { MarketSeries } from "@/lib/content/types";
 import "@/styles/board-mkt.css";
+import { demoBg } from "@/lib/demo";
 
 const LIC: Record<MarketSeries["licence"], [string, string]> = { delayed30: ["DELAYED 30M", "bad"], nextday: ["NEXT DAY", "ok"], licensed: ["LICENSED", "warn"], own: ["OWN DATA", "ok"] };
 const asOf = (s: MarketSeries) => s.licence === "delayed30" ? new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" }).format(new Date(s.asOf)) + " UTC" : s.licence === "nextday" ? "Previous close" : fmtDateShort(s.asOf);
@@ -22,7 +23,7 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--slate)", marginBottom: "14px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <Link href="/market-insights/" style={{ color: "var(--slate)" }}>Market Insights</Link> / <span style={{ color: "var(--ink)", fontWeight: "800" }}>Market data</span></nav>
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "32px", flexWrap: "wrap" }}>
 <div style={{ maxWidth: "680px" }}>
-<h1 style={{ margin: "0 0 10px", fontSize: "50px", letterSpacing: "-.05em", lineHeight: "1" }} className="h">Market data<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0 0 10px", fontSize: "50px", letterSpacing: "-.05em", lineHeight: "1" }} className="h">Market data<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>Six licensed price series behind every quotation — exchange zinc, wire rod, hot-rolled coil, our own panel survey and container freight — with the articles that explain why they moved.</p>
 </div>
 <div style={{ display: "flex", gap: "10px", flexShrink: "0", alignItems: "center" }}>
@@ -70,23 +71,23 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <li><b>Attribution &amp; copyright</b>: source, delay, ownership and the scope of the licence</li>
 <li><b>Disclaimer</b>: for reference only; not a quotation or investment advice; errors go through Corrections</li>
 </ul>
-<p style={{ margin: "12px 0 0", fontSize: "11.5px", lineHeight: "1.6" }} className="meta">Our own survey price states sample size, the kind of respondents and the exclusion rules. The full texts are one page: <Link href="/market-data/methodology/" style={{ color: "var(--red)", fontWeight: 800 }}>/market-data/methodology</Link>.</p>
+<p style={{ margin: "12px 0 0", fontSize: "11.5px", lineHeight: "1.6" }} className="meta">Our own survey price states sample size, the kind of respondents and the exclusion rules. The full texts are one page: <Link href="/market-data/methodology/" style={{ color: "var(--red-text)", fontWeight: 800 }}>/market-data/methodology</Link>.</p>
 </div>
 </div>
 {/* What moved the market */}
-<div style={{ border: "1px solid var(--line)", borderRadius: "14px", padding: "22px 24px", marginBottom: "30px", background: "#FFFFFF" }}>
+<div style={{ border: "1px solid var(--line)", borderRadius: "14px", padding: "22px 24px", marginBottom: "30px", background: "var(--card)" }}>
 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
 <span style={{ width: "15px", height: "3px", background: "var(--red)" }}></span>
 <span style={{ fontSize: "13px", letterSpacing: ".1em" }} className="h">WHAT MOVED THE MARKET</span>
 <span style={{ fontSize: "12px" }} className="meta">· {sel.name}</span>
 </div>
-<Link href="/market-insights/" style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }} className="mono">ALL MARKET INSIGHTS →</Link>
+<Link href="/market-insights/" style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }} className="mono">ALL MARKET INSIGHTS →</Link>
 </div>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "14px" }} className="g3">
 {items.map((a, i) => (
 <Link key={a.slug} href={articleHref(a)} style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
-<span style={{ display: "block", aspectRatio: "16/9", borderRadius: "10px", background: ["linear-gradient(135deg, #2A2B36, var(--ink))", "linear-gradient(135deg, #3A3B47, #1C1D26)", "linear-gradient(135deg, #2F3040, var(--ink))"][i % 3], position: "relative", overflow: "hidden" }}><svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "#FFFFFF", opacity: ".14" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 320 180"><rect width="320" height="180" fill="url(#pWeldQ)" /></svg></span>
+<span style={{ display: "block", aspectRatio: "16/9", borderRadius: "10px", background: ["linear-gradient(135deg, #2A2B36, var(--ink))", "linear-gradient(135deg, #3A3B47, #1C1D26)", "linear-gradient(135deg, #2F3040, var(--ink))"][i % 3], position: "relative", overflow: "hidden" }}><span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, opacity: .55, ...demoBg(a.slug) }} /></span>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".08em" }} className="mono meta">{(a.type === "analysis" ? "ANALYSIS" : sectionByCode(a.section)?.label.toUpperCase())} · {fmtDateShort(a.date)}</span>
 <span style={{ fontSize: "15.5px", lineHeight: "1.2" }} className="h">{a.title}</span>
 </Link>

@@ -23,7 +23,7 @@ export function MarketChart({ s }: { s: MarketSeries }) {
           {hover !== null && xy[hover] && <line x1={xy[hover][0]} x2={xy[hover][0]} y1="0" y2={H} stroke="var(--ink)" strokeWidth="1" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />}
         </svg>
         <span style={{ position: "absolute", right: "10px", top: "9px", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".08em", color: "var(--grey)" }} className="mono">{months} MONTHS</span>
-        {hover !== null && pts[hover] !== undefined && <span className="mono" style={{ position: "absolute", left: "10px", top: "9px", fontSize: "11px", fontWeight: 800, background: "var(--ink)", color: "#FFFFFF", padding: "4px 8px", borderRadius: "4px" }}>{labels[hover]} 2026 · {pts[hover].toLocaleString("en-US")} {s.unit}</span>}
+        {hover !== null && pts[hover] !== undefined && <span className="mono" style={{ position: "absolute", left: "10px", top: "9px", fontSize: "11px", fontWeight: 800, background: "var(--ink)", color: "var(--on-ink)", padding: "4px 8px", borderRadius: "4px" }}>{labels[hover]} 2026 · {pts[hover].toLocaleString("en-US")} {s.unit}</span>}
       </div>
       <div style={{ display: "flex", gap: "7px", marginTop: "12px", flexWrap: "wrap", alignItems: "center" }}>
         {[12, 6, 3, 1].map((m) => <button key={m} type="button" onClick={() => setMonths(m)} className={`pill${months === m ? " on" : ""}`}>{m}M</button>)}

@@ -17,7 +17,7 @@ export function AccountSettings() {
           <label style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13.5px", fontWeight: "500", cursor: "pointer" }}><input type="checkbox" checked={review} onChange={(e) => setReview(e.target.checked)} style={{ width: "18px", height: "18px", accentColor: "var(--red)" }} /> Email me review results</label>
           <p style={{ margin: "8px 0 0", lineHeight: "1.55" }} className="meta">Subscriptions are chosen separately; registering does not switch them on.</p>
         </div>
-        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "13px", display: "flex", gap: "9px", flexWrap: "wrap" }}><button type="button" className="btn">Change password</button><button type="button" style={{ color: "var(--red-deep)", borderColor: "#F2C9CC" }} className="btn">Deactivate account</button></div>
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "13px", display: "flex", gap: "9px", flexWrap: "wrap" }}><button type="button" className="btn">Change password</button><button type="button" style={{ color: "var(--red-deep)", borderColor: "var(--st-red-bg)" }} className="btn">Deactivate account</button></div>
       </div>
     </div>
   );

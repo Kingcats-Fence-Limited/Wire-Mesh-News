@@ -94,7 +94,7 @@ export function CookieBanner() {
         <div className="frame pref">
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px", marginBottom: "6px" }}>
             <div id="cookie-title" className="h" style={{ fontSize: "21px" }}>Cookie preferences</div>
-            <button type="button" aria-label="Close" onClick={() => (readConsent() ? setVisible(false) : setManage(false))} style={{ width: "34px", height: "34px", border: "1px solid var(--line)", borderRadius: "999px", background: "#FFFFFF", cursor: "pointer", flexShrink: 0, color: "var(--slate)", fontSize: "15px", fontWeight: 800 }}>✕</button>
+            <button type="button" aria-label="Close" onClick={() => (readConsent() ? setVisible(false) : setManage(false))} style={{ width: "34px", height: "34px", border: "1px solid var(--line)", borderRadius: "999px", background: "var(--card)", cursor: "pointer", flexShrink: 0, color: "var(--slate)", fontSize: "15px", fontWeight: 800 }}>✕</button>
           </div>
           <p className="meta" style={{ margin: "0 0 6px", lineHeight: 1.6 }}>Choose what we may store on your device. You can change this at any time from the footer.</p>
 
@@ -110,7 +110,7 @@ export function CookieBanner() {
           <div className="catrow">
             <span className="sw lock off" aria-hidden="true"><i /></span>
             <div style={{ flex: "1 1 auto" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "4px" }}><span style={{ fontSize: "15px", fontWeight: 800 }}>Advertising measurement</span><span style={{ background: "#FFF4E2", color: "#8A5A08", fontSize: "9.5px", fontWeight: 800, letterSpacing: ".1em", padding: "3px 7px", borderRadius: "3px" }}>NOT IN USE</span></div>
+              <div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "4px" }}><span style={{ fontSize: "15px", fontWeight: 800 }}>Advertising measurement</span><span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)", fontSize: "9.5px", fontWeight: 800, letterSpacing: ".1em", padding: "3px 7px", borderRadius: "3px" }}>NOT IN USE</span></div>
               <p className="meta" style={{ margin: 0, fontSize: "12.5px", lineHeight: 1.6 }}>Counting ad impressions and clicks. <b style={{ color: "var(--ink)" }}>We do no cross-site tracking, no behavioural targeting and use no ad networks</b>, so this category is currently empty. The switch stays here so it can never be turned on quietly.</p>
             </div>
           </div>

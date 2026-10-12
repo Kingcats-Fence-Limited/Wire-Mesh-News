@@ -7,6 +7,7 @@ import { CATEGORY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, COUNTRY_B
 import { fmtDate, fmtDateShort, articleHref, subsectionLabel } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-co.css";
+import { demoBg, logoSrc } from "@/lib/demo";
 
 export function CompanyBoard({ c }: { c: Company }) {
   const country = COUNTRY_BY_CODE[c.country]?.name ?? c.country;
@@ -24,16 +25,16 @@ export function CompanyBoard({ c }: { c: Company }) {
   return (
     <Shell header="compact" active="directory" board="b-co">
 {/* 企业头部 */}
-<section style={{ background: "var(--ink)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--fg-2)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
+<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
 <div style={{ position: "relative", paddingTop: "32px", paddingBottom: "32px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "20px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / <Link href="/directory/" style={{ color: "var(--grey-2)" }}>Directory</Link> / <Link href={`/directory/?category=${c.categories[0]}`} style={{ color: "var(--grey-2)" }}>{cats[0]}</Link> / <span style={{ color: "#FFFFFF", fontWeight: "800" }}>{c.name}</span></nav>
 <div style={{ display: "flex", gap: "24px", alignItems: "flex-start", flexWrap: "wrap" }}>
-<div style={{ width: "96px", height: "96px", borderRadius: "18px", background: "#FFFFFF", flexShrink: "0", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--grey-4)", fontSize: "10px", fontWeight: 800, letterSpacing: ".1em" }} className="mono">LOGO</div>
+<div style={{ width: "96px", height: "96px", borderRadius: "18px", background: "var(--card)", flexShrink: "0", overflow: "hidden" }}><img src={logoSrc(c.slug)} alt={`${c.name} logo`} width="96" height="96" style={{ display: "block", width: "96px", height: "96px" }} /></div>
 <div style={{ flex: "1 1 440px", display: "flex", flexDirection: "column", gap: "11px" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "11px", flexWrap: "wrap" }}>
 <h1 style={{ margin: "0", fontSize: "42px", letterSpacing: "-.05em", color: "#FFFFFF", lineHeight: "1.02" }} className="h">{c.name}</h1>
-{c.claimed ? <span style={{ background: "#1E6B35", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 10px", borderRadius: "4px" }}>CLAIMED</span> : <span style={{ border: "1px solid var(--line-dark)", color: "var(--grey-3)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 10px", borderRadius: "4px" }}>UNCLAIMED</span>}
+{c.claimed ? <span style={{ background: "var(--up)", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 10px", borderRadius: "4px" }}>CLAIMED</span> : <span style={{ border: "1px solid var(--line-dark)", color: "var(--grey-3)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 10px", borderRadius: "4px" }}>UNCLAIMED</span>}
 </div>
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 11px", borderRadius: "5px" }}>{orgType.toUpperCase()}</span>
@@ -42,11 +43,11 @@ export function CompanyBoard({ c }: { c: Company }) {
 </div>
 <p style={{ margin: "3px 0 0", fontSize: "16px", fontWeight: "500", lineHeight: "1.6", color: "#B9BCC6", maxWidth: "680px" }}>{c.summary}</p>
 <div style={{ display: "flex", gap: "7px", flexWrap: "wrap", marginTop: "4px" }}>
-{chips.map((t) => <span key={t} style={{ border: "1px solid var(--line-dark)", borderRadius: "6px", padding: "5px 10px", fontSize: "12px", fontWeight: "700", color: "var(--line-2)" }}>{t}</span>)}
+{chips.map((t) => <span key={t} style={{ border: "1px solid var(--line-dark)", borderRadius: "6px", padding: "5px 10px", fontSize: "12px", fontWeight: "700", color: "var(--on-dark-2)" }}>{t}</span>)}
 </div>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", flexShrink: "0", minWidth: "216px" }}>
-{c.website && <a href={c.website} rel="nofollow noopener noreferrer" target="_blank" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "#FFFFFF", color: "var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7L12.5 18" /><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7L11.5 6" /></svg>Company website</a>}
+{c.website && <a href={c.website} rel="nofollow noopener noreferrer" target="_blank" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--card)", color: "var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7L12.5 18" /><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7L11.5 6" /></svg>Company website</a>}
 <Link href="/signin/" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", border: "1px solid var(--line-dark)", background: "transparent", color: "#FFFFFF", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4.2-6 4.2z" /></svg>Save to my list</Link>
 <span style={{ textAlign: "center", color: "var(--grey-5)" }} className="meta">{c.claimed ? "Maintained by the company" : "Compiled by editors"} &#183; {c.verifiedAt ? `verified ${fmtDate(c.verifiedAt)}` : `updated ${fmtDate(c.updated)}`}</span>
 </div>
@@ -59,7 +60,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }} className="g4">
 {c.productCards.slice(0, 3).map((p) => (
 <div key={p.name} style={{ border: "1px solid var(--line)", borderRadius: "14px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-<div style={{ borderRadius: "0", aspectRatio: "4/3" }} className="ph"></div>
+<div style={{ borderRadius: "0", aspectRatio: "4/3", ...demoBg(c.slug + p.name) }} className="ph"></div>
 <div style={{ padding: "16px 17px", display: "flex", flexDirection: "column", gap: "7px", flex: "1 1 auto" }}>
 <span style={{ fontSize: "16.5px" }} className="h">{p.name}</span>
 <span style={{ lineHeight: "1.5" }} className="meta">{p.spec}</span>
@@ -67,8 +68,8 @@ export function CompanyBoard({ c }: { c: Company }) {
 </div>
 </div>
 ))}
-<div style={{ border: "1px dashed #C9CCD6", borderRadius: "14px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--paper-2)", minHeight: "240px", color: "var(--grey)" }}>
-<span style={{ fontSize: "26px", color: "#C9CCD6" }} className="h">{c.productCards.length > 3 ? `+${c.productCards.length - 3}` : `${c.products.length}`}</span>
+<div style={{ border: "1px dashed var(--line-2)", borderRadius: "14px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--paper-2)", minHeight: "240px", color: "var(--grey)" }}>
+<span style={{ fontSize: "26px", color: "var(--on-dark-2)" }} className="h">{c.productCards.length > 3 ? `+${c.productCards.length - 3}` : `${c.products.length}`}</span>
 <span style={{ fontSize: "13px", fontWeight: "800" }}>{c.productCards.length > 3 ? "More products" : "Product lines"}</span>
 {c.productCards.length <= 3 && <span className="meta" style={{ textAlign: "center", padding: "0 16px", fontSize: "11.5px" }}>{c.products.slice(0, 4).map((p) => PRODUCT_BY_CODE[p]?.labelEn ?? p).join(" · ")}</span>}
 </div>
@@ -92,7 +93,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 </div>
 ) : (
 <div key={x.type} style={{ opacity: ".72" }} className="certcard">
-<span style={{ background: "#FFF4E2", color: "#8A5A08" }} className="certmark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5.3l3.3 2" /></svg></span>
+<span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)" }} className="certmark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5.3l3.3 2" /></svg></span>
 <div style={{ minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "3px" }}>{certLabel(x.type)}</div><div style={{ lineHeight: "1.5" }} className="meta">Submitted by the company; verification pending</div><div className="src">Not displayed as verified until confirmed</div></div>
 </div>
 ))}
@@ -116,16 +117,16 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.65", color: "var(--fg-3)" }}>{c.claimed ? "This page is maintained by the company after claiming its profile; every fact carries its source and all changes are reviewed by editors." : "This page was compiled by editors from public information; every fact carries its source."} Listing is not a recommendation or endorsement, and order is never paid for. Self-reported figures are labelled; unverified capacity, market-share and revenue figures are not published.</div>
 </div>
 {/* 相关报道 */}
-<div className="sec"><h2>Coverage</h2><span className="rule"></span><Link href={`/search/?q=${encodeURIComponent(c.name)}`} style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red)" }}>ALL {articles.length} &#8594;</Link></div>
+<div className="sec"><h2>Coverage</h2><span className="rule"></span><Link href={`/search/?q=${encodeURIComponent(c.name)}`} style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red-text)" }}>ALL {articles.length} &#8594;</Link></div>
 {articles.length === 0 && <p className="meta">No coverage yet.</p>}
 {articles.map((a, i) => (
-<Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "18px", padding: i === 0 ? "0 0 20px" : "20px 0", borderBottom: "1px solid var(--line)" }}><span style={{ width: "164px", flexShrink: "0", aspectRatio: "4/3" }} className="ph"></span><span style={{ display: "flex", flexDirection: "column", gap: "7px", minWidth: "0" }}>{a.type === "sponsored" ? <span style={{ background: "var(--ink)", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".14em", padding: "4px 9px", borderRadius: "4px", alignSelf: "flex-start" }}>SPONSORED CONTENT</span> : <span className="kick"><i></i>{subsectionLabel(a.section, a.subsection).toUpperCase()}</span>}<span style={{ fontSize: "19px" }} className="h">{a.title}</span>{a.type !== "sponsored" && <span style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.5", color: "var(--slate)" }}>{a.dek}</span>}<span style={{ fontSize: "11.5px", fontWeight: "700" }} className="mono meta">{fmtDateShort(a.date)} 2026 &#183; {a.type === "sponsored" ? `PAID FOR BY ${(a.sponsor ?? c.name).toUpperCase()}` : `${a.readMin} MIN`}</span></span></Link>
+<Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "18px", padding: i === 0 ? "0 0 20px" : "20px 0", borderBottom: "1px solid var(--line)" }}><span style={{ width: "164px", flexShrink: "0", aspectRatio: "4/3", ...demoBg(a.slug) }} className="ph"></span><span style={{ display: "flex", flexDirection: "column", gap: "7px", minWidth: "0" }}>{a.type === "sponsored" ? <span style={{ background: "var(--ink)", color: "var(--on-ink)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".14em", padding: "4px 9px", borderRadius: "4px", alignSelf: "flex-start" }}>SPONSORED CONTENT</span> : <span className="kick"><i></i>{subsectionLabel(a.section, a.subsection).toUpperCase()}</span>}<span style={{ fontSize: "19px" }} className="h">{a.title}</span>{a.type !== "sponsored" && <span style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.5", color: "var(--slate)" }}>{a.dek}</span>}<span style={{ fontSize: "11.5px", fontWeight: "700" }} className="mono meta">{fmtDateShort(a.date)} 2026 &#183; {a.type === "sponsored" ? `PAID FOR BY ${(a.sponsor ?? c.name).toUpperCase()}` : `${a.readMin} MIN`}</span></span></Link>
 ))}
 </div>
 {/* 侧栏 */}
 <aside style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "hidden" }}>
-<div style={{ background: "var(--ink)", color: "#FFFFFF", padding: "14px 20px", display: "flex", alignItems: "center", gap: "9px" }}>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "14px 20px", display: "flex", alignItems: "center", gap: "9px" }}>
 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.1" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2" /><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" /></svg>
 <span style={{ fontSize: "16px", color: "#FFFFFF" }} className="h">Contact details</span>
 </div>
@@ -142,8 +143,8 @@ export function CompanyBoard({ c }: { c: Company }) {
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2" /><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" /></svg>
 <div style={{ fontSize: "14.5px", fontWeight: "800", lineHeight: "1.4" }}>Sign in to see contact details</div>
 <p style={{ margin: "0", lineHeight: "1.55", maxWidth: "230px" }} className="meta">Contact details are behind sign-in to stop them being scraped for bulk marketing. Registration is free.</p>
-<Link href={`/signin/?next=${encodeURIComponent(`/directory/${c.slug}/`)}`} style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 22px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center", marginTop: "2px" }}>Sign in to view</Link>
-<Link href="/register/" style={{ fontSize: "12.5px", fontWeight: "800", color: "var(--red)" }}>Register free</Link>
+<Link href={`/signin/?next=${encodeURIComponent(`/directory/${c.slug}/`)}`} style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 22px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center", marginTop: "2px" }}>Sign in to view</Link>
+<Link href="/register/" style={{ fontSize: "12.5px", fontWeight: "800", color: "var(--red-text)" }}>Register free</Link>
 </div>
 </div>
 </div>
@@ -172,14 +173,14 @@ export function CompanyBoard({ c }: { c: Company }) {
 {events.map((e, i) => {
   const [d, m] = fmtDateShort(e.start).split(" ");
   return (
-<Link key={e.slug} href={`/events/#${e.slug}`} style={{ display: "flex", gap: "14px", alignItems: "center", paddingBottom: i < events.length - 1 ? "12px" : undefined, borderBottom: i < events.length - 1 ? "1px solid var(--line)" : undefined, marginBottom: i < events.length - 1 ? "12px" : undefined }}><span style={{ flex: "0 0 46px", textAlign: "center" }}><span style={{ display: "block", fontSize: "10.5px", letterSpacing: ".08em", color: "var(--red)" }} className="h">{m}</span><span style={{ display: "block", fontSize: "22px" }} className="h">{d.padStart(2, "0")}</span></span><span style={{ fontSize: "14px", fontWeight: "700", lineHeight: "1.35" }}>{e.name}<span style={{ display: "block", fontWeight: "500", marginTop: "2px" }} className="meta">{e.online ? "Online" : e.city}{i === 0 && c.claimed && <span className="selfr">SELF-REPORTED</span>}</span></span></Link>
+<Link key={e.slug} href={`/events/#${e.slug}`} style={{ display: "flex", gap: "14px", alignItems: "center", paddingBottom: i < events.length - 1 ? "12px" : undefined, borderBottom: i < events.length - 1 ? "1px solid var(--line)" : undefined, marginBottom: i < events.length - 1 ? "12px" : undefined }}><span style={{ flex: "0 0 46px", textAlign: "center" }}><span style={{ display: "block", fontSize: "10.5px", letterSpacing: ".08em", color: "var(--red-text)" }} className="h">{m}</span><span style={{ display: "block", fontSize: "22px" }} className="h">{d.padStart(2, "0")}</span></span><span style={{ fontSize: "14px", fontWeight: "700", lineHeight: "1.35" }}>{e.name}<span style={{ display: "block", fontWeight: "500", marginTop: "2px" }} className="meta">{e.online ? "Online" : e.city}{i === 0 && c.claimed && <span className="selfr">SELF-REPORTED</span>}</span></span></Link>
   );
 })}
 </div>
 <div style={{ background: "var(--paper)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "16px", marginBottom: "8px" }} className="h">Something wrong here?</div>
 <p style={{ margin: "0 0 13px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>Corrections need a verifiable source. Editors check, update the entry and record the change date.</p>
-<Link href={`/contact/?subject=correction&about=${c.slug}`} style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Suggest a correction</Link>
+<Link href={`/contact/?subject=correction&about=${c.slug}`} style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Suggest a correction</Link>
 </div>
 {!c.claimed && (
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", padding: "22px" }}>

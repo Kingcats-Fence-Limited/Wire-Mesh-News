@@ -22,7 +22,7 @@ export function PolicyBoard({ p }: { p: Policy }) {
 <span className="meta">Last updated 10 October 2026</span>
 <span style={{ width: "1px", height: "14px", background: "var(--line)" }}></span>
 <span className="meta">Version 1</span>
-{p.draft && <><span style={{ width: "1px", height: "14px", background: "var(--line)" }}></span><span style={{ background: "#FFF4E2", color: "#8A5A08", fontSize: "10px", fontWeight: 800, letterSpacing: ".1em", padding: "4px 8px", borderRadius: "4px" }}>DRAFT · UNDER LEGAL REVIEW</span></>}
+{p.draft && <><span style={{ width: "1px", height: "14px", background: "var(--line)" }}></span><span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)", fontSize: "10px", fontWeight: 800, letterSpacing: ".1em", padding: "4px 8px", borderRadius: "4px" }}>DRAFT · UNDER LEGAL REVIEW</span></>}
 </div>
 <div style={{ background: "var(--paper)", borderLeft: "4px solid var(--ink)", borderRadius: "0 10px 10px 0", padding: "14px 18px", marginBottom: "20px" }}>
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "5px" }}>IN SHORT</div>
@@ -36,7 +36,7 @@ export function PolicyBoard({ p }: { p: Policy }) {
   return <div key={i}><h2 className="h">{n} · {m[1]}</h2><p>{m[2]}</p></div>;
 }); })()}
 {p.sections.length > 0 && (
-<div style={{ border: "1px dashed #C9CCD6", borderRadius: "12px", padding: "16px 20px", marginBottom: "18px", background: "var(--paper-2)" }}>
+<div style={{ border: "1px dashed var(--line-2)", borderRadius: "12px", padding: "16px 20px", marginBottom: "18px", background: "var(--paper-2)" }}>
 <div style={{ fontSize: "11.5px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", marginBottom: "8px" }}>SECTIONS IN THE FINAL TEXT</div>
 <ol style={{ margin: 0, paddingLeft: "20px", fontSize: "14.5px", fontWeight: 500, lineHeight: 1.7 }}>{p.sections.map((s) => <li key={s}>{s}</li>)}</ol>
 </div>
@@ -44,7 +44,7 @@ export function PolicyBoard({ p }: { p: Policy }) {
 </div>
 <div style={{ display: "flex", gap: "14px", alignItems: "center", background: "var(--paper)", borderRadius: "12px", padding: "16px 20px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "14px", fontWeight: "700" }}>Questions about this policy?</span>
-<a href={`mailto:${SITE.email}`} style={{ fontSize: "13.5px", fontWeight: "800", color: "var(--red)" }}>{SITE.email}</a>
+<a href={`mailto:${SITE.email}`} style={{ fontSize: "13.5px", fontWeight: "800", color: "var(--red-text)" }}>{SITE.email}</a>
 </div>
 </div>
 </div>

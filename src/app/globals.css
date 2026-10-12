@@ -9,18 +9,21 @@
 /* ------------------------------------------------------------------ */
 :root {
   /* brand */
-  --ink: #15161c;
-  --red: #e5242f;
+  --ink: #15161c;          /* body text, strong borders, primary fills (inverts in dark) */
+  --on-ink: #ffffff;       /* text on an --ink fill */
+  --red: #e5242f;          /* fills: buttons, tags, rules */
   --red-deep: #c41822;
-  --red-text: #e5242f; /* becomes #FF4A54 in dark mode */
+  --red-text: #e5242f;     /* red used as text/icon colour (#FF4A54 in dark, Dark-T) */
 
   /* surfaces */
-  --bg: #ffffff;
-  --paper: #f6f6f8;
+  --bg: #ffffff;           /* page */
+  --card: #ffffff;         /* cards, panels, inputs, white buttons */
+  --paper: #f6f6f8;        /* block background */
   --paper-2: #fafafb;
-  --surface-dark: #15161c;
+  --surface-dark: #15161c; /* dark blocks: utility bar, footer, dark heads — dark in both modes */
   --surface-dark-2: #1c1e27;
   --surface-dark-3: #23242e;
+  --mesh-dark: #23242e;    /* mesh pattern strokes on dark blocks */
 
   /* text */
   --fg: #15161c;
@@ -53,6 +56,8 @@
   --st-red-bg: #fde8e9;
 
   /* misc */
+  --ph: #d2d4dd;           /* image placeholder fill */
+  --ph-2: #c2c5ce;         /* placeholder pattern stroke */
   --mark: #ffe8b0;
   --up: #1e6b35;
   --down: #c41822;
@@ -61,25 +66,43 @@
   color-scheme: light;
 }
 
+/* Dark-T: not an inversion — one step lighter per layer; lines by brightness, not outline. */
 :root[data-theme="dark"] {
+  --ink: #f2f3f5;
+  --on-ink: #15161c;
+  --red-deep: #ff6b74;
   --red-text: #ff4a54;
-  --bg: #0e0f14;
-  --paper: #15161c;
-  --paper-2: #1a1b23;
-  --fg: #f2f2f5;
-  --fg-2: #e3e4ea;
+  --bg: #0f1016;
+  --card: #1c1e27;
+  --paper: #17181f;
+  --paper-2: #15161c;
+  --surface-dark: #15161c;
+  --surface-dark-2: #23242e;
+  --surface-dark-3: #2a2c36;
+  --mesh-dark: #262834;
+  --fg: #f2f3f5;
+  --fg-2: #e8e9ed;
   --fg-3: #d8d9e0;
   --slate: #a7abb8;
   --grey: #8a8f9e;
+  --grey-4: #5d6172;
   --line: #2a2c36;
   --line-soft: #23242e;
   --line-2: #33353f;
   --st-current-bg: #15261b;
+  --st-current-fg: #4fb06b;
   --st-review-bg: #2b2311;
+  --st-review-fg: #e0b45c;
   --st-withdrawn-bg: #1f2027;
+  --st-withdrawn-fg: #a7abb8;
   --st-draft-bg: #2b1518;
+  --st-draft-fg: #ff6b74;
   --st-red-bg: #2b1518;
+  --ph: #2a2c36;
+  --ph-2: #4a4e63;
   --mark: #4a3d12;
+  --up: #4fb06b;
+  --down: #ff6b74;
   color-scheme: dark;
 }
 
@@ -240,3 +263,5 @@
 /* Board ports reference the Google Fonts family names; alias them to the self-hosted variable fonts. */
 .site .h, .site .num, .site .sec h2, [class^="b-"] .h, [class^="b-"] .num { font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', sans-serif; font-variation-settings: "opsz" 96; }
 .site .mono, [class^="b-"] .mono { font-family: 'Manrope Variable', 'Manrope', sans-serif; }
+/* Demo imagery: Dark-T asks for a light dark overlay on photos in dark mode */
+:root[data-theme="dark"] .demo, :root[data-theme="dark"] .ph, :root[data-theme="dark"] .thumb, :root[data-theme="dark"] .ph2 { filter: brightness(.9); }

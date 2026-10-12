@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { demoBg } from "@/lib/demo";
 
 export type ListItem = { slug: string; href: string; kicker: string; title: string; dek: string; date: string; iso: string; readMin: number; author: string; views: number; pick: boolean; sponsor?: string };
 export type SeriesBox = { title: string; href: string; parts: { n: number; title: string; href: string }[] };
@@ -34,7 +35,7 @@ export function CategoryList({ heading, items, sponsored, series, perPage = 12 }
 </div>
 {first && (
 <Link href={first.href} className="lead" style={{ display: "grid", gridTemplateColumns: "250px minmax(0,1fr)", gap: "22px", paddingBottom: "24px", borderBottom: "1px solid var(--line)" }}>
-<span style={{ aspectRatio: "4/3" }} className="ph"></span>
+<span style={{ aspectRatio: "4/3", ...demoBg(first.slug) }} className="ph"></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
 <span className="kick"><i></i>{first.kicker}</span>
 <span style={{ fontSize: "24px" }} className="h">{first.title}</span>
@@ -56,8 +57,8 @@ export function CategoryList({ heading, items, sponsored, series, perPage = 12 }
 </div>
 )}
 {series && series.parts.length > 0 && (
-<div style={{ background: "var(--ink)", color: "#FFFFFF", borderRadius: "16px", padding: "26px 28px", margin: "28px 0", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--fg-2)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "16px", padding: "26px 28px", margin: "28px 0", position: "relative", overflow: "hidden" }}>
+<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
 <div style={{ position: "relative" }}>
 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap", marginBottom: "16px" }}>
 <div><span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10px", fontWeight: "800", letterSpacing: ".15em", padding: "5px 11px", borderRadius: "999px", display: "inline-block", marginBottom: "9px" }}>SERIES</span><div style={{ fontSize: "23px", color: "#FFFFFF" }} className="h">{series.title}</div></div>

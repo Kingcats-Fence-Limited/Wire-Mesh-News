@@ -10,6 +10,7 @@ import { getAuthor } from "@/lib/content/people";
 import { SECTION_INTRO, articleHref, fmtDate, fmtDateShort, subsectionLabel } from "@/lib/site";
 import type { Article, SectionCode } from "@/lib/content/types";
 import "@/styles/board-cat.css";
+import { demoBg } from "@/lib/demo";
 
 type Sub = { code: string; label: string; slug: string };
 
@@ -53,14 +54,14 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
   return (
     <Shell header="compact" active={code} board="b-cat">
 {/* 栏目头：深色 + 纹理 */}
-<section style={{ background: "var(--ink)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--fg-2)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
+<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
 <svg width="560" height="560" viewBox="0 0 120 120" style={{ position: "absolute", right: "-100px", top: "-130px", color: "#1A1B23" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
 <div style={{ position: "relative", paddingTop: "38px", paddingBottom: "34px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "18px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / {activeSub ? <><Link href={`/${section.slug}/`} style={{ color: "var(--grey-2)" }}>{section.label}</Link> / </> : null}<span style={{ color: "#FFFFFF", fontWeight: "800" }}>{title}</span></nav>
 <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "48px", alignItems: "end" }} className="cols">
 <div>
-<h1 style={{ margin: "0 0 14px", fontSize: "56px", letterSpacing: "-.055em", color: "#FFFFFF", lineHeight: ".98" }} className="h heroh">{title}<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0 0 14px", fontSize: "56px", letterSpacing: "-.055em", color: "#FFFFFF", lineHeight: ".98" }} className="h heroh">{title}<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "17px", fontWeight: "500", lineHeight: "1.6", color: "#B9BCC6", maxWidth: "620px" }}>{intro.intro}</p>
 </div>
 <div style={{ display: "flex", gap: "32px", flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -83,9 +84,9 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 {/* 编辑精选：大图左右 */}
 {pick && (
 <section style={{ paddingBottom: "34px" }} className="wrap">
-<div style={{ display: "grid", gridTemplateColumns: "1.45fr 1fr", gap: "36px", alignItems: "center" }} className="cols">
+<div style={{ display: "grid", gridTemplateColumns: "1.45fr 1fr", gap: "36px", alignItems: "center" }} className="cols lead">
 <div style={{ position: "relative" }}>
-<div style={{ aspectRatio: "16/9" }} className="ph"></div>
+<div style={{ aspectRatio: "16/9", ...demoBg(pick.slug) }} className="ph"></div>
 <span style={{ position: "absolute", left: "18px", top: "18px", background: "var(--red)", color: "#FFFFFF", fontSize: "10px", fontWeight: "800", letterSpacing: ".16em", padding: "6px 13px", borderRadius: "999px" }}>EDITORS&#8217; PICK</span>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "13px" }}>
@@ -126,7 +127,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "17px", marginBottom: "14px" }} className="h">MOST READ HERE</div>
 {top.map((a, i) => (
-<Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "12px", paddingBottom: i < top.length - 1 ? "12px" : undefined, borderBottom: i < top.length - 1 ? "1px solid var(--line)" : undefined, marginBottom: i < top.length - 1 ? "12px" : undefined }}><span style={{ fontSize: "13px", color: "var(--red)", flexShrink: "0" }} className="h">{String(i + 1).padStart(2, "0")}</span><span style={{ fontSize: "14px", fontWeight: "700", lineHeight: "1.35" }}>{a.title}</span></Link>
+<Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "12px", paddingBottom: i < top.length - 1 ? "12px" : undefined, borderBottom: i < top.length - 1 ? "1px solid var(--line)" : undefined, marginBottom: i < top.length - 1 ? "12px" : undefined }}><span style={{ fontSize: "13px", color: "var(--red-text)", flexShrink: "0" }} className="h">{String(i + 1).padStart(2, "0")}</span><span style={{ fontSize: "14px", fontWeight: "700", lineHeight: "1.35" }}>{a.title}</span></Link>
 ))}
 </div>
 {stds.length > 0 && (
@@ -140,7 +141,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "17px", marginBottom: "9px" }} className="h">Know this subject?</div>
 <p style={{ margin: "0 0 13px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>This section runs on first-hand experience. Articles are published after editorial review, under your real name.</p>
-<Link href="/submit/" style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit an article</Link>
+<Link href="/submit/" style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit an article</Link>
 </div>
 <div><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ aspectRatio: "6/5" }} className="ad">[ 300 &#215; 250 ]</div></div>
 <div className="sticky" style={{ marginTop: "18px" }}><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ height: "600px" }} className="ad">[ 300 &#215; 600 ]</div></div>
@@ -152,7 +153,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <section style={{ background: "var(--paper)", borderTop: "1px solid var(--line-soft)", borderBottom: "1px solid var(--line-soft)" }}>
 <div style={{ paddingTop: "22px", paddingBottom: "22px" }} className="wrap">
 <div style={{ marginBottom: "8px", justifyContent: "center", display: "flex" }} className="adtag">ADVERTISEMENT</div>
-<div style={{ height: "120px", maxWidth: "970px", margin: "0 auto", background: "#FFFFFF" }} className="ad">[ 970 &#215; 120 ]</div>
+<div style={{ height: "120px", maxWidth: "970px", margin: "0 auto", background: "var(--card)" }} className="ad">[ 970 &#215; 120 ]</div>
 </div>
 </section>
     </Shell>

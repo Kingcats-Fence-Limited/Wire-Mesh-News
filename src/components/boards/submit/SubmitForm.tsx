@@ -26,7 +26,7 @@ export function SubmitForm() {
       <div className="sec" style={{ textAlign: "center", padding: "48px 26px" }}>
         <div className="h" style={{ fontSize: "28px", marginBottom: "10px" }}>Thank you — your article is in the queue.</div>
         <p className="meta" style={{ fontSize: "14.5px", maxWidth: "520px", margin: "0 auto 18px" }}>Editors check facts, sources and image rights first. Expect a reply within five working days; the body is locked while in review, but you can withdraw it to a draft from your account.</p>
-        <Link href="/" style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: 800, fontSize: "14px", padding: "0 22px", minHeight: "46px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Back to the front page</Link>
+        <Link href="/" style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: 800, fontSize: "14px", padding: "0 22px", minHeight: "46px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Back to the front page</Link>
       </div>
     );
   }
@@ -44,7 +44,7 @@ export function SubmitForm() {
 <div className="fld"><label htmlFor="f1">TITLE</label><input id="f1" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Specific and accurate; no marketing language" className="inp" /><span className="hint">News headlines must reflect the facts; technical articles state the conditions they apply under in the body.</span></div>
 <div className="fld"><label htmlFor="f2">STANDFIRST</label><textarea id="f2" rows={2} value={dek} onChange={(e) => setDek(e.target.value)} placeholder="Two or three sentences: what question does the article answer?" className="inp"></textarea></div>
 <div className="fld"><label htmlFor="f3">BODY</label>
-<div style={{ border: "1px solid var(--line)", borderRadius: "10px", background: "#FFFFFF", overflow: "hidden" }}>
+<div style={{ border: "1px solid var(--line)", borderRadius: "10px", background: "var(--card)", overflow: "hidden" }}>
 <div style={{ display: "flex", gap: "4px", padding: "8px 10px", borderBottom: "1px solid var(--line)", background: "var(--paper-2)", flexWrap: "wrap" }}>
 <button type="button" aria-label="Heading" className="tb" onClick={() => wrap("## ")}>H2</button>
 <button type="button" aria-label="Bold" className="tb" style={{ fontSize: "14px" }} onClick={() => wrap("**bold**")}>B</button>
@@ -66,9 +66,9 @@ export function SubmitForm() {
 </div>
 <div className="sec">
 <div className="sechd"><span className="num">2</span><span style={{ fontSize: "20px" }} className="h">Images &amp; files</span></div>
-<div style={{ border: "2px dashed #C9CCD6", borderRadius: "12px", padding: "28px", textAlign: "center", background: "var(--paper-2)", marginBottom: "18px" }}>
+<div style={{ border: "2px dashed var(--line-2)", borderRadius: "12px", padding: "28px", textAlign: "center", background: "var(--paper-2)", marginBottom: "18px" }}>
 <svg width="30" height="30" viewBox="0 0 24 24" stroke="var(--grey)" strokeWidth="2" fill="none" strokeLinecap="round" aria-hidden="true" style={{ marginBottom: "8px" }}><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" /><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16" /></svg>
-<div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "5px" }}>Drag files here, or <label htmlFor="files" style={{ color: "var(--red)", fontWeight: "800", cursor: "pointer", textDecoration: "underline" }}>choose files</label><input id="files" type="file" multiple accept="image/*,.pdf" style={{ display: "none" }} /></div>
+<div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "5px" }}>Drag files here, or <label htmlFor="files" style={{ color: "var(--red-text)", fontWeight: "800", cursor: "pointer", textDecoration: "underline" }}>choose files</label><input id="files" type="file" multiple accept="image/*,.pdf" style={{ display: "none" }} /></div>
 <div className="meta">JPG, PNG or PDF, up to 10 MB each, up to 8 files. Files stay private until the article is approved.</div>
 </div>
 <p className="meta" style={{ margin: 0, fontSize: "12.5px" }}>Each image needs a caption and a source &amp; licence line before submission; both are required fields once a file is added.</p>
@@ -82,7 +82,7 @@ export function SubmitForm() {
 {["I confirm this article is original, or that I hold publication rights, and that every image and figure has a lawful source.", "I agree that editors may edit the title, structure and wording as needed, and will check facts and sources before publication."].map((t, i) => (
 <label key={i} className="chk"><input type="checkbox" checked={checks[i]} onChange={(e) => setChecks((c) => c.map((x, j) => (j === i ? e.target.checked : x)))} /><span>{t}</span></label>
 ))}
-<label style={{ marginBottom: "0" }} className="chk"><input type="checkbox" checked={checks[2]} onChange={(e) => setChecks((c) => [c[0], c[1], e.target.checked])} /><span>I have read the <Link href="/policies/submission-guidelines/" style={{ color: "var(--red)", fontWeight: "800", textDecoration: "underline" }}>Submission Guidelines</Link> and the <Link href="/policies/editorial-policy/" style={{ color: "var(--red)", fontWeight: "800", textDecoration: "underline" }}>Editorial Policy</Link>.</span></label>
+<label style={{ marginBottom: "0" }} className="chk"><input type="checkbox" checked={checks[2]} onChange={(e) => setChecks((c) => [c[0], c[1], e.target.checked])} /><span>I have read the <Link href="/policies/submission-guidelines/" style={{ color: "var(--red-text)", fontWeight: "800", textDecoration: "underline" }}>Submission Guidelines</Link> and the <Link href="/policies/editorial-policy/" style={{ color: "var(--red-text)", fontWeight: "800", textDecoration: "underline" }}>Editorial Policy</Link>.</span></label>
 </div>
 </div>
 {state === "preview" && (
@@ -94,9 +94,9 @@ export function SubmitForm() {
 </div>
 )}
 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
-<button type="submit" disabled={!canSubmit} style={{ minHeight: "52px", padding: "0 28px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: canSubmit ? "pointer" : "not-allowed", opacity: canSubmit ? 1 : 0.5 }}>Submit for review</button>
-<button type="button" onClick={() => setState(state === "preview" ? "edit" : "preview")} style={{ minHeight: "52px", padding: "0 24px", borderRadius: "999px", border: "2px solid var(--ink)", background: "#FFFFFF", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: "pointer", color: "var(--ink)" }}>{state === "preview" ? "Back to editing" : "Preview"}</button>
-<button type="button" onClick={save} style={{ minHeight: "52px", padding: "0 24px", borderRadius: "999px", border: "1px solid var(--line)", background: "#FFFFFF", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: "pointer", color: "var(--ink)" }}>Save draft</button>
+<button type="submit" disabled={!canSubmit} style={{ minHeight: "52px", padding: "0 28px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: canSubmit ? "pointer" : "not-allowed", opacity: canSubmit ? 1 : 0.5 }}>Submit for review</button>
+<button type="button" onClick={() => setState(state === "preview" ? "edit" : "preview")} style={{ minHeight: "52px", padding: "0 24px", borderRadius: "999px", border: "2px solid var(--ink)", background: "var(--card)", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: "pointer", color: "var(--ink)" }}>{state === "preview" ? "Back to editing" : "Preview"}</button>
+<button type="button" onClick={save} style={{ minHeight: "52px", padding: "0 24px", borderRadius: "999px", border: "1px solid var(--line)", background: "var(--card)", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: "pointer", color: "var(--ink)" }}>Save draft</button>
 <span style={{ marginLeft: "4px" }} className="meta">The body is locked once submitted; you can withdraw it to a draft.</span>
 </div>
 </form>

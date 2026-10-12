@@ -8,6 +8,7 @@ import { COUNTRY_BY_CODE } from "@/data/vocab";
 import { fmtDate, articleHref } from "@/lib/site";
 import type { EventItem } from "@/lib/content/types";
 import "@/styles/board-ev.css";
+import { demoBg } from "@/lib/demo";
 
 export type EvParams = { when?: string; region?: string; type?: string };
 const TYPE_LABEL = { trade_show: "Trade show", conference: "Conference", webinar: "Webinar" } as const;
@@ -42,7 +43,7 @@ export function EventsBoard({ sp }: { sp: EvParams }) {
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--slate)", marginBottom: "14px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <span style={{ color: "var(--ink)", fontWeight: "800" }}>Events</span></nav>
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "32px", flexWrap: "wrap" }}>
 <div style={{ maxWidth: "640px" }}>
-<h1 style={{ margin: "0 0 10px", fontSize: "50px", letterSpacing: "-.05em", lineHeight: "1" }} className="h">Events Calendar<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0 0 10px", fontSize: "50px", letterSpacing: "-.05em", lineHeight: "1" }} className="h">Events Calendar<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>Trade shows, conferences and webinars across wire, mesh, fencing and grating — with our reporting from the ones we attend.</p>
 </div>
 <div style={{ display: "flex", gap: "10px", flexShrink: "0" }}>
@@ -67,7 +68,7 @@ Subscribe to calendar
 <div style={{ background: "var(--red)", color: "#FFFFFF", borderRadius: "18px", padding: "30px", position: "relative", overflow: "hidden", display: "flex", flexDirection: "column", gap: "14px" }}>
 <svg width="360" height="360" viewBox="0 0 120 120" style={{ position: "absolute", right: "-80px", bottom: "-120px", color: "var(--red-deep)" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
 <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: "13px", alignItems: "flex-start" }}>
-<span style={{ background: "var(--ink)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", padding: "6px 12px", borderRadius: "999px" }}>{next.weAttend ? "NEXT UP · WE'LL BE THERE" : "NEXT UP"}</span>
+<span style={{ background: "var(--surface-dark)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", padding: "6px 12px", borderRadius: "999px" }}>{next.weAttend ? "NEXT UP · WE'LL BE THERE" : "NEXT UP"}</span>
 <div style={{ fontSize: "34px", letterSpacing: "-.045em", color: "#FFFFFF" }} className="h">{next.name}</div>
 <div style={{ display: "flex", gap: "22px", flexWrap: "wrap", fontSize: "14.5px", fontWeight: "700" }}>
 <span style={{ display: "flex", alignItems: "center", gap: "7px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>{range(next)}</span>
@@ -75,7 +76,7 @@ Subscribe to calendar
 </div>
 <p style={{ margin: "0", fontSize: "15px", fontWeight: "500", lineHeight: "1.55", maxWidth: "480px" }}>{next.summary}</p>
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "4px" }}>
-<a href={`#${next.slug}`} style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "14.5px", padding: "0 22px", minHeight: "48px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Event details</a>
+<a href={`#${next.slug}`} style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "14.5px", padding: "0 22px", minHeight: "48px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Event details</a>
 {next.website && <a href={next.website} rel="nofollow noopener noreferrer" target="_blank" style={{ border: "2px solid #FFFFFF", color: "#FFFFFF", fontWeight: "800", fontSize: "14.5px", padding: "0 22px", minHeight: "48px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Official site</a>}
 </div>
 </div>
@@ -90,7 +91,7 @@ Subscribe to calendar
 <div style={{ borderTop: "1px solid var(--line)", paddingTop: "16px", marginTop: "auto" }}>
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "7px" }}>MEDIA PARTNERSHIP</div>
 <p style={{ margin: "0 0 12px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>Media partnerships with shows can include an event feature, coverage and company interviews; partner content is always labelled.</p>
-<Link href="/advertise/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>ADVERTISE &amp; PARTNER →</Link>
+<Link href="/advertise/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>ADVERTISE &amp; PARTNER →</Link>
 </div>
 </div>
 </div>
@@ -101,7 +102,7 @@ Subscribe to calendar
 <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 320px", gap: "48px", alignItems: "start" }} className="cols">
 <div>
 <h2 style={{ margin: "0 0 2px", fontSize: "23px", borderBottom: "3px solid var(--ink)", paddingBottom: "10px" }} className="h">{past ? "Past events" : "Upcoming"}</h2>
-{list.length === 0 && <p className="meta" style={{ padding: "20px 0" }}>No events match these filters. <Link href="/events/" style={{ color: "var(--red)", fontWeight: 800 }}>Clear filters</Link></p>}
+{list.length === 0 && <p className="meta" style={{ padding: "20px 0" }}>No events match these filters. <Link href="/events/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear filters</Link></p>}
 {groups.map((g) => (
 <div key={g.label}>
 <div style={{ fontSize: "15px", color: "var(--slate)", letterSpacing: ".04em", padding: "20px 0 2px" }} className="h">{g.label}</div>
@@ -116,7 +117,7 @@ Subscribe to calendar
 <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>{e.summary}</p>
 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}><span className="tag">{TYPE_LABEL[e.type]}</span><span className="tag">{e.focus}</span>{e.weAttend && <span className="tag">We&#8217;ll be there</span>}</div>
 </div>
-{e.website && <a href={e.website} rel="nofollow noopener noreferrer" target="_blank" style={{ fontSize: "12.5px", fontWeight: "800", color: "var(--red)", flexShrink: "0", paddingTop: "4px" }}>DETAILS →</a>}
+{e.website && <a href={e.website} rel="nofollow noopener noreferrer" target="_blank" style={{ fontSize: "12.5px", fontWeight: "800", color: "var(--red-text)", flexShrink: "0", paddingTop: "4px" }}>DETAILS →</a>}
 </div>
   );
 })}
@@ -126,14 +127,14 @@ Subscribe to calendar
 <h2 style={{ margin: "36px 0 2px", fontSize: "23px", borderBottom: "3px solid var(--ink)", paddingBottom: "10px" }} className="h">Show reports</h2>
 <div className="g2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "22px", paddingTop: "20px" }}>
 {reports.map((a) => (
-<article key={a.slug} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><Link href={articleHref(a)} className="thumb"></Link><span className="kicker"><i></i>NEWS · EVENTS &amp; EXHIBITIONS</span><Link href={articleHref(a)} style={{ fontSize: "18px" }} className="h">{a.title}</Link><span className="meta">{fmtDate(a.date)} · {a.readMin} min</span></article>
+<article key={a.slug} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><Link href={articleHref(a)} className="thumb" style={demoBg(a.slug)}></Link><span className="kicker"><i></i>NEWS · EVENTS &amp; EXHIBITIONS</span><Link href={articleHref(a)} style={{ fontSize: "18px" }} className="h">{a.title}</Link><span className="meta">{fmtDate(a.date)} · {a.readMin} min</span></article>
 ))}
 </div>
 </div>
 <aside style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-<div style={{ background: "var(--ink)", color: "#FFFFFF", borderRadius: "16px", padding: "24px" }}>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "16px", padding: "24px" }}>
 <div style={{ fontSize: "20px", marginBottom: "8px" }} className="h">Event alerts</div>
-<p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--line-2)" }}>One email a month: next month&#8217;s events and our coverage plan.</p>
+<p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--on-dark-2)" }}>One email a month: next month&#8217;s events and our coverage plan.</p>
 <SectionNewsletter id="ev1" button="red" />
 </div>
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
@@ -146,7 +147,7 @@ Subscribe to calendar
 <div style={{ display: "flex", flexDirection: "column", gap: "11px", fontSize: "14px", fontWeight: "700" }}>
 {exhibitors.map((c) => <Link key={c.slug} href={`/directory/${c.slug}/`} style={{ display: "flex", alignItems: "center", gap: "10px" }}><span style={{ width: "30px", height: "30px", borderRadius: "7px", background: "var(--line)", flexShrink: "0" }}></span>{c.name}</Link>)}
 </div>
-<Link href="/directory/" style={{ display: "inline-block", marginTop: "12px", fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>DIRECTORY →</Link>
+<Link href="/directory/" style={{ display: "inline-block", marginTop: "12px", fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>DIRECTORY →</Link>
 </div>
 </aside>
 </div>

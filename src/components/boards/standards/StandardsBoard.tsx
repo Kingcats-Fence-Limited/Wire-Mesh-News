@@ -30,13 +30,13 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
   return (
     <Shell header="compact" active="standards" board="b-std">
 {/* 页头 */}
-<section style={{ position: "relative", overflow: "hidden", background: "var(--ink)", color: "#FFFFFF" }}>
+<section style={{ position: "relative", overflow: "hidden", background: "var(--surface-dark)", color: "#FFFFFF" }}>
 <svg style={{ position: "absolute", right: "0", top: "0", width: "520px", height: "100%", color: "#FFFFFF", opacity: ".16" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 520 280"><rect width="520" height="280" fill="url(#pWeld)" /></svg>
 <div style={{ position: "relative", paddingTop: "32px", paddingBottom: "30px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "16px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / <span style={{ color: "#FFFFFF", fontWeight: "800" }}>Standards Index</span></nav>
 <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "40px", alignItems: "end" }} className="cols">
 <div>
-<h1 style={{ margin: "0 0 12px", fontSize: "48px", letterSpacing: "-.055em" }} className="h">Standards Index<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0 0 12px", fontSize: "48px", letterSpacing: "-.055em" }} className="h">Standards Index<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "16px", fontWeight: "500", lineHeight: "1.6", color: "#B9BCC6", maxWidth: "600px" }}>An index of the standards that govern wire mesh and metal mesh: number, publishing body, current status, what it covers and our related reporting. <b style={{ color: "#FFFFFF" }}>Index and our own summaries only — never the standard&#8217;s text.</b></p>
 </div>
 <div style={{ display: "flex", gap: "28px", flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -45,7 +45,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <div><div style={{ fontSize: "30px", color: "#FFFFFF" }} className="mono h">{fmtDateShort(lastChecked)}</div><div style={{ color: "var(--grey-5)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em" }}>LAST CHECKED</div></div>
 </div>
 </div>
-<form action="/standards/" method="get" style={{ display: "flex", alignItems: "center", gap: "11px", background: "#FFFFFF", borderRadius: "999px", padding: "0 20px", minHeight: "54px", marginTop: "24px", maxWidth: "660px" }}>
+<form action="/standards/" method="get" style={{ display: "flex", alignItems: "center", gap: "11px", background: "var(--card)", borderRadius: "999px", padding: "0 20px", minHeight: "54px", marginTop: "24px", maxWidth: "660px" }}>
 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--grey)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg>
 <label htmlFor="sq" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Search standards</label>
 <input id="sq" name="q" defaultValue={sp.q ?? ""} type="search" placeholder="EN 10223-4, zinc coating, gabion, weld shear…" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "15.5px", fontWeight: "500", minHeight: "48px", color: "var(--ink)", background: "transparent", minWidth: 0 }} />
@@ -61,7 +61,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <p style={{ margin: "0 0 10px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.7", color: "var(--fg-3)" }}>Standards bodies earn their living from the text of their standards, and clauses, tables and values are copyright. This page does three things only: <b>records the number and bibliographic details, states the current status, and summarises the scope in our own words</b>. Number, title and year are facts and can be listed.</p>
 <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.7", color: "var(--fg-3)" }}>By design there is <b>no download, no PDF, no quoted clauses and no copied parameter tables</b>; every entry links to the publisher&#8217;s official purchase page.</p>
 </div>
-<div style={{ width: "230px", flexShrink: "0", background: "#FFF1F2", borderRadius: "10px", padding: "16px" }}>
+<div style={{ width: "230px", flexShrink: "0", background: "var(--st-red-bg)", borderRadius: "10px", padding: "16px" }}>
 <div style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".12em", color: "var(--red-deep)", marginBottom: "9px" }} className="mono">NEVER ON THIS SITE</div>
 <ul style={{ paddingLeft: "16px" }}>
 {["Standard PDFs or scans", "Verbatim clauses", "Copied parameter tables", "Links to pirated copies"].map((t) => <li key={t} style={{ fontSize: "12.5px", lineHeight: "1.65", color: "#8A1620" }}>{t}</li>)}
@@ -70,7 +70,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 </div>
 {/* 筛选 */}
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "hidden", marginBottom: "22px" }}>
-<div style={{ background: "var(--ink)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
 <a href="#bodies" className="fchip">Body{sp.body && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></a>
 <a href="#bodies" className="fchip">Subject{sp.subject && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">1</span>}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></a>
@@ -86,7 +86,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <span style={{ width: "1px", height: "18px", background: "var(--line)", margin: "0 6px" }}></span>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)" }} className="mono">SUBJECTS</span>
 {subjects.map((s) => <Link key={s} href={toggle("subject", s)} className={`badge ${sp.subject === s ? "on" : "wd"}`}>{subjectLabel(s)}</Link>)}
-{(sp.body || sp.subject || sp.status || sp.q) && <Link href="/standards/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: 800, color: "var(--red)", letterSpacing: ".06em" }}>CLEAR</Link>}
+{(sp.body || sp.subject || sp.status || sp.q) && <Link href="/standards/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: 800, color: "var(--red-text)", letterSpacing: ".06em" }}>CLEAR</Link>}
 </div>
 </div>
 {/* 列表 */}
@@ -94,19 +94,19 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <div style={{ background: "var(--paper)", borderBottom: "2px solid var(--ink)", paddingTop: "12px", paddingBottom: "12px" }} className="row head">
 {["NUMBER", "TITLE & WHAT IT COVERS", "SUBJECT", "STATUS", "COVERAGE", ""].map((h, i) => <span key={i} style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".12em", color: "var(--slate)" }} className="mono">{h}</span>)}
 </div>
-{list.length === 0 && <p className="meta" style={{ padding: "20px 18px", margin: 0 }}>No standards match. <Link href="/standards/" style={{ color: "var(--red)", fontWeight: 800 }}>Clear filters</Link></p>}
+{list.length === 0 && <p className="meta" style={{ padding: "20px 18px", margin: 0 }}>No standards match. <Link href="/standards/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear filters</Link></p>}
 {list.map((s) => {
   const [lab, cls] = STATUS[s.status];
   const n = byStandard(s.no).length;
   const wd = s.status === "withdrawn";
   return (
 <Link key={s.slug} href={`/standards/${s.slug}/`} style={{ ...(s.slug === latest.slug ? { borderLeft: "3px solid var(--red)" } : {}), ...(wd ? { opacity: ".72" } : {}) }} className="row">
-<span><span style={{ fontSize: "17px", display: "block", ...(wd ? { textDecoration: "line-through", textDecorationColor: "#C9CCD6" } : {}) }} className="mono h">{s.no}</span><span style={{ fontSize: "10.5px", fontWeight: "700", color: "var(--grey)" }} className="mono">{bodyOf(s.body)?.prefix === "EN" ? "CEN" : bodyOf(s.body)?.prefix ?? s.body.toUpperCase()} · {s.edition ?? "—"}</span></span>
+<span><span style={{ fontSize: "17px", display: "block", ...(wd ? { textDecoration: "line-through", textDecorationColor: "var(--line-2)" } : {}) }} className="mono h">{s.no}</span><span style={{ fontSize: "10.5px", fontWeight: "700", color: "var(--grey)" }} className="mono">{bodyOf(s.body)?.prefix === "EN" ? "CEN" : bodyOf(s.body)?.prefix ?? s.body.toUpperCase()} · {s.edition ?? "—"}</span></span>
 <span><span style={{ display: "block", fontSize: "14.5px", fontWeight: "800", marginBottom: "4px" }}>{s.title}</span><span style={{ fontSize: "12.5px", lineHeight: "1.5" }} className="meta">{wd && s.replacedBy ? <>Replaced by <b style={{ color: "var(--ink)" }}>{s.replacedBy}</b>. Withdrawn standards stay in the index: old drawings still cite them and readers need to know what to replace them with.</> : s.covers.split(". ")[0] + "."}</span></span>
 <span className="badge wd">{subjectLabel(s.subject)}</span>
 <span className={`badge ${cls}`}>{lab}</span>
 <span style={{ fontSize: "12px", fontWeight: "800", color: "var(--grey)" }} className="mono">{n} article{n === 1 ? "" : "s"}</span>
-<span style={{ color: "var(--red)", fontWeight: "800" }}>→</span>
+<span style={{ color: "var(--red-text)", fontWeight: "800" }}>→</span>
 </Link>
   );
 })}
@@ -116,7 +116,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <div style={{ fontSize: "13.5px", fontWeight: "800", marginBottom: "4px" }}>Has a status changed? Tell us</div>
 <p style={{ margin: "0", fontSize: "12px", lineHeight: "1.55" }} className="meta">Standards change, and we cannot check every entry every day. Reader reports are verified, the entry is updated, and the change appears in Standards Watch on the front page.</p>
 </div>
-<Link href="/contact/?subject=correction" style={{ minHeight: "40px", padding: "0 18px", border: "1.5px solid var(--ink)", borderRadius: "999px", background: "#FFFFFF", fontSize: "13px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Report a change</Link>
+<Link href="/contact/?subject=correction" style={{ minHeight: "40px", padding: "0 18px", border: "1.5px solid var(--ink)", borderRadius: "999px", background: "var(--card)", fontSize: "13px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Report a change</Link>
 </div>
 </div>
     </Shell>
@@ -136,7 +136,7 @@ export function StandardBoard({ s }: { s: Standard }) {
 <div style={{ paddingTop: "28px", paddingBottom: "40px" }} className="wrap">
 <nav aria-label="Breadcrumb" className="meta" style={{ marginBottom: "16px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <Link href="/standards/" style={{ color: "var(--slate)" }}>Standards Index</Link> / <b style={{ color: "var(--ink)" }}>{s.no}</b></nav>
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "hidden", marginBottom: "32px" }}>
-<div style={{ background: "var(--ink)", color: "#FFFFFF", padding: "24px 26px", position: "relative", overflow: "hidden" }}>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "24px 26px", position: "relative", overflow: "hidden" }}>
 <svg style={{ position: "absolute", right: "0", top: "0", width: "300px", height: "100%", color: "#FFFFFF", opacity: ".14" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 300 160"><rect width="300" height="160" fill="url(#pChain)" /></svg>
 <div style={{ position: "relative", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
 <div>
@@ -145,7 +145,7 @@ export function StandardBoard({ s }: { s: Standard }) {
 <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--grey-2)" }} className="mono">STATUS CHECKED {fmtDate(s.checked).toUpperCase()} · SOURCE: {(body?.prefix ?? s.body).toUpperCase()} WEBSITE</span>
 </div>
 <h1 style={{ fontSize: "38px", letterSpacing: "-.02em", margin: 0, color: "#FFFFFF" }} className="mono h">{s.no}</h1>
-<div style={{ fontSize: "17px", fontWeight: "700", color: "var(--line-2)", marginTop: "6px", maxWidth: "620px" }}>{s.title}</div>
+<div style={{ fontSize: "17px", fontWeight: "700", color: "var(--on-dark-2)", marginTop: "6px", maxWidth: "620px" }}>{s.title}</div>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-end" }}>
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -171,9 +171,9 @@ export function StandardBoard({ s }: { s: Standard }) {
   const [kl, kc] = KIND_LABEL[c.kind] ?? ["CHANGE", "wd"];
   return (
 <div key={c.date + c.kind} style={{ position: "relative", paddingBottom: i < s.changelog.length - 1 ? "14px" : 0 }}>
-<span style={{ position: "absolute", left: "-22px", top: "4px", width: "12px", height: "12px", borderRadius: "999px", ...(i === 0 ? { background: "var(--red)", border: "2px solid #FFFFFF", boxShadow: "0 0 0 1.5px var(--red)" } : { background: "#FFFFFF", border: "2px solid var(--ink)" }) }}></span>
+<span style={{ position: "absolute", left: "-22px", top: "4px", width: "12px", height: "12px", borderRadius: "999px", ...(i === 0 ? { background: "var(--red)", border: "2px solid #FFFFFF", boxShadow: "0 0 0 1.5px var(--red)" } : { background: "var(--card)", border: "2px solid var(--ink)" }) }}></span>
 <div style={{ display: "flex", alignItems: "center", gap: "9px", flexWrap: "wrap", marginBottom: "3px" }}><span style={{ fontSize: "11.5px", fontWeight: "800" }} className="mono">{fmtDate(c.date).toUpperCase()}</span><span style={{ fontSize: "9px" }} className={`badge ${kc}`}>{c.kind === "status" ? `STATUS → ${lab}` : kl}</span></div>
-<div style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--fg-2)" }}>{c.text}&#160;{c.source && <a href={c.source.startsWith("http") ? c.source : s.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--red)" }} className="mono">Source: {c.source.startsWith("http") ? body?.prefix ?? "publisher" : c.source} ↗</a>}</div>
+<div style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--fg-2)" }}>{c.text}&#160;{c.source && <a href={c.source.startsWith("http") ? c.source : s.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--red-text)" }} className="mono">Source: {c.source.startsWith("http") ? body?.prefix ?? "publisher" : c.source} ↗</a>}</div>
 </div>
   );
 })}
@@ -182,7 +182,7 @@ export function StandardBoard({ s }: { s: Standard }) {
 <div style={{ fontSize: "16px", marginBottom: "11px" }} className="h">Our coverage</div>
 {articles.length === 0 ? <p className="meta" style={{ margin: "0 0 20px" }}>No article references this standard yet.</p> : (
 <div style={{ display: "flex", flexDirection: "column", gap: "11px", marginBottom: "20px" }}>
-{articles.map((a, i) => <Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "11px", alignItems: "flex-start", paddingBottom: i < articles.length - 1 ? "11px" : 0, borderBottom: i < articles.length - 1 ? "1px solid var(--line-soft)" : undefined }}><span style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--red)", marginTop: "2px" }} className="mono">{String(i + 1).padStart(2, "0")}</span><span><span style={{ display: "block", fontSize: "16px" }} className="h">{a.title}</span><span style={{ fontSize: "11px", fontWeight: "700" }} className="mono meta">{sectionByCode(a.section)?.label.toUpperCase()} · {fmtDate(a.date).toUpperCase()}</span></span></Link>)}
+{articles.map((a, i) => <Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "11px", alignItems: "flex-start", paddingBottom: i < articles.length - 1 ? "11px" : 0, borderBottom: i < articles.length - 1 ? "1px solid var(--line-soft)" : undefined }}><span style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--red-text)", marginTop: "2px" }} className="mono">{String(i + 1).padStart(2, "0")}</span><span><span style={{ display: "block", fontSize: "16px" }} className="h">{a.title}</span><span style={{ fontSize: "11px", fontWeight: "700" }} className="mono meta">{sectionByCode(a.section)?.label.toUpperCase()} · {fmtDate(a.date).toUpperCase()}</span></span></Link>)}
 </div>
 )}
 <div style={{ background: "var(--paper)", borderRadius: "12px", padding: "16px 18px", display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
@@ -190,7 +190,7 @@ export function StandardBoard({ s }: { s: Standard }) {
 <div style={{ fontSize: "13.5px", fontWeight: "800", marginBottom: "4px" }}>Has the status changed? Tell us</div>
 <p style={{ margin: "0", fontSize: "12px", lineHeight: "1.55" }} className="meta">Standards change, and we cannot check every entry every day. Reader reports are verified, the entry is updated, and the change appears in Standards Watch on the front page.</p>
 </div>
-<Link href={`/contact/?subject=correction&about=${s.slug}`} style={{ minHeight: "40px", padding: "0 18px", border: "1.5px solid var(--ink)", borderRadius: "999px", background: "#FFFFFF", fontSize: "13px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Report a change</Link>
+<Link href={`/contact/?subject=correction&about=${s.slug}`} style={{ minHeight: "40px", padding: "0 18px", border: "1.5px solid var(--ink)", borderRadius: "999px", background: "var(--card)", fontSize: "13px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Report a change</Link>
 </div>
 </div>
 <div style={{ padding: "24px 22px", display: "flex", flexDirection: "column", gap: "20px" }}>

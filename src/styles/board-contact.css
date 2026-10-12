@@ -2,15 +2,15 @@
 .b-contact .h{letter-spacing:-.04em;line-height:1.1}
 .b-contact .fld{display:flex;flex-direction:column;gap:6px}
 .b-contact .fld label{font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--fg-3)}
-.b-contact .inp{width:100%;box-sizing:border-box;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:0 13px;font-family:inherit;font-size:14.5px;font-weight:500;background:#FFFFFF;color:var(--ink)}
+.b-contact .inp{width:100%;box-sizing:border-box;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:0 13px;font-family:inherit;font-size:14.5px;font-weight:500;background:var(--card);color:var(--ink)}
 .b-contact textarea.inp{padding:11px 13px;resize:vertical;line-height:1.6}
 .b-contact .route{display:flex;gap:13px;align-items:flex-start;padding:15px 0;border-bottom:1px solid var(--line)}
 .b-contact .ico{width:38px;height:38px;border-radius:10px;background:var(--paper);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .b-contact .polbody p{margin:0 0 18px;font-size:15px;font-weight:500;line-height:1.7}
 .b-contact .polbody h2{margin:0 0 9px;font-size:20px}
 .b-contact .polnav a{font-size:14px;font-weight:500;color:var(--slate)}
-.b-contact .polnav a.on{font-weight:800;color:var(--red)}
-@media (max-width:900px){
+.b-contact .polnav a.on{font-weight:800;color:var(--red-text)}
+@media (max-width:980px){
 .b-contact .cols, .b-contact .g2{grid-template-columns:1fr !important}
 .b-contact .polnav{flex-direction:row !important;flex-wrap:wrap;gap:6px 16px !important}
 }

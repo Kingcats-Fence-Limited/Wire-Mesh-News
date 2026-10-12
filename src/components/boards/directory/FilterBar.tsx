@@ -33,7 +33,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
 
   return (
     <div ref={root} style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "visible" }}>
-      <div style={{ background: "var(--ink)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0" }}>
+      <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0" }}>
         <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
         {menus.map((m, i) => {
           const n = m.items.filter((x) => x.on).length;
@@ -73,7 +73,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
         </div>
         {open === "more" && (
           <div style={{ flexBasis: "100%", order: 9, marginTop: "6px" }}>
-            <div style={{ border: "1px solid var(--line)", borderRadius: "16px", background: "#FFFFFF", padding: "20px 24px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)", color: "var(--ink)" }}>
+            <div style={{ border: "1px solid var(--line)", borderRadius: "16px", background: "var(--card)", padding: "20px 24px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)", color: "var(--ink)" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
                 <span style={{ fontSize: "16px" }} className="h">More filters</span>
                 <span style={{ fontSize: "12px" }} className="meta">Two coarse axes only; grades and processes are not filters</span>
@@ -89,7 +89,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "16px", paddingTop: "14px", borderTop: "1px solid var(--line)", flexWrap: "wrap" }}>
                 <p style={{ margin: "0", fontSize: "11.5px", lineHeight: "1.5", flex: "1 1 260px" }} className="meta">Finer specifications (aperture, wire diameter, coating weight) are not filters: use search or the company profile.</p>
                 <Link href={resetHref} className="chip">Reset</Link>
-                <button type="button" onClick={() => setOpen(null)} style={{ minHeight: "38px", padding: "0 20px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "13.5px", fontWeight: "800", cursor: "pointer" }}>Done</button>
+                <button type="button" onClick={() => setOpen(null)} style={{ minHeight: "38px", padding: "0 20px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "13.5px", fontWeight: "800", cursor: "pointer" }}>Done</button>
               </div>
             </div>
           </div>

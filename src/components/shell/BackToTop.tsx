@@ -67,7 +67,7 @@ export function BackToTop() {
         <span className="ringbox">
           <svg className="arc" width="48" height="48" viewBox="0 0 48 48" style={{ position: "absolute", inset: 0 }} aria-hidden="true">
             <circle cx="24" cy="24" r={r} fill="none" stroke="var(--line-soft)" strokeWidth="3" />
-            <circle cx="24" cy="24" r={r} fill="none" stroke="var(--red)" strokeWidth="3" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - progress)} transform="rotate(-90 24 24)" />
+            <circle cx="24" cy="24" r={r} fill="none" stroke="var(--red-text)" strokeWidth="3" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - progress)} transform="rotate(-90 24 24)" />
           </svg>
           <span className="disc" style={{ position: "relative" }}>{arrow(16)}<span>Top</span></span>
         </span>

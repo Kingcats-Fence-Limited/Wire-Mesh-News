@@ -10,7 +10,7 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 <section style={{ paddingTop: "40px", paddingBottom: "56px" }} className="wrap">
 <div style={{ maxWidth: "860px", margin: "0 auto" }}>
 {next && (
-<div style={{ marginBottom: "16px" }}><span style={{ background: "var(--ink)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 11px", borderRadius: "5px", display: "inline-block" }}>SIGN IN REQUIRED</span><p className="hint" style={{ margin: "10px 0 0", fontSize: "14px" }}>Submissions, comments and saved items are tied to an account so you can keep drafts and see review outcomes. You will return to the page you came from.</p></div>
+<div style={{ marginBottom: "16px" }}><span style={{ background: "var(--ink)", color: "var(--on-ink)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 11px", borderRadius: "5px", display: "inline-block" }}>SIGN IN REQUIRED</span><p className="hint" style={{ margin: "10px 0 0", fontSize: "14px" }}>Submissions, comments and saved items are tied to an account so you can keep drafts and see review outcomes. You will return to the page you came from.</p></div>
 )}
 <div style={{ display: "grid", gridTemplateColumns: "1fr 230px", minHeight: "560px" }} className="frame">
 <div style={{ padding: "30px 32px" }}>
@@ -27,8 +27,8 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 {mode === "register" && <RegisterForm claim={claim} />}
 {mode === "reset" && <ResetForm />}
 </div>
-<div className="sidepanel" style={{ background: "var(--ink)", color: "#FFFFFF", padding: "30px 24px", display: "flex", flexDirection: "column", justifyContent: "center", gap: "16px", position: "relative", overflow: "hidden" }}>
-<svg width="260" height="260" viewBox="0 0 120 120" style={{ position: "absolute", right: "-90px", bottom: "-80px", color: "var(--fg-2)" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
+<div className="sidepanel" style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "30px 24px", display: "flex", flexDirection: "column", justifyContent: "center", gap: "16px", position: "relative", overflow: "hidden" }}>
+<svg width="260" height="260" viewBox="0 0 120 120" style={{ position: "absolute", right: "-90px", bottom: "-80px", color: "var(--mesh-dark)" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
 <div style={{ position: "relative" }}>
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey-2)", marginBottom: "14px" }}>{next ? "HOW SUBMISSION WORKS" : "WITH AN ACCOUNT"}</div>
 {next ? (
@@ -39,7 +39,7 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 </div>
 ) : (
 <div style={{ display: "flex", flexDirection: "column", gap: "13px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.5" }}>
-{["Submit articles and track review status", "Comment under articles", "Save articles and companies", "Manage subscription preferences"].map((t) => <div key={t} style={{ display: "flex", gap: "10px" }}><span style={{ color: "var(--red)", fontWeight: "800" }}>&#183;</span><span>{t}</span></div>)}
+{["Submit articles and track review status", "Comment under articles", "Save articles and companies", "Manage subscription preferences"].map((t) => <div key={t} style={{ display: "flex", gap: "10px" }}><span style={{ color: "var(--red-text)", fontWeight: "800" }}>&#183;</span><span>{t}</span></div>)}
 </div>
 )}
 <p style={{ margin: "18px 0 0", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--grey-5)" }}>Reading articles does not need an account.</p>

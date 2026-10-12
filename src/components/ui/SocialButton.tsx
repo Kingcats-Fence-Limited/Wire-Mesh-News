@@ -58,7 +58,7 @@ export function SocialButton({ id, href, label, tone = "dark", size = 42, classN
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
       className={clsx("soc", !dark && "soc-light", className)}
-      style={{ width: size, height: size, ...(dark ? {} : { background: "#FFFFFF", borderColor: "var(--line)", color: "var(--ink)" }), WebkitTapHighlightColor: "transparent" }}
+      style={{ width: size, height: size, ...(dark ? {} : { background: "var(--card)", borderColor: "var(--line)", color: "var(--ink)" }), WebkitTapHighlightColor: "transparent" }}
     >
       <SocialGlyph id={id} size={size === 42 ? 17 : 15} />
     </a>

@@ -8,6 +8,7 @@ import { APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT_BY_CODE, O
 import { fmtDateShort } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-dir.css";
+import { demoBg, logoSrc } from "@/lib/demo";
 
 export type DirParams = { app?: string; category?: string; region?: string; material?: string; claimed?: string; photos?: string; covered?: string; sort?: string; page?: string; q?: string };
 
@@ -67,14 +68,14 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   return (
     <Shell header="compact" active="directory" board="b-dir">
 {/* 页头 */}
-<section style={{ background: "var(--ink)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--fg-2)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
+<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
 <svg width="520" height="520" viewBox="0 0 120 120" style={{ position: "absolute", right: "-90px", top: "-120px", color: "#1A1B23" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
 <div style={{ position: "relative", paddingTop: "36px", paddingBottom: "32px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "16px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / <span style={{ color: "#FFFFFF", fontWeight: "800" }}>Directory</span></nav>
 <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "44px", alignItems: "end" }} className="cols">
 <div>
-<h1 style={{ margin: "0 0 12px", fontSize: "50px", letterSpacing: "-.055em", color: "#FFFFFF", lineHeight: "1" }} className="h">Company Directory<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0 0 12px", fontSize: "50px", letterSpacing: "-.055em", color: "#FFFFFF", lineHeight: "1" }} className="h">Company Directory<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.6", color: "#B9BCC6", maxWidth: "580px" }}>The manufacturers, processors, institutions and laboratories that appear in our reporting. Compiled and maintained by editors, with each fact sourced. Listing and order are never paid for.</p>
 </div>
 <div style={{ display: "flex", gap: "30px", flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -83,7 +84,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <div><div style={{ fontSize: "32px", color: "#FFFFFF" }} className="mono h">{COMPANIES.filter((c) => c.claimed).length}</div><div style={{ color: "var(--grey-5)", fontSize: "11px", fontWeight: "800", letterSpacing: ".1em" }}>CLAIMED</div></div>
 </div>
 </div>
-<form action="/directory/" method="get" style={{ display: "flex", alignItems: "center", gap: "11px", background: "#FFFFFF", borderRadius: "999px", padding: "0 20px", minHeight: "54px", marginTop: "24px", maxWidth: "640px" }}>
+<form action="/directory/" method="get" style={{ display: "flex", alignItems: "center", gap: "11px", background: "var(--card)", borderRadius: "999px", padding: "0 20px", minHeight: "54px", marginTop: "24px", maxWidth: "640px" }}>
 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--grey)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg>
 <label htmlFor="ds" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Search companies</label>
 <input id="ds" name="q" defaultValue={sp.q ?? ""} type="search" placeholder="Search by company, product or country" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "15.5px", fontWeight: "500", minHeight: "48px", color: "var(--ink)", background: "transparent" }} />
@@ -148,28 +149,28 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <div style={{ background: "var(--paper-2)", padding: "12px 16px", display: "flex", alignItems: "center", gap: "9px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)", marginRight: "2px" }} className="mono">ACTIVE</span>
 {active.map((a) => <Link key={a.label} href={a.href} className="onchip">{a.label} <span style={{ opacity: ".75" }}>&#10005;</span></Link>)}
-<Link href="/directory/" style={{ padding: "0 4px", fontSize: "12.5px", fontWeight: "800", color: "var(--red)" }}>CLEAR ALL</Link>
+<Link href="/directory/" style={{ padding: "0 4px", fontSize: "12.5px", fontWeight: "800", color: "var(--red-text)" }}>CLEAR ALL</Link>
 <span style={{ marginLeft: "auto", fontSize: "12px" }} className="meta util">Filters are written to the address bar — share the link as it is</span>
 </div>
 )}
 </FilterBar>
 {/* 付费展示位：独立成块，不进自然列表，不影响排序 */}
 {SPONSORED.length > 0 && (
-<div style={{ marginTop: "26px", border: "2px dashed #C9CCD6", borderRadius: "16px", padding: "18px 20px", background: "var(--paper-2)" }}>
+<div style={{ marginTop: "26px", border: "2px dashed var(--line-2)", borderRadius: "16px", padding: "18px 20px", background: "var(--paper-2)" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "14px" }}>
-<span style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--ink)", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 10px", borderRadius: "4px" }} className="badge">SPONSORED LISTING</span>
+<span style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--ink)", color: "var(--on-ink)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 10px", borderRadius: "4px" }} className="badge">SPONSORED LISTING</span>
 <span style={{ fontSize: "12px" }} className="meta">Paid placement · kept apart from the editorial list and never affects its order</span>
-<Link href="/policies/directory-listing-policy/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".08em", color: "var(--red)" }}>WHY AM I SEEING THIS? &#8594;</Link>
+<Link href="/policies/directory-listing-policy/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".08em", color: "var(--red-text)" }}>WHY AM I SEEING THIS? &#8594;</Link>
 </div>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px" }} className="g3">
 {SPONSORED.map((sx) => (
-<a key={sx.name} href={sx.url} rel={sx.open ? undefined : "sponsored noopener"} target={sx.open ? undefined : "_blank"} style={{ borderColor: "#C9CCD6" }} className="card">
+<a key={sx.name} href={sx.url} rel={sx.open ? undefined : "sponsored noopener"} target={sx.open ? undefined : "_blank"} style={{ borderColor: "var(--line-2)" }} className="card">
 <span style={{ background: "var(--slate)" }} className="band"><svg width="100%" height="8" style={{ display: "block", color: "#FFFFFF", opacity: ".35" }} aria-hidden="true"><rect width="100%" height="8" fill="url(#pGrate)" /></svg></span>
 <div className="cbody">
 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-<span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><svg width="52" height="52" style={{ position: "absolute", inset: "0", color: "#C9CCD6" }} aria-hidden="true"><rect width="52" height="52" fill="url(#pGrate)" /></svg><span style={{ position: "relative", fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }} className="mono">LOGO</span></span>
+<span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><svg width="52" height="52" style={{ position: "absolute", inset: "0", color: "var(--on-dark-2)" }} aria-hidden="true"><rect width="52" height="52" fill="url(#pGrate)" /></svg><span style={{ position: "relative", fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }} className="mono">LOGO</span></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{sx.role.toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{sx.name}</span></span>
-<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{sx.country}</span><span style={{ background: "#EDEEF2", color: "var(--slate)" }} className="cert">SPONSOR</span></span>
+<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{sx.country}</span><span style={{ background: "var(--st-withdrawn-bg)", color: "var(--slate)" }} className="cert">SPONSOR</span></span>
 </div>
 <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>{sx.blurb}</p>
 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>{sx.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
@@ -181,7 +182,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 </a>
 ))}
 <div style={{ gridColumn: `span ${Math.max(1, 3 - SPONSORED.length)}`, display: "grid", gridTemplateColumns: SPONSORED.length >= 2 ? "1fr" : "1fr 1fr", gap: "18px" }} className="g2">
-<div style={{ borderLeft: "4px solid #1E6B35", padding: "18px 20px", display: "block" }} className="card">
+<div style={{ borderLeft: "4px solid var(--up)", padding: "18px 20px", display: "block" }} className="card">
 <div style={{ fontSize: "15px", marginBottom: "10px" }} className="h">Free, for every company</div>
 <ul style={{ margin: "0", paddingLeft: "17px", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.8", color: "var(--fg-3)" }}>
 <li>Listed, and shown in the list and in search</li>
@@ -204,8 +205,8 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 </div>
 </div>
 <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "14px", paddingTop: "13px", borderTop: "1px solid var(--line)" }}>
-<span style={{ color: "var(--red)", fontWeight: "800", flexShrink: "0" }}>!</span>
-<p style={{ margin: "0", fontSize: "11.5px", lineHeight: "1.65" }} className="meta">Three rules: <b style={{ color: "var(--ink)" }}>paid placements sit apart from the editorial list</b>, never mixed in or queued ahead; <b style={{ color: "var(--ink)" }}>the SPONSORED mark is always shown</b> and cannot be hidden; <b style={{ color: "var(--ink)" }}>payment changes no editorial order</b> and triggers no coverage. Placements are capped per page; when they are sold, no more are added. Enquiries: <Link href="/advertise/" style={{ color: "var(--red)", fontWeight: 800 }}>Advertise &amp; Partner</Link>.</p>
+<span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>!</span>
+<p style={{ margin: "0", fontSize: "11.5px", lineHeight: "1.65" }} className="meta">Three rules: <b style={{ color: "var(--ink)" }}>paid placements sit apart from the editorial list</b>, never mixed in or queued ahead; <b style={{ color: "var(--ink)" }}>the SPONSORED mark is always shown</b> and cannot be hidden; <b style={{ color: "var(--ink)" }}>payment changes no editorial order</b> and triggers no coverage. Placements are capped per page; when they are sold, no more are added. Enquiries: <Link href="/advertise/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Advertise &amp; Partner</Link>.</p>
 </div>
 </div>
 )}
@@ -215,7 +216,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <span style={{ flex: "1 1 0", height: "1px", background: "var(--line)" }}></span>
 <span style={{ fontSize: "11.5px" }} className="meta">Editorial listing; order is unrelated to payment</span>
 </div>
-{slice.length === 0 && <p className="meta" style={{ margin: "20px 0", fontSize: "14px" }}>No companies match these filters. <Link href="/directory/" style={{ color: "var(--red)", fontWeight: 800 }}>Clear all</Link></p>}
+{slice.length === 0 && <p className="meta" style={{ margin: "20px 0", fontSize: "14px" }}>No companies match these filters. <Link href="/directory/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear all</Link></p>}
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px", alignItems: "stretch" }} className="g3">
 {slice.map((c) => {
   const p = CAT_PAT[c.categories[0]] ?? "pWeld";
@@ -227,20 +228,20 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <span className="band"><svg width="100%" height="8" style={{ display: "block", color: "#FFFFFF", opacity: ".45" }} aria-hidden="true"><rect width="100%" height="8" fill={`url(#${p})`} /></svg></span>
 <div className="cbody">
 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-<span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><svg width="52" height="52" style={{ position: "absolute", inset: "0", color: "#C9CCD6" }} aria-hidden="true"><rect width="52" height="52" fill={`url(#${p})`} /></svg><span style={{ position: "relative", fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }} className="mono">LOGO</span></span>
+<span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><img src={logoSrc(c.slug)} alt="" width="52" height="52" style={{ display: "block", width: "52px", height: "52px" }} /></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{(ORGANISATION_TYPE_BY_CODE[c.orgType]?.labelEn ?? c.orgType).toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{c.name}</span></span>
-<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{c.country}</span>{c.claimed && <span style={{ background: "var(--ink)", color: "#FFFFFF" }} className="cert">&#9679; CLAIMED</span>}</span>
+<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{c.country}</span>{c.claimed && <span style={{ background: "var(--ink)", color: "var(--on-ink)" }} className="cert">&#9679; CLAIMED</span>}</span>
 </div>
 {photos > 0 && (
 <div style={{ display: "flex", gap: "6px" }}>
-<span className="ph2"><svg width="100%" height="58" style={{ display: "block", color: "#C2C5CE" }} aria-hidden="true"><rect width="100%" height="58" fill={`url(#${p})`} /></svg></span>
-<span className="ph2"><svg width="100%" height="58" style={{ display: "block", color: "#C2C5CE" }} aria-hidden="true"><rect width="100%" height="58" fill={`url(#${CAT_PAT[c.categories[1]] ?? "pChain"})`} /></svg></span>
-<span style={{ background: "var(--ink)", color: "#FFFFFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11.5px", fontWeight: "800" }} className="ph2">{photos > 2 ? `+${photos - 2} photos` : `${photos} photos`}</span>
+<span className="ph2" style={{ height: "58px", ...demoBg(c.slug) }}></span>
+<span className="ph2" style={{ height: "58px", ...demoBg(c.slug, 5) }}></span>
+<span style={{ background: "var(--ink)", color: "var(--on-ink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11.5px", fontWeight: "800" }} className="ph2">{photos > 2 ? `+${photos - 2} photos` : `${photos} photos`}</span>
 </div>
 )}
 <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>{c.summary}</p>
 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-{c.applications.slice(0, 1).map((a) => <span key={a} style={{ background: "var(--ink)", color: "#FFFFFF" }} className="tag">{APPLICATION_AREA_BY_CODE[a]?.labelEn}</span>)}
+{c.applications.slice(0, 1).map((a) => <span key={a} style={{ background: "var(--ink)", color: "var(--on-ink)" }} className="tag">{APPLICATION_AREA_BY_CODE[a]?.labelEn}</span>)}
 {c.categories.slice(0, 1).map((k) => <span key={k} className="tag">{CATEGORY_BY_CODE[k]?.labelEn}</span>)}
 {c.products.slice(0, 1).map((k) => <span key={k} className="tag">{PRODUCT_BY_CODE[k]?.labelEn ?? k}</span>)}
 {cert && <span className="cert">&#10003; {cert.type.replace(/_/g, " ").toUpperCase()}</span>}
@@ -265,7 +266,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="util">PAGE {page} OF {pages}</span>
 </div>
 {/* 认领 CTA：深色勾花网 */}
-<div id="claim" style={{ marginTop: "36px", position: "relative", overflow: "hidden", background: "var(--ink)", color: "#FFFFFF", borderRadius: "18px", padding: "28px 30px" }}>
+<div id="claim" style={{ marginTop: "36px", position: "relative", overflow: "hidden", background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "18px", padding: "28px 30px" }}>
 <svg style={{ position: "absolute", right: "0", top: "0", width: "420px", height: "100%", color: "#FFFFFF", opacity: ".14" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 420 200"><rect width="420" height="200" fill="url(#pChain)" /></svg>
 <div style={{ position: "relative", display: "flex", gap: "26px", alignItems: "center", flexWrap: "wrap" }}>
 <div style={{ flex: "1 1 420px" }}>

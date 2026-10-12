@@ -37,7 +37,7 @@ export function SearchButton({ size, border }: { size: number; border: string })
 
   return (
     <>
-      <button ref={btn} type="button" className="searchbtn" aria-label={open ? "Close search" : "Search"} aria-expanded={open} onClick={() => (open ? close() : openAt())} style={{ width: size, height: size, border, background: open ? "var(--ink)" : "#FFFFFF", color: open ? "#FFFFFF" : "var(--ink)", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, position: "relative", zIndex: open ? 91 : undefined }}>
+      <button ref={btn} type="button" className="searchbtn" aria-label={open ? "Close search" : "Search"} aria-expanded={open} onClick={() => (open ? close() : openAt())} style={{ width: size, height: size, border, background: open ? "var(--ink)" : "var(--card)", color: open ? "var(--on-ink)" : "var(--ink)", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, position: "relative", zIndex: open ? 91 : undefined }}>
         {open ? (
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
         ) : (

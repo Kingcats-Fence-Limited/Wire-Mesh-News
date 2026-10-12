@@ -2,7 +2,7 @@
 export function PrimaryNav() {
   return (
     <>
-<div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "#FFFFFF" }}>
+<div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "var(--card)" }}>
 <nav className="wrap" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
 <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>News<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg></a>
 <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>Market Insights<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg></a>

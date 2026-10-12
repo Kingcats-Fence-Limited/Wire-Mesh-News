@@ -7,7 +7,7 @@ export function SideNewsletter() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   return (
-    <div style={{ position: "relative", overflow: "hidden", background: "var(--ink)", color: "#FFFFFF", borderRadius: "14px", padding: "22px" }}>
+    <div style={{ position: "relative", overflow: "hidden", background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "14px", padding: "22px" }}>
 <svg style={{ position: "absolute", right: "-20px", bottom: "-20px", width: "180px", height: "160px" }} aria-hidden="true"><g color="#FFFFFF" opacity=".16"><rect width="180" height="160" fill="url(#pWoven)" /></g></svg>
 <div style={{ position: "relative" }}>
 <div style={{ fontSize: "20px", marginBottom: "8px" }} className="h">The Monday brief</div>

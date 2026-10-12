@@ -60,18 +60,18 @@ export function MethodologyBoard() {
 <p>The galvanized mesh panel series is produced by Wire Mesh News. Each quarter we request indicative ex-works prices for a fixed reference specification (50 × 200 mm aperture, 5 mm wire, 2 500 × 2 030 mm panel, hot-dip galvanized ≥ 275 g/m²) from manufacturers and distributors in northern Europe. Responses are anonymised; the highest and lowest 10% are excluded and the remainder is averaged. We publish the number of responses with every release. Participants are not named and no individual quotation is published.</p>
 <h2 id="s5">5 · Attribution and copyright</h2>
 <div style={{ border: "1px solid var(--line)", borderRadius: "12px", padding: "16px 18px", marginBottom: "12px", display: "flex", gap: "18px", alignItems: "center", flexWrap: "wrap" }}>
-<span style={{ width: "110px", height: "34px", border: "1.5px dashed #C9CBD4", borderRadius: "6px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>LME LOGO</span>
-<span style={{ width: "110px", height: "34px", border: "1.5px dashed #C9CBD4", borderRadius: "6px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>PROVIDER LOGO</span>
+<span style={{ width: "110px", height: "34px", border: "1.5px dashed var(--ph)", borderRadius: "6px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>LME LOGO</span>
+<span style={{ width: "110px", height: "34px", border: "1.5px dashed var(--ph)", borderRadius: "6px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "10px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>PROVIDER LOGO</span>
 <span style={{ flex: "1 1 260px", fontSize: "12px", lineHeight: "1.55" }} className="meta">LME data &#169; The London Metal Exchange. Delayed by at least 30 minutes. Not for redistribution. Assessed prices &#169; their respective providers, reproduced under licence; the exact attribution wording of each licence is reproduced here when the agreement is signed.</span>
 </div>
 <p>Third-party data is reproduced under licence and remains the property of its providers. You may quote a figure from this site with attribution to the original source and to Wire Mesh News. You may not scrape, redistribute, or republish the data series, in whole or in part.</p>
 <h2 id="s6">6 · Disclaimer</h2>
 <p>Market data on this site is provided for general information only. It is not a quotation, an offer to buy or sell, or investment, trading or procurement advice. Prices for specific products vary by specification, volume, delivery terms and counterparty, and may differ materially from the series shown here. Wire Mesh News and its data providers accept no liability for decisions made on the basis of this information.</p>
 <h2 id="s7">7 · Corrections</h2>
-<p>If you believe a figure is wrong, write to <a href={`mailto:${SITE.email}`} style={{ fontWeight: "800", color: "var(--red)" }}>{SITE.email}</a> with the series, date and the value you expected. Errors originating with a provider are passed to that provider; errors in our own survey are corrected on the site with a dated note. Our general <Link href="/policies/corrections/" className="lnk">Corrections</Link> policy applies.</p>
+<p>If you believe a figure is wrong, write to <a href={`mailto:${SITE.email}`} style={{ fontWeight: "800", color: "var(--red-text)" }}>{SITE.email}</a> with the series, date and the value you expected. Errors originating with a provider are passed to that provider; errors in our own survey are corrected on the site with a dated note. Our general <Link href="/policies/corrections/" className="lnk">Corrections</Link> policy applies.</p>
 <div style={{ display: "flex", gap: "14px", alignItems: "center", background: "var(--paper)", borderRadius: "12px", padding: "16px 20px", flexWrap: "wrap", marginTop: "22px" }}>
 <span style={{ fontSize: "14px", fontWeight: "700" }}>Questions about a series or a licence?</span>
-<a href={`mailto:${SITE.email}`} style={{ fontSize: "13.5px", fontWeight: "800", color: "var(--red)" }}>{SITE.email}</a>
+<a href={`mailto:${SITE.email}`} style={{ fontSize: "13.5px", fontWeight: "800", color: "var(--red-text)" }}>{SITE.email}</a>
 </div>
 </div>
 </div>
