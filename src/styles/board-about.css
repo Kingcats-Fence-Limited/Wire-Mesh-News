@@ -8,3 +8,4 @@
 .b-about .cols{grid-template-columns:1fr !important}
 .b-about h1{font-size:36px !important}
 }
+@media (min-width:601px) and (max-width:980px){.b-about .g5{grid-template-columns:1fr 1fr 1fr !important}}
