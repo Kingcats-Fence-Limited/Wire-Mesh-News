@@ -20,4 +20,7 @@
 .b-mkt .tablewrap{overflow-x:auto}
 @media (max-width:900px){
 .b-mkt .cols, .b-mkt .g3{grid-template-columns:1fr !important}
+.b-mkt .cols > *{min-width:0}
+.b-mkt .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.b-mkt .tablewrap table{min-width:720px}
 }

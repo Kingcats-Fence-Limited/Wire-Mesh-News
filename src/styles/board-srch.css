@@ -19,7 +19,7 @@
 .b-srch mark{background:#FFE8B0;color:inherit;padding:0 1px;border-radius:2px}
 @media (max-width:900px){
 .b-srch .cols, .b-srch .g2{grid-template-columns:1fr !important}
-.b-srch .res > span:first-child, .b-srch .res > .thumb{display:none}
+.b-srch .res > span:first-child, .b-srch .res > .thumb{display:none !important}
 .b-srch .chips{overflow-x:auto;flex-wrap:nowrap !important;scrollbar-width:none;margin:0 -14px;padding:0 14px}
 .b-srch .chips::-webkit-scrollbar{display:none}
 }

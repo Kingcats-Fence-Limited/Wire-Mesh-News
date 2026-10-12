@@ -42,5 +42,6 @@
 .b-dir .g5{display:flex !important;overflow-x:auto;gap:9px !important;margin:0 -14px;padding:0 14px;scrollbar-width:none}
 .b-dir .g5::-webkit-scrollbar{display:none}
 .b-dir .cat{flex:0 0 170px;min-height:130px}
+.b-dir .cat .pat{width:84px;height:64px;right:-10px;top:-10px;opacity:.3}
 .b-dir h1{font-size:34px !important}
 }
