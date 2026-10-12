@@ -29,7 +29,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
   if (letters.length < 3) return null;
   return (
     <>
-<section style={{ borderTop: "1px solid var(--line)", background: "#FFFFFF" }}>
+<section style={{ borderTop: "1px solid var(--line)", background: "var(--card)" }}>
 <div className="wrap" style={{ paddingTop: "46px", paddingBottom: "46px" }}>
 <div className="sec" style={{ marginBottom: "8px" }}><span className="node"></span><h2>Letters &amp; Opinion</h2><span className="rule"></span><Link href="/letters/">ALL LETTERS &#8594;</Link></div>
 <p className="meta" style={{ margin: "0 0 22px", fontSize: "13px" }}>Readers first, columns second. The editorial team does not write columns; every column is by an outside author under their real name, title and organisation, with interests disclosed at the end.</p>
@@ -45,7 +45,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
 <div className="h" style={{ fontSize: "16px", marginBottom: "4px" }}>Write to the editor</div>
 <p className="meta" style={{ margin: "0", fontSize: "12.5px", lineHeight: "1.6" }}>200&#8211;400 words on one specific question or one experience from site. Sign in to submit; we verify identity and organisation before publishing. You may ask to be anonymous, but the editors must know who you are.</p>
 </div>
-<Link href="/letters/#write" style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Send a letter</Link>
+<Link href="/letters/#write" style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Send a letter</Link>
 </div>
 </div>
 <div>
@@ -55,7 +55,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
 <span className="h" style={{ fontSize: "14px", letterSpacing: ".08em", color: "var(--grey)" }}>THIS WEEK&#8217;S COLUMN</span>
 <span style={{ border: "1.5px solid var(--line)", borderRadius: "4px", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".12em", padding: "4px 8px", color: "var(--slate)" }}>OPINION</span>
 </div>
-<span className="h" style={{ fontSize: "44px", lineHeight: ".5", color: "var(--red)", display: "block", marginBottom: "14px" }}>&#8220;</span>
+<span className="h" style={{ fontSize: "44px", lineHeight: ".5", color: "var(--red-text)", display: "block", marginBottom: "14px" }}>&#8220;</span>
 <Link href={`/letters/columns/${column.slug}/`} className="h" style={{ display: "block", fontSize: "21px", lineHeight: "1.2", marginBottom: "12px" }}>{column.title}</Link>
 <p className="meta" style={{ margin: "0 0 14px", fontSize: "13px", lineHeight: "1.6" }}>{column.summary}</p>
 <div style={{ display: "flex", alignItems: "center", gap: "11px", paddingTop: "13px", borderTop: "1px solid var(--line-soft)" }}>
@@ -68,7 +68,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", padding: "22px" }}>
 <span className="h" style={{ fontSize: "14px", letterSpacing: ".08em", color: "var(--grey)", display: "block", marginBottom: "14px" }}>WRITE A COLUMN</span>
 <p className="meta" style={{ margin: "0 0 14px", fontSize: "13px", lineHeight: "1.6" }}>We publish one outside column a week, under the author&#8217;s real name, title and organisation. Pitch us a 700&#8211;900 word argument.</p>
-<Link href="/submit/" style={{ color: "var(--red)", fontWeight: "800", fontSize: "12px", letterSpacing: ".1em" }}>HOW TO PITCH &#8594;</Link>
+<Link href="/submit/" style={{ color: "var(--red-text)", fontWeight: "800", fontSize: "12px", letterSpacing: ".1em" }}>HOW TO PITCH &#8594;</Link>
 </div>
 )}
 <div style={{ marginTop: "14px", borderLeft: "3px solid var(--red)", paddingLeft: "16px" }}>

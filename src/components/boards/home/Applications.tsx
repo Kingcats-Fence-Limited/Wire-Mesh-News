@@ -41,7 +41,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 <span style={{ position: "absolute", left: "0", right: "0", bottom: "0", height: "3px", background: "linear-gradient(90deg, var(--red) 0%, rgba(229,36,47,0) 72%)", opacity: ".55" }}></span>
 <span className="lbl aphead" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
 <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "12px", background: "rgba(229,36,47,.14)", border: "1px solid rgba(229,36,47,.34)" }} aria-hidden="true">
-<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{ICON[area.code]}</svg>
+<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{ICON[area.code]}</svg>
 </span>
 <span className="mono" style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", color: "#4E5266" }}>{String(i + 1).padStart(2, "0")}</span>
 </span>
@@ -51,7 +51,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 <span className="aptag" style={{ height: "1px", background: "var(--line-dark)", marginBottom: "10px" }}></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", marginBottom: "12px" }}>
 {area.scenariosEn.split(";").slice(0, 3).map((s, k) => (
-<span key={s} className={k === 2 ? "apsc3" : undefined} style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: "700", color: "var(--red)" }}><span style={{ width: "4px", height: "4px", borderRadius: "999px", background: "var(--red)", flexShrink: "0" }}></span>{s.trim()}</span>
+<span key={s} className={k === 2 ? "apsc3" : undefined} style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: "700", color: "var(--red-text)" }}><span style={{ width: "4px", height: "4px", borderRadius: "999px", background: "var(--red)", flexShrink: "0" }}></span>{s.trim()}</span>
 ))}
 </span>
 <span className="apfoot" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { demoBg } from "@/lib/demo";
 
 /* Canvas Nav-J: hover opens after 120ms, closes after 240ms; one panel at a time;
    section label itself is a link; panel content is server-rendered (passed as data). */
@@ -52,7 +53,7 @@ const ICONS: Record<string, React.ReactNode> = {
   report: <><path d="M5 4h14v16H5z" /><path d="M8 9h8M8 13h8M8 17h5" /></>,
 };
 const Icon = ({ id, size = 17 }: { id: string; size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="1.9" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">{ICONS[id] ?? ICONS.doc}</svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="1.9" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">{ICONS[id] ?? ICONS.doc}</svg>
 );
 
 const chevDown = <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg>;
@@ -64,9 +65,15 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
   const [open, setOpen] = useState<string | null>(null);
   const enterT = useRef<number | null>(null);
   const leaveT = useRef<number | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const [narrowLeft, setNarrowLeft] = useState(0);
   function show(code: string) {
     if (leaveT.current) window.clearTimeout(leaveT.current);
     enterT.current = window.setTimeout(() => setOpen(code), open ? 0 : 120);
+  }
+  function place(el: HTMLElement) {
+    const wrap = navRef.current?.getBoundingClientRect();
+    if (wrap) setNarrowLeft(Math.max(0, Math.min(el.getBoundingClientRect().left - wrap.left - 22, wrap.width - 64 - 600)));
   }
   function hide() {
     if (enterT.current) window.clearTimeout(enterT.current);
@@ -83,8 +90,8 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
   const navLink = (on: boolean) => ({ display: "inline-flex", alignItems: "center", gap: "6px", color: on ? "var(--red)" : undefined, position: "relative" as const });
 
   return (
-    <div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "#FFFFFF", position: "relative", zIndex: 40 }} onMouseLeave={hide}>
-      <nav className="wrap" aria-label="Primary" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
+    <div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "var(--bg)", position: "relative", zIndex: 40 }} onMouseLeave={hide}>
+      <nav ref={navRef} className="wrap" aria-label="Primary" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
         {data.sections.map((s) => (
           <Link key={s.code} href={s.href} style={navLink(open === s.code || (!open && active === s.code))} aria-expanded={open === s.code} aria-haspopup="true" onMouseEnter={() => show(s.code)} onFocus={() => show(s.code)} onClick={() => setOpen(null)}>
             {s.label}
@@ -94,19 +101,19 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
         ))}
         <span style={{ width: "1px", height: "18px", background: "var(--line)" }}></span>
         {[["directory", "Directory", "/directory/"], ["events", "Events", "/events/"], ["standards", "Standards", "/standards/"]].map(([code, label, href]) => (
-          <Link key={code} href={href} style={{ color: open === code ? "var(--red)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={() => show(code)} onFocus={() => show(code)} onClick={() => setOpen(null)}>{label}</Link>
+          <Link key={code} href={href} style={{ color: open === code ? "var(--red)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={(e) => { place(e.currentTarget); show(code); }} onFocus={(e) => { place(e.currentTarget); show(code); }} onClick={() => setOpen(null)}>{label}</Link>
         ))}
       </nav>
 
       {open && (
-        <div className="megapanel" role="region" aria-label={`${cur?.label ?? open} menu`} onMouseEnter={() => leaveT.current && window.clearTimeout(leaveT.current)} style={narrow ? { position: "absolute", left: 0, right: 0, top: "100%", zIndex: 50, pointerEvents: "none" } : { position: "absolute", left: 0, right: 0, top: "100%", background: "#FFFFFF", borderBottom: "3px solid var(--ink)", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", zIndex: 50 }}>
+        <div className="megapanel" role="region" aria-label={`${cur?.label ?? open} menu`} onMouseEnter={() => leaveT.current && window.clearTimeout(leaveT.current)} style={narrow ? { position: "absolute", left: 0, right: 0, top: "100%", zIndex: 50, pointerEvents: "none" } : { position: "absolute", left: 0, right: 0, top: "100%", background: "var(--card)", borderBottom: "3px solid var(--ink)", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", zIndex: 50 }}>
           <div className="wrap" style={{ padding: 0 }}>
             {cur && (
-              <div style={{ display: "grid", gridTemplateColumns: "1.08fr 1.05fr 1.12fr 0.86fr", gap: "0", background: "#FFFFFF" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1.08fr 1.05fr 1.12fr 0.86fr", gap: "0", background: "var(--card)" }}>
                 <div style={{ padding: "26px 28px 26px 0" }}>
-                  <div className="colhd"><span style={{ fontSize: "15px" }} className="h">Sections</span><Link href={cur.href} onClick={() => setOpen(null)} style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red)" }}>ALL</Link></div>
-                  {cur.subs.map((x, i) => (
-                    <Link key={x.href} href={x.href} onClick={() => setOpen(null)} className={`mi${i === 0 ? " on" : ""}`}>
+                  <div className="colhd"><span style={{ fontSize: "15px" }} className="h">Sections</span><Link href={cur.href} onClick={() => setOpen(null)} style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red-text)" }}>ALL</Link></div>
+                  {cur.subs.map((x) => (
+                    <Link key={x.href} href={x.href} onClick={() => setOpen(null)} className="mi">
                       <span className="ic"><Icon id={x.icon} /></span>
                       <span><b>{x.label}</b><span>{x.desc}</span></span>
                     </Link>
@@ -116,34 +123,34 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
                   <div className="colhd"><span style={{ fontSize: "15px" }} className="h">Latest in {cur.label}</span><span style={{ fontSize: "10.5px", fontWeight: "800" }} className="mono meta">{data.date}</span></div>
                   {cur.latest.map((a, i) => (
                     <Link key={a.href} href={a.href} onClick={() => setOpen(null)} style={{ display: "flex", gap: "12px", padding: "13px 0", borderBottom: i < cur.latest.length - 1 ? "1px solid var(--line)" : undefined }}>
-                      <span style={{ width: "62px", aspectRatio: "1/1" }} className="ph"></span>
+                      <span style={{ width: "62px", aspectRatio: "1/1", ...demoBg(a.href) }} className="ph"></span>
                       <span style={{ display: "flex", flexDirection: "column", gap: "4px", minWidth: "0" }}><span className="kick"><i></i>{a.kicker}</span><span style={{ fontSize: "13.5px", fontWeight: "800", lineHeight: "1.3", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</span></span>
                     </Link>
                   ))}
                 </div>
                 {isMarket ? (
-                  <div style={{ padding: "26px 28px", borderLeft: "1px solid var(--line)", background: "var(--ink)", color: "#FFFFFF" }}>
+                  <div style={{ padding: "26px 28px", borderLeft: "1px solid var(--line)", background: "var(--surface-dark)", color: "#FFFFFF" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", paddingBottom: "9px", borderBottom: "2px solid var(--red)", marginBottom: "12px" }}>
                       <span style={{ fontSize: "15px", color: "#FFFFFF" }} className="h">Market snapshot</span>
                       <span style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".08em", color: "var(--grey-5)" }} className="mono">WK TO {data.date}</span>
                     </div>
                     {data.snapshot.map((s, i) => (
                       <div key={s.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "9px 0", borderBottom: i < data.snapshot.length - 1 ? "1px solid var(--line-dark)" : undefined }}>
-                        <span style={{ fontSize: "12.5px", fontWeight: "700", color: "var(--line-2)" }}>{s.name}</span>
+                        <span style={{ fontSize: "12.5px", fontWeight: "700", color: "var(--on-dark-2)" }}>{s.name}</span>
                         <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           <span className="mono" style={{ fontSize: "13px", fontWeight: "800" }}>{s.value}</span>
                           <span className="mono" style={{ fontSize: "11px", fontWeight: "800", color: s.pct === null ? "var(--grey)" : s.pct > 0 ? "#3DBE6B" : s.pct < 0 ? "#FF4A54" : "var(--grey)" }}>{s.pct === null ? "—" : `${s.pct > 0 ? "▲" : s.pct < 0 ? "▼" : "▬"}${Math.abs(s.pct).toFixed(1)}%`}</span>
                         </span>
                       </div>
                     ))}
-                    <Link href="/market-data/" onClick={() => setOpen(null)} style={{ display: "inline-block", marginTop: "12px", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red)" }}>FULL DATA &amp; METHOD &#8594;</Link>
+                    <Link href="/market-data/" onClick={() => setOpen(null)} style={{ display: "inline-block", marginTop: "12px", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red-text)" }}>FULL DATA &amp; METHOD &#8594;</Link>
                   </div>
                 ) : (
                   <div style={{ padding: "26px 28px", borderLeft: "1px solid var(--line)" }}>
                     <div style={{ borderColor: "var(--red)" }} className="colhd"><span style={{ fontSize: "15px" }} className="h">Editors&apos; pick</span></div>
                     {cur.pick && (
                       <Link href={cur.pick.href} onClick={() => setOpen(null)} style={{ display: "block" }}>
-                        <span style={{ display: "block", width: "100%", aspectRatio: "16/9", marginBottom: "11px" }} className="ph"></span>
+                        <span style={{ display: "block", width: "100%", aspectRatio: "16/9", marginBottom: "11px", ...demoBg(cur.pick.href) }} className="ph"></span>
                         <span style={{ marginBottom: "7px" }} className="kick"><i></i>{cur.pick.kicker}</span>
                         <span style={{ display: "block", fontSize: "18px", marginBottom: "7px" }} className="h">{cur.pick.title}</span>
                         <span style={{ lineHeight: "1.5", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }} className="meta">{cur.pick.dek}</span>
@@ -161,8 +168,8 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
                         </Link>
                       ))}
                   {!isMarket && (
-                    <div style={{ background: "var(--ink)", color: "#FFFFFF", borderRadius: "12px", padding: "17px", marginTop: "16px", position: "relative", overflow: "hidden" }}>
-                      <svg width="150" height="150" viewBox="0 0 120 120" style={{ position: "absolute", right: "-46px", bottom: "-58px", color: "var(--fg-2)" }} aria-hidden="true"><use href="#w1" width="120" height="120" /></svg>
+                    <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "12px", padding: "17px", marginTop: "16px", position: "relative", overflow: "hidden" }}>
+                      <svg width="150" height="150" viewBox="0 0 120 120" style={{ position: "absolute", right: "-46px", bottom: "-58px", color: "var(--mesh-dark)" }} aria-hidden="true"><use href="#w1" width="120" height="120" /></svg>
                       <div style={{ position: "relative" }}>
                         <div style={{ fontSize: "15px", color: "#FFFFFF", marginBottom: "5px" }} className="h">Weekly brief</div>
                         <p style={{ margin: "0 0 11px", fontSize: "12px", fontWeight: "500", lineHeight: "1.5", color: "var(--grey-3)" }}>The week&apos;s news and price moves, every Monday.</p>
@@ -174,7 +181,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
               </div>
             )}
             {narrow && (
-              <div style={{ pointerEvents: "auto", display: "inline-grid", gridTemplateColumns: "auto auto 230px", gap: "26px", padding: "20px 22px 22px", background: "#FFFFFF", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 14px 14px", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", marginLeft: "-22px" }}>
+              <div style={{ pointerEvents: "auto", display: "inline-grid", gridTemplateColumns: "auto auto 230px", gap: "26px", padding: "20px 22px 22px", background: "var(--card)", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 14px 14px", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", marginLeft: `${narrowLeft}px`, maxWidth: "calc(100% - 28px)" }}>
                 <div>
                   <div className="colhd"><span style={{ fontSize: "14px" }} className="h">Directory</span></div>
                   {[["list", "Browse companies", "/directory/"], ["shield", "Standards Index", "/standards/"], ["plus", "Suggest a listing", "/contact/?subject=directory"]].map(([ic, l, h]) => (
@@ -191,7 +198,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
                   <div style={{ marginBottom: "9px" }} className="cap">NEXT UP</div>
                   {data.nextEvent && (
                     <Link href={data.nextEvent.href} onClick={() => setOpen(null)} style={{ display: "flex", gap: "11px", alignItems: "center" }}>
-                      <span style={{ flex: "0 0 40px", textAlign: "center" }}><span style={{ display: "block", fontSize: "10px", letterSpacing: ".08em", color: "var(--red)" }} className="h">{data.nextEvent.mon}</span><span style={{ display: "block", fontSize: "24px", lineHeight: "1" }} className="h">{data.nextEvent.day}</span></span>
+                      <span style={{ flex: "0 0 40px", textAlign: "center" }}><span style={{ display: "block", fontSize: "10px", letterSpacing: ".08em", color: "var(--red-text)" }} className="h">{data.nextEvent.mon}</span><span style={{ display: "block", fontSize: "24px", lineHeight: "1" }} className="h">{data.nextEvent.day}</span></span>
                       <span style={{ minWidth: 0 }}><span style={{ display: "block", fontSize: "13.5px", fontWeight: "800", lineHeight: "1.3" }}>{data.nextEvent.name}</span><span className="meta" style={{ fontSize: "11.5px" }}>{data.nextEvent.where}</span></span>
                     </Link>
                   )}

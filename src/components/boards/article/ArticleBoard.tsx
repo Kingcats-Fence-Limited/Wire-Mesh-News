@@ -15,6 +15,7 @@ import { COUNTRY_BY_CODE } from "@/data/vocab";
 import { sectionByCode, subsectionLabel, subsectionSlug, fmtDate, articleHref, SITE, daysAgo } from "@/lib/site";
 import type { Article } from "@/lib/content/types";
 import "@/styles/board-art.css";
+import { demoBg, demoSrc } from "@/lib/demo";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp" };
 const TYPE_LABEL: Record<string, string> = { news: "NEWS", analysis: "ANALYSIS", guide: "DEEP DIVE", case_study: "CASE STUDY", sponsored: "SPONSORED CONTENT", column: "OPINION" };
@@ -32,14 +33,13 @@ export function ArticleBoard({ a }: { a: Article }) {
   const total = bySection(a.section).length;
   const next = readNext(a, 3);
   const heroPat = PAT[a.mesh ?? "chainL"] ?? "pChainL";
-  const leadPat = !a.mesh || a.mesh === "weldQ" ? "pWeld" : PAT[a.mesh] ?? "pWeld";
   const sponsored = a.type === "sponsored";
   const enc = encodeURIComponent;
 
   return (
     <Shell header="compact" active={a.section} board="b-art">
 {/* ① 深色文章头：网型图案 + 大标题 + 作者条 */}
-<div className="hero" style={{ position: "relative", background: "var(--ink)", color: "#FFFFFF", overflow: "hidden", paddingBottom: 0 }}>
+<div className="hero" style={{ position: "relative", background: "var(--surface-dark)", color: "#FFFFFF", overflow: "hidden", paddingBottom: 0 }}>
 <svg style={{ position: "absolute", right: "0", top: "0", height: "100%", width: "760px" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 760 560">
 <g color="#FFFFFF" opacity=".2"><rect width="760" height="560" fill={`url(#${heroPat})`} /></g>
 <rect width="760" height="560" fill="url(#fadeR)" />
@@ -88,8 +88,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <figure style={{ margin: "0" }}>
 <div style={{ position: "relative", borderRadius: "16px", overflow: "hidden", background: "var(--line-2)", aspectRatio: "21/9", boxShadow: "0 24px 60px rgba(21,22,28,.3)" }}>
 <svg width="100%" height="100%" style={{ display: "block" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 1156 496">
-<rect width="1156" height="496" fill="#D2D4DD" />
-<g color="var(--grey)" opacity=".85"><rect width="1156" height="496" fill={`url(#${leadPat})`} /></g>
+<image href={demoSrc(a.slug)} width="1156" height="496" preserveAspectRatio="xMidYMid slice" />
 <rect width="1156" height="496" fill="url(#fadeD)" opacity=".3" />
 </svg>
 <span style={{ position: "absolute", left: "0", bottom: "0", background: "var(--red)", color: "#FFFFFF", fontSize: "11px", fontWeight: "800", letterSpacing: ".14em", padding: "8px 14px", borderRadius: "0 10px 0 0" }}>FIG. 1</span>
@@ -113,7 +112,7 @@ export function ArticleBoard({ a }: { a: Article }) {
   const [head, ...rest] = t.split(/[;:—] /);
   return (
 <div key={t} className="cell"><span style={{ left: "-4px", top: "-4px" }} className="nd"></span><span style={{ right: "-4px", top: "-4px" }} className="nd"></span><span style={{ left: "-4px", bottom: "-4px" }} className="nd"></span><span style={{ right: "-4px", bottom: "-4px" }} className="nd"></span>
-<div style={{ fontSize: "12px", fontWeight: "700", color: "var(--red)", marginBottom: "8px" }} className="mono">{String(i + 1).padStart(2, "0")}</div>
+<div style={{ fontSize: "12px", fontWeight: "700", color: "var(--red-text)", marginBottom: "8px" }} className="mono">{String(i + 1).padStart(2, "0")}</div>
 <div style={{ fontSize: "18px", marginBottom: "7px" }} className="h">{rest.length ? head : t}</div>
 {rest.length > 0 && <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.62", color: "var(--slate)" }}>{rest.join(" ").replace(/^./, (c) => c.toUpperCase())}</p>}
 </div>
@@ -137,12 +136,15 @@ export function ArticleBoard({ a }: { a: Article }) {
 <SubscribeModal />
 </aside>
 <article data-article="" style={{ minWidth: "0" }} className="body">
+<details className="mobtoc"><summary><span>ON THIS PAGE · {toc.length + (a.sources?.length ? 1 : 0)}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg></summary>
+<div>{toc.map((t) => <a key={t.id} href={`#${t.id}`} className="tocl">{t.text}</a>)}{a.sources && a.sources.length > 0 && <a href="#sources" className="tocl">Sources</a>}</div>
+</details>
 {(a.appliesTo || stds.length > 0) && (
 <div style={{ display: "flex", gap: "16px", background: "var(--paper)", borderLeft: "4px solid var(--red)", borderRadius: "0 12px 12px 0", padding: "18px 22px", marginBottom: "32px", flexWrap: "wrap" }}>
 <div style={{ flex: "1 1 200px" }}>
 <div style={{ fontSize: "12px", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "9px" }} className="h">APPLIES TO</div>
 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-{(a.appliesTo ?? a.tags).map((t) => <span key={t} style={{ background: "#FFFFFF" }} className="tag">{t}</span>)}
+{(a.appliesTo ?? a.tags).map((t) => <span key={t} style={{ background: "var(--card)" }} className="tag">{t}</span>)}
 </div>
 </div>
 {stds.length > 0 && (<>
@@ -164,13 +166,13 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 <ol style={{ margin: "0", padding: "0", listStyle: "none", display: "flex", flexDirection: "column", gap: "11px" }}>
 {a.sources.map((s, i) => (
-<li key={s.url} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}><span style={{ width: "22px", height: "22px", background: "var(--ink)", color: "#FFFFFF", borderRadius: "4px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: "0", marginTop: "1px" }} className="mono">{i + 1}</span><span style={{ fontSize: "14px", fontWeight: "500", lineHeight: "1.6" }}>{s.title} — <a href={s.url} style={{ color: "var(--red)", textDecoration: "underline" }} target={s.url.startsWith("http") ? "_blank" : undefined} rel={s.url.startsWith("http") ? "noopener noreferrer" : undefined}>link</a>, accessed {fmtDate(s.accessed)}</span></li>
+<li key={s.url} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}><span style={{ width: "22px", height: "22px", background: "var(--ink)", color: "var(--on-ink)", borderRadius: "4px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: "0", marginTop: "1px" }} className="mono">{i + 1}</span><span style={{ fontSize: "14px", fontWeight: "500", lineHeight: "1.6" }}>{s.title} — <a href={s.url} style={{ color: "var(--red-text)", textDecoration: "underline" }} target={s.url.startsWith("http") ? "_blank" : undefined} rel={s.url.startsWith("http") ? "noopener noreferrer" : undefined}>link</a>, accessed {fmtDate(s.accessed)}</span></li>
 ))}
 </ol>
 </div>
 )}
 {a.correction && (
-<div style={{ background: "#FFF1F2", border: "1px solid #F5C2C6", borderRadius: "12px", padding: "16px 20px", marginBottom: "26px" }}>
+<div style={{ background: "var(--st-red-bg)", border: "1px solid #F5C2C6", borderRadius: "12px", padding: "16px 20px", marginBottom: "26px" }}>
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--red-deep)", marginBottom: "6px" }}>CORRECTION &#183; {fmtDate(a.correction.date, { day: "numeric", month: "long", year: "numeric" }).toUpperCase()}</div>
 <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.65", color: "var(--fg-3)" }}>{a.correction.text} <Link href="/policies/corrections/" style={{ color: "var(--red-deep)", textDecoration: "underline" }}>Corrections policy</Link></p>
 </div>
@@ -190,7 +192,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 {letters.length > 0 && (
 <div style={{ marginTop: "30px", border: "2px solid var(--ink)", borderRadius: "14px", padding: "20px 22px" }}>
-<div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "12px" }}><span style={{ width: "15px", height: "3px", background: "var(--red)" }}></span><span style={{ fontSize: "12.5px", letterSpacing: ".1em" }} className="h">LETTERS ON THIS ARTICLE</span><Link href="/letters/" style={{ marginLeft: "auto", fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--red)" }}>ALL LETTERS &#8594;</Link></div>
+<div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "12px" }}><span style={{ width: "15px", height: "3px", background: "var(--red)" }}></span><span style={{ fontSize: "12.5px", letterSpacing: ".1em" }} className="h">LETTERS ON THIS ARTICLE</span><Link href="/letters/" style={{ marginLeft: "auto", fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--red-text)" }}>ALL LETTERS &#8594;</Link></div>
 {letters.map((l) => (
 <Link key={l.slug} href={`/letters/${l.slug}/`} style={{ display: "block", padding: "12px 0", borderTop: "1px solid var(--line)" }}><span className="h" style={{ display: "block", fontSize: "16px", lineHeight: "1.3", marginBottom: "5px" }}>&#8220;{l.title}&#8221;</span><span className="meta" style={{ fontSize: "12px" }}>{l.writer.role} &#183; {l.writer.org} &#183; {daysAgo(l.date)}</span></Link>
 ))}
@@ -206,7 +208,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
 {next.map((n, i) => (<span key={n.slug} style={{ display: "contents" }}>
 {i > 0 && <div style={{ height: "1px", background: "var(--line-soft)" }}></div>}
-<Link href={articleHref(n)} style={{ display: "flex", gap: "11px", alignItems: "flex-start" }}><span style={{ fontSize: "12px", fontWeight: "700", color: "var(--red)", marginTop: "2px" }} className="mono">{String(i + 1).padStart(2, "0")}</span><span style={{ fontSize: "15px", letterSpacing: "-.02em" }} className="h">{n.title}</span></Link>
+<Link href={articleHref(n)} style={{ display: "flex", gap: "11px", alignItems: "flex-start" }}><span style={{ fontSize: "12px", fontWeight: "700", color: "var(--red-text)", marginTop: "2px" }} className="mono">{String(i + 1).padStart(2, "0")}</span><span style={{ fontSize: "15px", letterSpacing: "-.02em" }} className="h">{n.title}</span></Link>
 </span>))}
 </div>
 </div>
@@ -230,7 +232,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 {/* ⑤ 作者卡 */}
 {!sponsored && (
 <div style={{ marginTop: "52px" }} className="wrap">
-<div style={{ position: "relative", overflow: "hidden", background: "var(--ink)", color: "#FFFFFF", borderRadius: "16px", padding: "28px 30px" }}>
+<div style={{ position: "relative", overflow: "hidden", background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "16px", padding: "28px 30px" }}>
 <svg style={{ position: "absolute", right: "0", top: "0", height: "100%", width: "420px" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 420 220"><g color="#FFFFFF" opacity=".16"><rect width="420" height="220" fill="url(#pChain)" /></g><rect width="420" height="220" fill="url(#fadeR)" /></svg>
 <div style={{ position: "relative", display: "flex", gap: "22px", alignItems: "flex-start", flexWrap: "wrap" }}>
 <span style={{ width: "72px", height: "72px", borderRadius: "999px", background: "var(--line-dark)", boxShadow: "0 0 0 2px var(--red)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "21px", fontWeight: "800", flexShrink: "0" }}>{initials(author.name)}</span>
@@ -244,7 +246,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 {author.email && <a href={`mailto:${author.email}`} className="icobtn gh">{author.email}</a>}
 {author.linkedin && <a href={author.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ width: "42px", padding: "0" }} className="icobtn gh"><SocialGlyph id="linkedin" size={16} /></a>}
 <div style={{ width: "1px", height: "34px", background: "rgba(255,255,255,.16)", margin: "0 4px" }}></div>
-<Link href={`/authors/${author.slug}/`} style={{ display: "inline-flex", alignItems: "center", minHeight: "42px", padding: "0 20px", borderRadius: "999px", background: "#FFFFFF", color: "var(--ink)", fontSize: "13.5px", fontWeight: "800" }}>All articles by this author &#8594;</Link>
+<Link href={`/authors/${author.slug}/`} style={{ display: "inline-flex", alignItems: "center", minHeight: "42px", padding: "0 20px", borderRadius: "999px", background: "var(--card)", color: "var(--ink)", fontSize: "13.5px", fontWeight: "800" }}>All articles by this author &#8594;</Link>
 </div>
 </div>
 </div>
@@ -255,8 +257,8 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div style={{ marginTop: "48px" }} className="wrap">
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px", paddingBottom: "14px", borderBottom: "3px solid var(--ink)" }}>
 <div>
-<h2 style={{ margin: "0", fontSize: "28px" }} className="h">Comments <span style={{ color: "var(--red)", fontSize: "19px" }} className="mono">0</span></h2>
-<p style={{ margin: "6px 0 0", fontSize: "12.5px", fontWeight: "500", color: "var(--slate)" }}>Sign in to comment. Every comment is reviewed before it appears, under the <Link href="/policies/comment-policy/" style={{ color: "var(--red)", textDecoration: "underline" }}>Comment Policy</Link>.</p>
+<h2 style={{ margin: "0", fontSize: "28px" }} className="h">Comments <span style={{ color: "var(--red-text)", fontSize: "19px" }} className="mono">0</span></h2>
+<p style={{ margin: "6px 0 0", fontSize: "12.5px", fontWeight: "500", color: "var(--slate)" }}>Sign in to comment. Every comment is reviewed before it appears, under the <Link href="/policies/comment-policy/" style={{ color: "var(--red-text)", textDecoration: "underline" }}>Comment Policy</Link>.</p>
 </div>
 <div style={{ display: "flex", gap: "8px" }}>
 <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--grey)" }}>SORT</span>
@@ -267,14 +269,14 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div>
 <div style={{ border: "2px solid var(--ink)", borderRadius: "14px", padding: "18px 20px", marginBottom: "26px" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "12px" }}>
-<span style={{ width: "34px", height: "34px", borderRadius: "999px", background: "var(--ink)", color: "#FFFFFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "12.5px", fontWeight: "800" }}>?</span>
+<span style={{ width: "34px", height: "34px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "12.5px", fontWeight: "800" }}>?</span>
 <span style={{ fontSize: "14px", fontWeight: "800" }}>Your name</span>
 <span style={{ background: "var(--paper)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 8px", borderRadius: "4px", color: "var(--slate)" }}>READER</span>
 </div>
 <div style={{ minHeight: "70px", border: "1px solid var(--line)", borderRadius: "10px", padding: "12px 14px", fontSize: "14px", fontWeight: "500", color: "var(--grey)" }}>Add to the record — a correction, a site experience, a standard we missed…</div>
 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "12px", flexWrap: "wrap" }}>
 <span style={{ fontSize: "12px", fontWeight: "500", color: "var(--grey)" }}>Comments enter a review queue and are usually handled within one working day.</span>
-<Link href="/signin/" style={{ minHeight: "42px", padding: "0 22px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "14px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Sign in to comment</Link>
+<Link href="/signin/" style={{ minHeight: "42px", padding: "0 22px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "14px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Sign in to comment</Link>
 </div>
 </div>
 <p className="meta" style={{ margin: 0 }}>No comments yet. Be the first to add to the record.</p>
@@ -296,12 +298,12 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "18px" }}>
 <span style={{ fontSize: "26px" }} className="h">Read next</span>
 <span style={{ flex: "1 1 0", height: "2px", background: "var(--ink)" }}></span>
-<Link href={`/${sec.slug}/`} style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>ALL {sec.label.toUpperCase()} &#8594;</Link>
+<Link href={`/${sec.slug}/`} style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>ALL {sec.label.toUpperCase()} &#8594;</Link>
 </div>
 <div className="g3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "22px" }}>
 {next.map((n) => (
 <article key={n.slug} style={{ display: "flex", flexDirection: "column", gap: "11px" }}>
-<Link href={articleHref(n)} style={{ borderRadius: "12px", overflow: "hidden", aspectRatio: "16/10", display: "block" }}><svg width="100%" height="100%" style={{ display: "block" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 380 238"><rect width="380" height="238" fill="var(--ink)" /><g color="#FFFFFF" opacity=".3"><rect width="380" height="238" fill={`url(#${PAT[n.mesh ?? "perf"] ?? "pPerf"})`} /></g></svg></Link>
+<Link href={articleHref(n)} style={{ borderRadius: "12px", overflow: "hidden", aspectRatio: "16/10", display: "block", ...demoBg(n.slug) }}></Link>
 <span className="kicker"><i></i>{subsectionLabel(n.section, n.subsection).toUpperCase()}</span>
 <Link href={articleHref(n)} style={{ fontSize: "19px" }} className="h">{n.title}</Link>
 <span style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey)" }}>{n.readMin} min read</span>

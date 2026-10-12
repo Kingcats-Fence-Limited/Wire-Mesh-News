@@ -23,7 +23,7 @@ export function ReadBar({ readMin }: { readMin: number }) {
   return (
     <>
       <div className="readbar" aria-hidden="true"><div style={{ width: `${pct}%` }} /></div>
-      <div style={{ marginTop: "18px", paddingTop: "16px", borderTop: "1px solid var(--line)", fontSize: "12px", fontWeight: "600", color: "var(--grey)", lineHeight: "1.6" }}>Reading progress <span style={{ color: "var(--red)" }} className="mono">{pct}%</span><br />About {Math.max(1, Math.round(readMin * (1 - p)))} min left</div>
+      <div style={{ marginTop: "18px", paddingTop: "16px", borderTop: "1px solid var(--line)", fontSize: "12px", fontWeight: "600", color: "var(--grey)", lineHeight: "1.6" }}>Reading progress <span style={{ color: "var(--red-text)" }} className="mono">{pct}%</span><br />About {Math.max(1, Math.round(readMin * (1 - p)))} min left</div>
     </>
   );
 }

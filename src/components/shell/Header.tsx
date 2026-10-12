@@ -64,7 +64,7 @@ export function buildMenu(): MenuData {
 function UtilityBar({ live }: { live?: { title: string; href: string } }) {
   const n = latest(60).filter((a) => a.date >= "2026-10-06").length;
   return (
-    <div className="utilbar" style={{ background: "var(--ink)", color: "#FFFFFF" }}>
+    <div className="utilbar" style={{ background: "var(--surface-dark)", color: "#FFFFFF" }}>
       <div className="wrap" style={{ height: "40px", display: "flex", alignItems: "center", gap: "16px", fontSize: "12.5px", fontWeight: "500" }}>
         <span className="mono utilcount" style={{ color: "#FFFFFF", flexShrink: "0", fontWeight: "700" }}>{n}<span style={{ color: "var(--grey-5)", fontWeight: "500" }}> NEW<span className="util"> THIS WEEK</span></span></span>
         <span style={{ width: "1px", height: "14px", background: "var(--line-dark)", flexShrink: "0" }}></span>
@@ -88,7 +88,7 @@ export function Header({ variant = "compact", active }: { variant?: "full" | "co
     <>
       <UtilityBar live={live ? { title: live.title, href: articleHref(live) } : undefined} />
       {variant === "full" ? (
-        <header style={{ background: "#FFFFFF" }}>
+        <header style={{ background: "var(--bg)" }}>
           <div className="wrap" style={{ paddingTop: "24px", paddingBottom: "18px" }}>
             <div className="masthead" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "28px" }}>
               <MastheadDateClocks />
@@ -115,7 +115,7 @@ export function Header({ variant = "compact", active }: { variant?: "full" | "co
           </div>
         </header>
       ) : (
-        <header style={{ borderBottom: "1px solid var(--line)", background: "#FFFFFF" }}>
+        <header style={{ borderBottom: "1px solid var(--line)", background: "var(--bg)" }}>
           <div style={{ height: "82px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }} className="wrap">
             <div style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
               <MobileMenu data={data} />

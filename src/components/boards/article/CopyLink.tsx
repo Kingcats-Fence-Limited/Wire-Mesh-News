@@ -13,7 +13,7 @@ export function CopyLink({ url, variant }: { url: string; variant?: "print" }) {
     );
   }
   return (
-    <button type="button" onClick={() => { navigator.clipboard?.writeText(url).then(() => { setDone(true); setTimeout(() => setDone(false), 1800); }); }} style={{ display: "inline-flex", alignItems: "center", gap: "8px", minHeight: "40px", padding: "0 16px", border: "1.5px solid var(--line)", borderRadius: "999px", fontSize: "13px", fontWeight: "800", color: "var(--ink)", background: "#FFFFFF", fontFamily: "inherit", cursor: "pointer" }}>
+    <button type="button" onClick={() => { navigator.clipboard?.writeText(url).then(() => { setDone(true); setTimeout(() => setDone(false), 1800); }); }} style={{ display: "inline-flex", alignItems: "center", gap: "8px", minHeight: "40px", padding: "0 16px", border: "1.5px solid var(--line)", borderRadius: "999px", fontSize: "13px", fontWeight: "800", color: "var(--ink)", background: "var(--card)", fontFamily: "inherit", cursor: "pointer" }}>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" /><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" /></svg>{done ? "Copied" : "Copy link"}
     </button>
   );

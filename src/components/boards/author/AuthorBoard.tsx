@@ -7,6 +7,7 @@ import { byAuthor } from "@/lib/content/articles";
 import { sectionByCode, subsectionLabel, articleHref, fmtDate } from "@/lib/site";
 import type { Author, SectionCode } from "@/lib/content/types";
 import "@/styles/board-auth.css";
+import { demoBg } from "@/lib/demo";
 
 const initials = (n: string) => n.split(/\s+/).map((x) => x[0]).join("").slice(0, 2).toUpperCase();
 
@@ -27,14 +28,14 @@ export function AuthorBoard({ a, section }: { a: Author; section?: string }) {
 <div style={{ width: "104px", height: "104px", borderRadius: "999px", background: "var(--line)", flexShrink: "0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "30px", fontWeight: 800, color: "var(--slate)" }} className="h">{initials(a.name)}</div>
 <div style={{ minWidth: "0", flex: "1 1 320px" }}>
 <h1 style={{ margin: "0 0 6px", fontSize: "40px", letterSpacing: "-.045em" }} className="h">{a.name}</h1>
-<div style={{ fontSize: "13px", fontWeight: "800", letterSpacing: ".08em", color: "var(--red)", marginBottom: "14px" }}>{a.role.toUpperCase()}</div>
+<div style={{ fontSize: "13px", fontWeight: "800", letterSpacing: ".08em", color: "var(--red-text)", marginBottom: "14px" }}>{a.role.toUpperCase()}</div>
 <p style={{ margin: "0 0 16px", fontSize: "16px", fontWeight: "500", lineHeight: "1.65", color: "var(--fg-3)", maxWidth: "540px" }}>{a.bio}</p>
 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
 {a.expertise.map((e) => <span key={e} className="tag">{e}</span>)}
 </div>
 </div>
 </div>
-<div style={{ background: "#FFFFFF", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px" }}>
+<div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px" }}>
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--slate)", marginBottom: "14px" }}>AUTHOR DETAILS</div>
 <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "14px", fontWeight: "500" }}>
 <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}><span style={{ color: "var(--slate)" }}>Role</span><b>{a.role.split(" · ")[0]}</b></div>
@@ -45,11 +46,11 @@ export function AuthorBoard({ a, section }: { a: Author; section?: string }) {
 <div style={{ borderTop: "1px solid var(--line)", marginTop: "16px", paddingTop: "16px" }}>
 <div style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", color: "var(--slate)", marginBottom: "11px" }}>CONTACT &amp; SOCIAL</div>
 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-{a.email && <a href={`mailto:${a.email}`} style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--line)", borderRadius: "999px", minHeight: "44px", padding: "0 16px", fontSize: "13.5px", fontWeight: "800" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2" aria-hidden="true" style={{ flexShrink: "0" }}><rect x="2.5" y="4.5" width="19" height="15" rx="2" /><path d="m3 6 9 6 9-6" /></svg>Email</a>}
+{a.email && <a href={`mailto:${a.email}`} style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--line)", borderRadius: "999px", minHeight: "44px", padding: "0 16px", fontSize: "13.5px", fontWeight: "800" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" aria-hidden="true" style={{ flexShrink: "0" }}><rect x="2.5" y="4.5" width="19" height="15" rx="2" /><path d="m3 6 9 6 9-6" /></svg>Email</a>}
 {a.linkedin && <a href={a.linkedin} rel="me noopener noreferrer" target="_blank" aria-label="LinkedIn" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", border: "1px solid var(--line)", borderRadius: "999px", color: "var(--ink)" }}><SocialGlyph id="linkedin" size={15} /></a>}
 <a href={`/authors/${a.slug}/feed.xml`} aria-label="Author RSS feed" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", border: "1px solid var(--line)", borderRadius: "999px", color: "var(--ink)" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" aria-hidden="true"><path d="M5 11a8 8 0 0 1 8 8M5 5a14 14 0 0 1 14 14" /><circle cx="5.5" cy="18.5" r="1.5" fill="currentColor" stroke="none" /></svg></a>
 <span style={{ width: "1px", height: "26px", background: "var(--line)", margin: "0 2px" }}></span>
-<Link href="/signin/" style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "0", background: "var(--ink)", color: "#FFFFFF", borderRadius: "999px", minHeight: "44px", padding: "0 20px", fontSize: "13.5px", fontWeight: "800" }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13" /></svg>Follow</Link>
+<Link href="/signin/" style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "0", background: "var(--ink)", color: "var(--on-ink)", borderRadius: "999px", minHeight: "44px", padding: "0 20px", fontSize: "13.5px", fontWeight: "800" }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13" /></svg>Follow</Link>
 </div>
 <p style={{ margin: "11px 0 0", fontSize: "11.5px", lineHeight: "1.55" }} className="meta">Authors maintain these details themselves; items left blank are not shown. The public email can differ from the account email, which is never published.</p>
 </div>
@@ -69,14 +70,14 @@ export function AuthorBoard({ a, section }: { a: Author; section?: string }) {
 </div>
 </div>
 {list.map((x) => (
-<Link key={x.slug} href={articleHref(x)} className="row" style={{ display: "flex", gap: "20px", padding: "22px 0", borderBottom: "1px solid var(--line)" }}><span style={{ width: "186px", flexShrink: "0", aspectRatio: "4/3" }} className="thumb"></span><span style={{ display: "flex", flexDirection: "column", gap: "7px", minWidth: "0" }}><span className="kicker"><i></i>{sectionByCode(x.section)?.label.toUpperCase()} · {subsectionLabel(x.section, x.subsection).toUpperCase()}</span><span style={{ fontSize: "21px" }} className="h">{x.title}</span><span style={{ fontSize: "14px", fontWeight: "500", lineHeight: "1.5", color: "var(--slate)" }}>{x.dek}</span><span className="meta">{fmtDate(x.date)} · {x.readMin} min</span></span></Link>
+<Link key={x.slug} href={articleHref(x)} className="row" style={{ display: "flex", gap: "20px", padding: "22px 0", borderBottom: "1px solid var(--line)" }}><span style={{ width: "186px", flexShrink: "0", aspectRatio: "4/3", ...demoBg(x.slug) }} className="thumb"></span><span style={{ display: "flex", flexDirection: "column", gap: "7px", minWidth: "0" }}><span className="kicker"><i></i>{sectionByCode(x.section)?.label.toUpperCase()} · {subsectionLabel(x.section, x.subsection).toUpperCase()}</span><span style={{ fontSize: "21px" }} className="h">{x.title}</span><span style={{ fontSize: "14px", fontWeight: "500", lineHeight: "1.5", color: "var(--slate)" }}>{x.dek}</span><span className="meta">{fmtDate(x.date)} · {x.readMin} min</span></span></Link>
 ))}
 {list.length === 0 && <p className="meta" style={{ padding: "20px 0" }}>No articles in this section yet.</p>}
 </div>
 <aside style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-<div style={{ background: "var(--ink)", color: "#FFFFFF", borderRadius: "16px", padding: "24px" }}>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "16px", padding: "24px" }}>
 <div style={{ fontSize: "19px", marginBottom: "8px" }} className="h">Follow this author</div>
-<p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--line-2)" }}>Sign in to follow; you are notified when this author publishes.</p>
+<p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--on-dark-2)" }}>Sign in to follow; you are notified when this author publishes.</p>
 <Link href="/signin/" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", boxSizing: "border-box", minHeight: "46px", border: "0", borderRadius: "10px", background: "var(--red)", color: "#FFFFFF", fontWeight: "800", fontSize: "14.5px" }}>Sign in to follow</Link>
 </div>
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>

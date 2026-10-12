@@ -10,8 +10,8 @@ export const SITE = {
   /** Operator details appear only on About / Privacy / Terms (HANDOFF §5.1). */
   operator: { legalName: "KINGCATS FENCE LIMITED", region: "United States" },
   launched: 2026,
-  /** Optional phone shown on About/Contact only; leave empty until a real line exists. */
-  phone: "",
+  /** Operator phone / WhatsApp (shown in footer, About, Contact, Advertise). */
+  phone: "+86 182 3018 3999",
   clocks: [
     { label: "Shanghai", tz: "Asia/Shanghai" },
     { label: "Hamburg", tz: "Europe/Berlin" },

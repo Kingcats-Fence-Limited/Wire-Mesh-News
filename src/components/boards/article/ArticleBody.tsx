@@ -38,7 +38,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
           case "quote":
             return (
               <div key={i} style={{ display: "flex", gap: "20px", margin: "34px 0 36px", padding: "2px 0" }}>
-                <span style={{ fontSize: "72px", lineHeight: ".62", color: "var(--red)", flexShrink: "0" }} className="h">&#8220;</span>
+                <span style={{ fontSize: "72px", lineHeight: ".62", color: "var(--red-text)", flexShrink: "0" }} className="h">&#8220;</span>
                 <div>
                   <p style={{ margin: "0 0 12px", fontFamily: "'Bricolage Grotesque Variable', 'Bricolage Grotesque', sans-serif", fontWeight: "800", fontSize: "24px", letterSpacing: "-.03em", lineHeight: "1.38", color: "var(--ink)" }}>{b.text}</p>
                   {b.cite && <div style={{ fontSize: "12.5px", fontWeight: "700", letterSpacing: ".04em", color: "var(--slate)" }}>{b.cite}</div>}
@@ -50,7 +50,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
             return (
               <figure key={i} style={{ margin: "0 0 30px" }}>
                 <div style={{ borderRadius: "12px", overflow: "hidden", background: "var(--line-2)", aspectRatio: "16/7" }}>
-                  <svg width="100%" height="100%" style={{ display: "block" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 752 329"><rect width="752" height="329" fill="#D7D9E1" /><g color="var(--grey)" opacity=".8"><rect width="752" height="329" fill={`url(#${PAT[b.mesh ?? "grate"] ?? "pGrate"})`} /></g></svg>
+                  <svg width="100%" height="100%" style={{ display: "block" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 752 329"><rect width="752" height="329" fill="var(--ph)" /><g color="var(--grey)" opacity=".8"><rect width="752" height="329" fill={`url(#${PAT[b.mesh ?? "grate"] ?? "pGrate"})`} /></g></svg>
                 </div>
                 <figcaption style={{ marginTop: "11px", fontSize: "12.5px", fontWeight: "500", color: "var(--slate)" }}><b style={{ color: "var(--ink)" }}>FIG. {fig} —</b> {b.caption.replace(/^Fig(?:ure)?\.?\s*\d+\s*[—–-]\s*/i, "")}{b.source && <> &#183; Source: {b.source}</>}</figcaption>
               </figure>
@@ -58,7 +58,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
           }
           case "spec":
             return (
-              <div key={i} className="quick" style={{ position: "relative", overflow: "hidden", background: "var(--ink)", color: "#FFFFFF", borderRadius: "14px", padding: "24px 26px", margin: "30px 0 34px" }}>
+              <div key={i} className="quick" style={{ position: "relative", overflow: "hidden", background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "14px", padding: "24px 26px", margin: "30px 0 34px" }}>
                 <svg style={{ position: "absolute", right: "0", top: "0", height: "100%", width: "320px" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 320 220"><g color="#FFFFFF" opacity=".16"><rect width="320" height="220" fill="url(#pWeldQ)" /></g><rect width="320" height="220" fill="url(#fadeR)" /></svg>
                 <div style={{ position: "relative" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "16px" }}><span style={{ width: "15px", height: "3px", background: "var(--red)" }}></span><span style={{ fontSize: "12.5px", letterSpacing: ".1em" }} className="h">{b.title.toUpperCase()}</span></div>

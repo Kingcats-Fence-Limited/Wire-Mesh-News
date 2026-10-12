@@ -131,3 +131,9 @@ export const EVENTS: EventItem[] = [
 
 export const getEvent = (slug: string) => EVENTS.find((e) => e.slug === slug);
 export const upcomingEvents = (from = "2026-10-12") => EVENTS.filter((e) => e.start >= from).sort((a, b) => (a.start > b.start ? 1 : -1));
+
+/** Paid placements (Directory-D sponsored block). Kept apart from COMPANIES: they never enter the editorial list, its counts or its order. Wording is supplied by the sponsor; editors only check it for policy breaches. */
+export type Sponsored = { name: string; role: string; country: string; blurb: string; tags: string[]; url: string; open?: boolean };
+export const SPONSORED: Sponsored[] = [
+  { name: "This placement is open", role: "Sponsored listing", country: "—", blurb: "Your company in your own words, with one outbound link and extra product-photo slots. Always marked SPONSORED; it never changes the editorial list or its order.", tags: ["Your products", "Your markets"], url: "/advertise/", open: true },
+];

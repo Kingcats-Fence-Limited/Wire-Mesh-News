@@ -30,7 +30,7 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
             <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)" }}>{pill}</span>
           </div>
         )}
-        <h2 className="h" id="sub-title" style={{ margin: "0 0 12px", fontSize: "34px", letterSpacing: "-.05em", lineHeight: 1.04, maxWidth: "390px" }}>Mondays, one email,<br />the whole week’s <span style={{ color: "var(--red)" }}>mesh</span>.</h2>
+        <h2 className="h" id="sub-title" style={{ margin: "0 0 12px", fontSize: "34px", letterSpacing: "-.05em", lineHeight: 1.04, maxWidth: "390px" }}>Mondays, one email,<br />the whole week’s <span style={{ color: "var(--red-text)" }}>mesh</span>.</h2>
         <p style={{ margin: "0 0 20px", fontSize: "15px", fontWeight: 500, lineHeight: 1.6, color: "var(--slate)", maxWidth: "400px" }}>News, price moves and standards updates on one page. Written for people who make decisions, not for the algorithm.</p>
         {sent ? (
           <div style={{ border: "1.5px solid var(--ink)", borderRadius: "14px", padding: "16px 18px", marginBottom: "16px", fontSize: "14px", fontWeight: 700, lineHeight: 1.5 }}>
@@ -52,8 +52,8 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
           <span className="meta" style={{ fontSize: "12px" }}>No sharing of your address · one-click unsubscribe · <Link href="/policies/privacy/" style={{ color: "var(--slate)", textDecoration: "underline" }}>Privacy</Link></span>
         </div>
       </div>
-      <div style={{ background: "var(--ink)", position: "relative", overflow: "hidden", padding: "30px 24px", display: "flex", flexDirection: "column" }}>
-        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", color: "var(--fg-2)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+      <div style={{ background: "var(--surface-dark)", position: "relative", overflow: "hidden", padding: "30px 24px", display: "flex", flexDirection: "column" }}>
+        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
         <svg width="230" height="230" viewBox="0 0 120 120" style={{ position: "absolute", right: "-78px", bottom: "-92px", color: "#1C1D26" }} aria-hidden="true"><use href="#w1" width="120" height="120" /></svg>
         {modal && (
           <button type="button" aria-label="Close" onClick={onClose} style={{ position: "absolute", right: "12px", top: "12px", width: "40px", height: "40px", border: 0, background: "rgba(255,255,255,.1)", borderRadius: "999px", color: "#FFFFFF", fontSize: "15px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>✕</button>
@@ -63,7 +63,7 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
           <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             {ISSUE.map(([t, s], i) => (
               <div key={t} style={{ display: "flex", gap: "11px", alignItems: "flex-start" }}>
-                <span style={{ color: "var(--red)", fontWeight: 800, fontSize: "13px", flexShrink: 0, paddingTop: "1px" }}>{String(i + 1).padStart(2, "0")}</span>
+                <span style={{ color: "var(--red-text)", fontWeight: 800, fontSize: "13px", flexShrink: 0, paddingTop: "1px" }}>{String(i + 1).padStart(2, "0")}</span>
                 <span style={{ fontSize: "13.5px", fontWeight: 700, lineHeight: 1.4, color: "#FFFFFF" }}>{t}<span style={{ display: "block", fontWeight: 500, fontSize: "12px", color: "var(--grey-2)", marginTop: "2px" }}>{s}</span></span>
               </div>
             ))}

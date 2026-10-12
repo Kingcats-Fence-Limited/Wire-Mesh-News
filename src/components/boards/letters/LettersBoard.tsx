@@ -1,6 +1,7 @@
 /* Ported 1:1 from canvas board Letters-LT: ① index (Letters / Columns tabs), ② single letter, column page in the same frame. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
+import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { CopyLink } from "@/components/boards/article/CopyLink";
 import { LETTERS, COLUMNS, getLetter, getAuthor } from "@/lib/content/people";
 import { getArticle } from "@/lib/content/articles";
@@ -16,9 +17,9 @@ const PER = 10;
 
 function WriteCard() {
   return (
-    <div style={{ background: "var(--ink)", color: "#FFFFFF", borderRadius: "16px", padding: "24px" }}>
+    <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "16px", padding: "24px" }}>
 <div style={{ fontSize: "20px", marginBottom: "8px" }} className="h">Write to the editor</div>
-<p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--line-2)" }}>200–400 words. One specific point, one experience from a site or a plant, or a correction to something we published.</p>
+<p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--on-dark-2)" }}>200–400 words. One specific point, one experience from a site or a plant, or a correction to something we published.</p>
 <ul style={{ margin: "0 0 16px", paddingLeft: "18px", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.7", color: "var(--grey-3)" }}>
 <li>Sign in to send. We verify your name and organisation before publishing.</li>
 <li>You can ask for your name to be withheld; the editor must still know who you are.</li>
@@ -48,24 +49,23 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 <section style={{ paddingTop: "30px", paddingBottom: "24px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "30px", flexWrap: "wrap" }} className="wrap">
 <div style={{ maxWidth: "640px" }}>
 <nav aria-label="Breadcrumb" className="meta" style={{ marginBottom: "14px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <b style={{ color: "var(--ink)" }}>Letters &amp; Opinion</b></nav>
-<h1 style={{ margin: "0 0 10px", fontSize: "40px", letterSpacing: "-.045em" }} className="h">Letters &amp; Opinion<span style={{ color: "var(--red)" }}>.</span></h1>
+<h1 style={{ margin: "0 0 10px", fontSize: "40px", letterSpacing: "-.045em" }} className="h">Letters &amp; Opinion<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "15.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>Short, signed letters from people who specify, buy, test and make wire mesh — and an occasional column from outside the newsroom. Every writer is identified to the editor, even when published without a name.</p>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-end" }}>
-<div className="seg"><Link href={href({ tab: undefined })} className={tab === "letters" ? "on" : undefined}>Letters <span style={{ fontWeight: "700", opacity: ".7" }} className="mono">{LETTERS.length}</span></Link>{COLUMNS.length > 0 && <Link href={href({ tab: "columns" })} className={tab === "columns" ? "on" : undefined}>Columns <span style={{ fontWeight: "700", color: tab === "columns" ? undefined : "var(--grey)" }} className="mono">{COLUMNS.length}</span></Link>}</div>
-<Link href="/policies/comment-policy/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>LETTERS POLICY →</Link>
+<div className="seg"><Link href={href({ tab: undefined })} scroll={false} className={tab === "letters" ? "on" : undefined}>Letters <span style={{ fontWeight: "700", opacity: ".7" }} className="mono">{LETTERS.length}</span></Link>{COLUMNS.length > 0 && <Link href={href({ tab: "columns" })} scroll={false} className={tab === "columns" ? "on" : undefined}>Columns <span style={{ fontWeight: "700", color: tab === "columns" ? undefined : "var(--grey)" }} className="mono">{COLUMNS.length}</span></Link>}</div>
+<Link href="/policies/comment-policy/" style={{ fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>LETTERS POLICY →</Link>
 </div>
 </section>
 {tab === "letters" && (
 <div style={{ paddingTop: "16px", paddingBottom: "16px", borderBottom: "1px solid var(--line)", display: "flex", gap: "9px", flexWrap: "wrap", alignItems: "center" }} className="wrap chips">
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)", marginRight: "3px" }} className="meta">REPLYING TO</span>
-<Link href={href({ section: undefined })} className={`chip${sp.section ? "" : " on"}`}>All sections</Link>
-{EDITORIAL_SECTIONS.filter((s) => LETTERS.some((l) => l.replyTo.section === s.code)).map((s) => <Link key={s.code} href={toggle("section", s.code)} className={`chip${sp.section === s.code ? " on" : ""}`}>{s.label}</Link>)}
+<Link href={href({ section: undefined })} scroll={false} className={`chip${sp.section ? "" : " on"}`}>All sections</Link>
+{EDITORIAL_SECTIONS.filter((s) => LETTERS.some((l) => l.replyTo.section === s.code)).map((s) => <Link key={s.code} href={toggle("section", s.code)} scroll={false} className={`chip${sp.section === s.code ? " on" : ""}`}>{s.label}</Link>)}
 <span style={{ width: "1px", height: "22px", background: "var(--line)", margin: "0 4px" }}></span>
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)", marginRight: "3px" }} className="meta">WRITER</span>
-<details style={{ position: "relative" }}><summary className="chip" style={{ listStyle: "none", cursor: "pointer" }}>{sp.role ?? "Any role"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
-<div style={{ position: "absolute", left: 0, top: "calc(100% + 6px)", zIndex: 20, background: "#FFFFFF", border: "1px solid var(--line)", borderRadius: "12px", padding: "8px", display: "flex", flexDirection: "column", gap: "2px", minWidth: "220px", boxShadow: "0 20px 40px -26px rgba(21,22,28,.4)" }}><Link href={href({ role: undefined })} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: sp.role ? 600 : 800 }}>Any role</Link>{roles.map((r) => <Link key={r} href={toggle("role", r)} style={{ padding: "8px 10px", borderRadius: "8px", fontSize: "13.5px", fontWeight: sp.role === r ? 800 : 600, background: sp.role === r ? "var(--paper)" : undefined }}>{r}</Link>)}</div></details>
-<span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "newest" ? "oldest" : undefined })} className="chip">{sort === "newest" ? "Newest" : "Oldest"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
+<DropMenu className="chip" label={sp.role ?? "Any role"} items={[{ label: "Any role", href: href({ role: undefined }), on: !sp.role }, ...roles.map((r) => ({ label: r, href: href({ role: r }), on: sp.role === r }))]} />
+<span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "9px" }}><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".06em", color: "var(--grey)" }} className="meta">SORT</span><Link href={href({ sort: sort === "newest" ? "oldest" : undefined })} scroll={false} className="chip">{sort === "newest" ? "Newest" : "Oldest"}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></Link></span>
 </div>
 )}
 <section style={{ paddingTop: "10px", paddingBottom: "40px", display: "grid", gridTemplateColumns: "minmax(0,1fr) 320px", gap: "44px", alignItems: "start" }} className="wrap cols">
@@ -75,7 +75,7 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 <span style={{ fontSize: "13px", letterSpacing: ".08em", color: "var(--grey)" }} className="h">FROM OUR READERS</span>
 <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey-4)" }} className="mono">{month} THIS MONTH</span>
 </div>
-{slice.length === 0 && <p className="meta" style={{ padding: "16px 0" }}>No letters match. <Link href="/letters/" style={{ color: "var(--red)", fontWeight: 800 }}>Clear filters</Link></p>}
+{slice.length === 0 && <p className="meta" style={{ padding: "16px 0" }}>No letters match. <Link href="/letters/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear filters</Link></p>}
 {slice.map((l) => {
   const more = replies(l).length;
   return (
@@ -89,7 +89,7 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 </div>
 <Link href={`/letters/${l.slug}/`} style={{ display: "block", fontSize: "21px", lineHeight: "1.24", marginBottom: "8px" }} className="h">&#8220;{l.title}&#8221;</Link>
 <p style={{ margin: "0 0 8px", fontSize: "13.5px", lineHeight: "1.6", color: "var(--fg-3)" }} className="meta">{l.teaser}</p>
-<div style={{ fontSize: "12.5px", display: "flex", gap: "14px", flexWrap: "wrap" }} className="meta"><span>Replying to <Link href={`/${sectionByCode(l.replyTo.section)?.slug}/${l.replyTo.slug}/`} style={{ color: "var(--slate)", textDecoration: "underline" }}>{l.replyTo.title}</Link></span>{l.ledToCorrection ? <span style={{ background: "#F0F7F2", color: "#1E6B35" }} className="rp">LED TO A CORRECTION</span> : l.editorReply ? <span className="rp">EDITOR REPLIED</span> : null}{more > 0 && <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey)" }} className="mono">{more} FURTHER LETTER{more === 1 ? "" : "S"} →</span>}</div>
+<div style={{ fontSize: "12.5px", display: "flex", gap: "14px", flexWrap: "wrap" }} className="meta"><span>Replying to <Link href={`/${sectionByCode(l.replyTo.section)?.slug}/${l.replyTo.slug}/`} style={{ color: "var(--slate)", textDecoration: "underline" }}>{l.replyTo.title}</Link></span>{l.ledToCorrection ? <span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="rp">LED TO A CORRECTION</span> : l.editorReply ? <span className="rp">EDITOR REPLIED</span> : null}{more > 0 && <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey)" }} className="mono">{more} FURTHER LETTER{more === 1 ? "" : "S"} →</span>}</div>
 </div>
 </article>
   );
@@ -131,7 +131,7 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 <span style={{ border: "1.5px solid var(--line)", borderRadius: "4px", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".12em", padding: "4px 8px", color: "var(--slate)" }}>OPINION</span>
 </div>
 {columns.slice(0, 3).map((c) => <Link key={c.slug} href={`/letters/columns/${c.slug}/`} style={{ display: "flex", gap: "11px", alignItems: "flex-start", padding: "10px 0", borderTop: "1px solid var(--line-soft)" }}><span style={{ width: "36px", height: "36px", borderRadius: "999px", background: "var(--line)", flexShrink: "0" }}></span><span style={{ minWidth: "0" }}><span style={{ display: "block", fontSize: "15px", lineHeight: "1.25", marginBottom: "3px" }} className="h">{c.title}</span><span style={{ fontSize: "11.5px" }} className="meta">{c.author.name} · {c.author.title} · {c.author.org}</span></span></Link>)}
-<Link href="/letters/?tab=columns" style={{ display: "block", paddingTop: "12px", borderTop: "1px solid var(--line-soft)", fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red)" }}>ALL COLUMNS →</Link>
+<Link href="/letters/?tab=columns" style={{ display: "block", paddingTop: "12px", borderTop: "1px solid var(--line-soft)", fontSize: "12.5px", fontWeight: "800", letterSpacing: ".06em", color: "var(--red-text)" }}>ALL COLUMNS →</Link>
 <p style={{ margin: "10px 0 0", fontSize: "11px", lineHeight: "1.55", color: "var(--grey)" }} className="meta">Columns are written by outside authors under their own name, job title and organisation, with a disclosure of interests. The newsroom does not write columns.</p>
 </div>
 )}
@@ -180,11 +180,11 @@ export function LetterBoard({ l }: { l: Letter }) {
 )}
 {l.editorReply && (
 <div style={{ background: "var(--paper)", borderLeft: "4px solid var(--red)", borderRadius: "0 12px 12px 0", padding: "16px 20px", marginBottom: "22px" }}>
-<div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "7px", flexWrap: "wrap" }}><span className="rp">EDITOR&#8217;S REPLY</span><span style={{ fontSize: "11.5px" }} className="meta">{editor ? <Link href={`/authors/${editor.slug}/`}>{editor.name}</Link> : l.editorReply.by}, {fmtDate(l.editorReply.date)}</span>{l.ledToCorrection && <span style={{ background: "#F0F7F2", color: "#1E6B35" }} className="rp">LED TO A CORRECTION</span>}</div>
+<div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "7px", flexWrap: "wrap" }}><span className="rp">EDITOR&#8217;S REPLY</span><span style={{ fontSize: "11.5px" }} className="meta">{editor ? <Link href={`/authors/${editor.slug}/`}>{editor.name}</Link> : l.editorReply.by}, {fmtDate(l.editorReply.date)}</span>{l.ledToCorrection && <span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="rp">LED TO A CORRECTION</span>}</div>
 <p style={{ margin: "0", fontSize: "14.5px", fontWeight: "500", lineHeight: "1.65", color: "var(--fg-2)" }}>{l.editorReply.text}</p>
 </div>
 )}
-<div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", padding: "16px 18px", background: "var(--ink)", color: "#FFFFFF", borderRadius: "12px" }}>
+<div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", padding: "16px 18px", background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "12px" }}>
 <div style={{ flex: "1 1 300px" }}><div style={{ fontSize: "16px", marginBottom: "3px" }} className="h">Have a different view?</div><p style={{ margin: "0", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--grey-3)" }}>Reply with a letter of your own. Letters answering this one are linked below it.</p></div>
 <Link href={`/signin/?next=/letters/${l.slug}/`} style={{ background: "var(--red)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Reply with a letter</Link>
 </div>
@@ -228,7 +228,7 @@ export function ColumnBoard({ c }: { c: Column }) {
 <div style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "5px" }}>DISCLOSURE</div>
 <div style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--fg-3)" }}>{c.author.disclosure} The views are the author&#8217;s own, not the editors&#8217;.</div>
 </div>
-<div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", padding: "16px 18px", background: "var(--ink)", color: "#FFFFFF", borderRadius: "12px" }}>
+<div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", padding: "16px 18px", background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "12px" }}>
 <div style={{ flex: "1 1 300px" }}><div style={{ fontSize: "16px", marginBottom: "3px" }} className="h">Disagree?</div><p style={{ margin: "0", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--grey-3)" }}>Columns invite letters. Reply with one of your own.</p></div>
 <Link href={`/signin/?next=/letters/columns/${c.slug}/`} style={{ background: "var(--red)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Reply with a letter</Link>
 </div>

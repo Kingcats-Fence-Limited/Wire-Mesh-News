@@ -18,7 +18,7 @@ export function MastheadDateClocks() {
   const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(d);
   return (
     <div className="util" style={{ display: "flex", flexDirection: "column", gap: "9px" }} suppressHydrationWarning>
-      <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".18em", color: "var(--red)" }}>{wd}</span>
+      <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".18em", color: "var(--red-text)" }}>{wd}</span>
       <span className="h" style={{ fontSize: "20px", letterSpacing: "-.035em", color: "var(--ink)" }}>{date}</span>
       <span style={{ display: "flex", gap: "16px", paddingTop: "9px", borderTop: "1px solid var(--line)" }}>
         {CITIES.map(([c, tz]) => (
@@ -57,7 +57,7 @@ export function MobileDateLine() {
   const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(d).toUpperCase();
   return (
     <>
-      <span style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".12em", color: "var(--red)" }} suppressHydrationWarning>{wd} {date}</span>
+      <span style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".12em", color: "var(--red-text)" }} suppressHydrationWarning>{wd} {date}</span>
       <span className="mono" style={{ fontSize: "10px", fontWeight: "700", color: "var(--grey)" }} suppressHydrationWarning>{CITIES.map(([c, tz]) => `${c.slice(0, 3).toUpperCase()} ${fmt(tz, d)}`).join(" · ")}</span>
     </>
   );

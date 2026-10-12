@@ -50,8 +50,8 @@ export function SiteDefs() {
 <pattern id="pG3" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M0 0H16M0 0V16" stroke="currentColor" strokeWidth="1.5" fill="none" /></pattern>
 <pattern id="pG4" width="11" height="11" patternUnits="userSpaceOnUse"><path d="M0 0H11M0 0V11" stroke="currentColor" strokeWidth="1.1" fill="none" /></pattern>
 <pattern id="pG5" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 0H7M0 0V7" stroke="currentColor" strokeWidth=".8" fill="none" /></pattern>
-<linearGradient id="fadeR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="var(--ink)" stopOpacity="1" /><stop offset=".55" stopColor="var(--ink)" stopOpacity="0" /></linearGradient>
-<linearGradient id="fadeD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--ink)" stopOpacity="0" /><stop offset="1" stopColor="var(--ink)" stopOpacity="1" /></linearGradient>
+<linearGradient id="fadeR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="var(--surface-dark)" stopOpacity="1" /><stop offset=".55" stopColor="var(--surface-dark)" stopOpacity="0" /></linearGradient>
+<linearGradient id="fadeD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--surface-dark)" stopOpacity="0" /><stop offset="1" stopColor="var(--surface-dark)" stopOpacity="1" /></linearGradient>
 </defs>
 <symbol id="w1" viewBox="0 0 120 120">
 <path d="M12 26L33 90Q39 106 46 90L55 66Q60 54 65 66L74 90Q81 106 87 90L100 50" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />

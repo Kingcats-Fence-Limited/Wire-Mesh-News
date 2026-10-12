@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { search, highlight, SEARCH_INDEX, type SearchDoc, type SearchType } from "@/lib/search";
 import "@/styles/board-sov.css";
+import { demoBg } from "@/lib/demo";
 
 /* SearchOv-W — full-width dropdown under the header. Esc closes and returns focus to the magnifier. */
 
 const TRENDING = ["coating weight g/m²", "chain link vs welded mesh", "anti-dumping duty EU", "weld shear test"];
 const JUMP: { label: string; href: string; icon: React.ReactNode }[] = [
-  { label: "Market data", href: "/market-data/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-6M22 18H2" /></svg> },
-  { label: "Standards Index", href: "/standards/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /></svg> },
-  { label: "Company directory", href: "/directory/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M4 20.5V5.5A1.5 1.5 0 0 1 5.5 4H13v16.5M13 20.5h6.5V10H13" /></svg> },
-  { label: "Events calendar", href: "/events/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg> },
+  { label: "Market data", href: "/market-data/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-6M22 18H2" /></svg> },
+  { label: "Standards Index", href: "/standards/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /></svg> },
+  { label: "Company directory", href: "/directory/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M4 20.5V5.5A1.5 1.5 0 0 1 5.5 4H13v16.5M13 20.5h6.5V10H13" /></svg> },
+  { label: "Events calendar", href: "/events/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg> },
 ];
 const TYPE_LABEL: Record<SearchType, string> = { article: "Articles", letter: "Letters", opinion: "Opinion", company: "Directory", standard: "Standards", topic: "Topics", event: "Events" };
 const TP: Record<SearchType, { cls: string; label: string }> = {
@@ -80,17 +81,17 @@ function Lead({ d }: { d: SearchDoc }) {
   const box: React.CSSProperties = { width: "48px", height: "48px", borderRadius: "9px", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 };
   switch (d.type) {
     case "article":
-      return <span className="ph" style={{ width: "64px", height: "48px" }} />;
+      return <span className="ph" style={{ width: "64px", height: "48px", ...demoBg(d.href) }} />;
     case "company":
-      return <span style={{ ...box, background: "var(--ink)", color: "#FFFFFF" }}><svg width="26" height="26" viewBox="0 0 120 120" aria-hidden="true"><use href="#w1" width="120" height="120" /></svg></span>;
+      return <span style={{ ...box, background: "var(--surface-dark)", color: "#FFFFFF" }}><svg width="26" height="26" viewBox="0 0 120 120" aria-hidden="true"><use href="#w1" width="120" height="120" /></svg></span>;
     case "standard":
-      return <span style={{ ...box, background: "#FDE8E9", color: "var(--red-deep)" }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /><path d="m8.9 12 2.1 2.1 4.1-4.3" /></svg></span>;
+      return <span style={{ ...box, background: "var(--st-red-bg)", color: "var(--red-deep)" }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 4.8 6v5.4c0 4.3 3 7.8 7.2 9 4.2-1.2 7.2-4.7 7.2-9V6z" /><path d="m8.9 12 2.1 2.1 4.1-4.3" /></svg></span>;
     case "topic":
       return <span className="h" style={{ ...box, background: "var(--red)", color: "#FFFFFF", fontWeight: 800, fontSize: "17px" }}>T</span>;
     case "event":
-      return <span style={{ ...box, background: "#F0F7F2", color: "#1E6B35" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>;
+      return <span style={{ ...box, background: "var(--st-current-bg)", color: "var(--up)" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span>;
     default:
-      return <span style={{ ...box, background: "#FFF4E2", color: "#8A5A08" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" aria-hidden="true"><path d="M3 6.5h18v11H3z" /><path d="m3 7 9 6 9-6" /></svg></span>;
+      return <span style={{ ...box, background: "var(--st-review-bg)", color: "var(--st-review-fg)" }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" aria-hidden="true"><path d="M3 6.5h18v11H3z" /><path d="m3 7 9 6 9-6" /></svg></span>;
   }
 }
 
@@ -232,12 +233,12 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
                   <div className="lbl">TRENDING THIS WEEK</div>
                   {TRENDING.map((t, i) => (
                     <button key={t} type="button" className="row" onClick={() => setQ(t)}>
-                      <span className="h" style={{ fontSize: "13px", color: "var(--red)", flexShrink: 0 }}>{String(i + 1).padStart(2, "0")}</span>
+                      <span className="h" style={{ fontSize: "13px", color: "var(--red-text)", flexShrink: 0 }}>{String(i + 1).padStart(2, "0")}</span>
                       <span style={{ fontSize: "14.5px", fontWeight: 700, lineHeight: 1.3 }}>{t}</span>
                     </button>
                   ))}
                 </div>
-                <div style={{ background: "var(--ink)", borderRadius: "13px", padding: "20px", position: "relative", overflow: "hidden" }}>
+                <div style={{ background: "var(--surface-dark)", borderRadius: "13px", padding: "20px", position: "relative", overflow: "hidden" }}>
                   <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", color: "#262834" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pChain)" /></svg>
                   <div style={{ position: "relative" }}>
                     <div className="lbl" style={{ color: "var(--grey-5)" }}>JUMP TO</div>
@@ -304,7 +305,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
                     );
                   })}
                   <div style={{ borderTop: "1px solid var(--line)", marginTop: "12px", paddingTop: "14px" }}>
-                    <button type="button" onClick={submitAll} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13.5px", fontWeight: 800, color: "var(--red)", border: 0, background: "transparent", padding: 0, fontFamily: "inherit", cursor: "pointer" }}>
+                    <button type="button" onClick={submitAll} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13.5px", fontWeight: 800, color: "var(--red-text)", border: 0, background: "transparent", padding: 0, fontFamily: "inherit", cursor: "pointer" }}>
                       Search all content for “{debounced}”<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
                     </button>
                   </div>
@@ -333,7 +334,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap", marginTop: "16px", paddingTop: "14px", borderTop: "1px solid var(--line)" }}>
                   <span className="meta">Still can’t find it? Tell us what you were looking for.</span>
-                  <Link href="/contact/?subject=editorial_tip" onClick={onClose} style={{ fontSize: "12.5px", fontWeight: 800, letterSpacing: ".06em", color: "var(--red)" }}>SUGGEST A TOPIC →</Link>
+                  <Link href="/contact/?subject=editorial_tip" onClick={onClose} style={{ fontSize: "12.5px", fontWeight: 800, letterSpacing: ".06em", color: "var(--red-text)" }}>SUGGEST A TOPIC →</Link>
                 </div>
               </div>
             )}

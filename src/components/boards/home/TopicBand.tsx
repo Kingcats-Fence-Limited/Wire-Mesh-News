@@ -12,10 +12,10 @@ export function TopicBand({ topic, count }: { topic: Topic; count: number }) {
 <div className="wrap" style={{ position: "relative", paddingTop: "54px", paddingBottom: "54px" }}>
 <div className="split" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "50px", alignItems: "center" }}>
 <div>
-<span style={{ background: "var(--ink)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".16em", padding: "7px 14px", borderRadius: "999px", display: "inline-block", marginBottom: "18px" }}>TOPIC</span>
+<span style={{ background: "var(--ink)", color: "var(--on-ink)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".16em", padding: "7px 14px", borderRadius: "999px", display: "inline-block", marginBottom: "18px" }}>TOPIC</span>
 <h2 className="h" style={{ margin: "0 0 16px", fontSize: "48px", letterSpacing: "-.06em", color: "#FFFFFF", lineHeight: ".98" }}>{topic.title}</h2>
 <p style={{ margin: "0 0 22px", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.6" }}>{topic.intro.split(". ")[0].replace(/\.$/, "")}.</p>
-<Link href={`/topics/${topic.slug}/`} style={{ background: "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "15px", padding: "0 26px", minHeight: "52px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Open the topic &#183; {count} articles</Link>
+<Link href={`/topics/${topic.slug}/`} style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "15px", padding: "0 26px", minHeight: "52px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Open the topic &#183; {count} articles</Link>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
 {steps.map((s, i) => (

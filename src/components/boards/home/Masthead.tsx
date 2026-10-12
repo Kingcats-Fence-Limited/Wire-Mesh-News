@@ -2,11 +2,11 @@
 export function Masthead({ v }: { v: Record<string, string> }) {
   return (
     <>
-<header style={{ background: "#FFFFFF" }}>
+<header style={{ background: "var(--card)" }}>
 <div className="wrap" style={{ paddingTop: "24px", paddingBottom: "18px" }}>
 <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "28px" }}>
 <div className="util" style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
-<span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".18em", color: "var(--red)" }}>{v.now_wd}</span>
+<span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".18em", color: "var(--red-text)" }}>{v.now_wd}</span>
 <span className="h" style={{ fontSize: "20px", letterSpacing: "-.035em", color: "var(--ink)" }}>{v.now_date}</span>
 <span style={{ display: "flex", gap: "16px", paddingTop: "9px", borderTop: "1px solid var(--line)" }}>
 <span style={{ display: "flex", flexDirection: "column", gap: "2px" }}><span className="mono" style={{ fontSize: "9px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-3)" }}>SHANGHAI</span><span className="mono" style={{ fontSize: "14px", fontWeight: "800", color: "var(--ink)" }}>{v.clock_sha}</span></span>
@@ -20,7 +20,7 @@ export function Masthead({ v }: { v: Record<string, string> }) {
 <span className="h" style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "54px", letterSpacing: "-.055em", padding: "4px 14px 10px", borderRadius: "12px" }}>news</span>
 </a>
 <div style={{ display: "flex", alignItems: "center", gap: "9px", justifyContent: "flex-end" }}>
-<button type="button" aria-label="Search" style={{ width: "42px", height: "42px", border: "1.5px solid var(--line)", background: "#FFFFFF", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: "0" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg></button>
+<button type="button" aria-label="Search" style={{ width: "42px", height: "42px", border: "1.5px solid var(--line)", background: "var(--card)", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: "0" }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg></button>
 <a href="#" className="mastbtn hdbtn" style={{ border: "1.5px solid var(--line)" }}>Sign In</a>
 <a href="#" className="mastbtn" style={{ background: "var(--red)", color: "#FFFFFF" }}>Subscribe free</a>
 </div>
