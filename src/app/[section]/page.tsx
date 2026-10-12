@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { EDITORIAL_SECTIONS, sectionBySlug, SECTION_INTRO, subsectionsOf, subsectionSlug } from "@/lib/site";
-import { CategoryPage } from "@/components/site/CategoryPage";
+import { CategoryBoard as CategoryPage } from "@/components/boards/category/CategoryBoard";
 import type { SectionCode } from "@/lib/content/types";
 
 export function generateStaticParams() {

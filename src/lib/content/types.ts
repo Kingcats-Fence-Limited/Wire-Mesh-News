@@ -1,5 +1,6 @@
 /** Content model for Phase 1 (local mock data). Codes reference src/data/vocab. */
-import type { MeshId } from "@/components/ui/Mesh";
+/** Mesh pattern ids (SiteDefs: pChain, pChainL, pWeld, pWeldQ, pWoven, pGrate, pPerf, pExp, pG1–pG5). */
+export type MeshId = "chain" | "chainL" | "weld" | "weldQ" | "woven" | "grate" | "perf" | "exp" | "g1" | "g2" | "g3" | "g4" | "g5";
 
 export type SectionCode = "news" | "market_insights" | "applications" | "technical_guides" | "buying_guides";
 
@@ -39,6 +40,10 @@ export type Article = {
   correction?: { date: string; text: string };
   sponsor?: string; // company name when type === "sponsored"
   featured?: boolean;
+  /** Home hero: the word(s) in the title to highlight in a red block */
+  highlight?: string;
+  /** Home hero slot: 1 = top story, 2/3 = side tiles */
+  hero?: 1 | 2 | 3;
   series?: { slug: string; part: number };
   marketSeries?: string[]; // market series codes this article explains
 };
@@ -71,6 +76,9 @@ export type Company = {
   legalName?: string;
   orgType: string; // organisation_type code
   categories: string[]; // category codes
+  /** Editorial: up to two application areas (application_area codes), judged from covered projects. */
+  applications: string[];
+  materials?: ("carbon_steel" | "stainless" | "other_alloys")[];
   products: string[]; // product codes
   processes?: string[];
   country: string; // alpha2

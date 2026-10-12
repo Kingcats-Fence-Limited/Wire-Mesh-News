@@ -1,0 +1,21 @@
+/* Submit-H board classes (scoped). */
+.b-sub .h{letter-spacing:-.04em;line-height:1.1}
+.b-sub .fld{display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.b-sub .fld label{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--fg-3)}
+.b-sub .fld .hint{font-size:12.5px;font-weight:500;color:var(--slate);line-height:1.5}
+.b-sub .inp{width:100%;box-sizing:border-box;min-height:48px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-family:inherit;font-size:15px;font-weight:500;background:#FFFFFF;color:var(--ink)}
+.b-sub textarea.inp{padding:12px 14px;resize:vertical;line-height:1.6}
+.b-sub .sec{display:block;border:1px solid var(--line);border-radius:16px;padding:26px;background:#FFFFFF;margin-bottom:22px}
+.b-sub .sechd{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--ink)}
+.b-sub .num{width:30px;height:30px;border-radius:999px;background:var(--ink);color:#FFFFFF;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;font-family:inherit;letter-spacing:0;line-height:1}
+.b-sub .chk{display:flex;gap:11px;align-items:flex-start;font-size:14px;font-weight:500;line-height:1.55;cursor:pointer;margin-bottom:13px}
+.b-sub .chk input{width:19px;height:19px;accent-color:var(--red);flex-shrink:0;margin-top:1px}
+.b-sub .step{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:800;color:var(--grey)}
+.b-sub .step .dot{width:26px;height:26px;border-radius:999px;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.b-sub .step.on{color:var(--ink)}
+.b-sub .step.on .dot{background:var(--ink);border-color:var(--ink);color:#FFFFFF}
+.b-sub .tb{min-width:36px;min-height:36px;border:0;background:transparent;border-radius:7px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--ink)}
+.b-sub .tb:hover{background:var(--line-soft)}
+@media (max-width:900px){
+.b-sub .cols, .b-sub .g2{grid-template-columns:1fr !important}
+}

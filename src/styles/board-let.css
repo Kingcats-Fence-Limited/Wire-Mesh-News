@@ -1,0 +1,16 @@
+/* Letters-LT board classes (scoped). */
+.b-let .h{letter-spacing:-.04em;line-height:1.1}
+.b-let .chip{border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:36px;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;background:#FFFFFF;white-space:nowrap;color:var(--ink)}
+.b-let .chip.on{background:var(--ink);color:#FFFFFF;border-color:var(--ink)}
+.b-let .seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;padding:3px}
+.b-let .seg a{min-height:34px;padding:0 16px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800}
+.b-let .seg a.on{background:var(--ink);color:#FFFFFF}
+.b-let .letter{display:flex;gap:16px;padding:20px 0;border-top:1px solid var(--line)}
+.b-let .av{flex-shrink:0;width:46px;height:46px;border-radius:999px;background:#F2F3F5;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center}
+.b-let .rp{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.1em;padding:4px 8px;border-radius:4px;background:#FDE8E9;color:var(--red-deep)}
+.b-let .body p{margin:0 0 14px;font-size:15.5px;font-weight:500;line-height:1.75;color:var(--fg-2)}
+@media (max-width:900px){
+.b-let .cols{grid-template-columns:1fr !important}
+.b-let h1{font-size:30px !important}
+.b-let .chips{overflow-x:auto;flex-wrap:nowrap !important;scrollbar-width:none}
+}

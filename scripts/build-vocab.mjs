@@ -17,7 +17,7 @@ for (const [name, table] of Object.entries(json.vocabularies)) {
   if (!cols) throw new Error("no headers for " + name);
   const rows = table.rows.map((r) => Object.fromEntries(cols.map((c, i) => [camel(c), r[i] == null ? "" : String(r[i])])));
   const type = pascal(name);
-  const keyCol = camel(cols[0]);
+  const keyCol = cols.includes("code") ? "code" : camel(cols[0]);
   const file = `// AUTO-GENERATED from docs/Wire_Mesh_News_Vocabularies.xlsx — do not edit by hand.
 // ${table.description.replace(/\n/g, " ")}
 // Used in: ${(table.used_in || []).join(" · ")}

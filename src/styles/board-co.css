@@ -1,0 +1,19 @@
+/* Company-E board classes (scoped). */
+.b-co .h{letter-spacing:-.04em;line-height:1.1}
+.b-co .tag{border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--slate)}
+.b-co .sec{gap:14px;margin-bottom:18px}
+.b-co .sec h2{letter-spacing:-.04em;font-size:24px}
+.b-co .fact{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.b-co .fact dt{flex:0 0 184px;font-weight:800;margin:0}
+.b-co .fact dd{margin:0;font-weight:500;flex:1 1 auto;line-height:1.5}
+.b-co .src{font-size:11px;font-weight:700;color:var(--grey-2);display:block;margin-top:3px}
+.b-co .selfr{display:inline-block;background:#FFF4E2;color:#8A5A08;font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:3px 7px;border-radius:3px;margin-left:7px}
+.b-co .certcard{border:1px solid var(--line);border-radius:12px;padding:15px 17px;display:flex;gap:13px;align-items:flex-start;background:#FFFFFF}
+.b-co .certmark{width:40px;height:40px;border-radius:9px;background:#F0F7F2;color:#1E6B35;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+@media (max-width:980px){
+.b-co .cols, .b-co .g2, .b-co .g3{grid-template-columns:1fr !important}
+.b-co .g4{grid-template-columns:1fr 1fr !important}
+.b-co .fact{flex-direction:column;gap:4px}
+.b-co .fact dt{flex:none}
+.b-co h1{font-size:32px !important}
+}
