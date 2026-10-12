@@ -94,3 +94,10 @@
 .b-dir .seg a{padding:0 9px;font-size:11.5px;min-height:30px;white-space:nowrap}
 }
 .b-dir .cat.on, .b-dir .cat.on *{color:var(--on-ink) !important}
+/* product row: two-column wide menu on desktop, horizontal scroll on phones */
+.b-dir .ddmenu.wide2{display:grid;grid-template-columns:1fr 1fr;gap:2px 6px;min-width:560px}
+@media (max-width:600px){
+.b-dir .prodrow{flex-wrap:nowrap !important;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.b-dir .prodrow::-webkit-scrollbar{display:none}
+.b-dir .prodrow .chip{white-space:nowrap;flex-shrink:0}
+}

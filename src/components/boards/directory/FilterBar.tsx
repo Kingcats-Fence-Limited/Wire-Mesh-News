@@ -46,8 +46,8 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
                   {m.label}{n > 0 && <span style={{ color: "var(--grey)", fontWeight: "800" }} className="mono">{n}</span>}<Chev />
                 </button>
                 {isOpen && (
-                  <div role="menu" className="ddmenu" style={{ minWidth: m.wide ? "340px" : "280px" }}>
-                    {m.note && <div className="ddnote">{m.note}</div>}
+                  <div role="menu" className={`ddmenu${m.items.length > 8 ? " wide2" : ""}`} style={{ minWidth: m.wide ? "340px" : "280px" }}>
+                    {m.note && <div className="ddnote" style={{ gridColumn: "1 / -1" }}>{m.note}</div>}
                     {m.items.map((it) => (
                       <Link key={it.href} href={it.href} scroll={false} role="menuitemradio" aria-checked={it.on} className={`dditem${it.on ? " on" : ""}`} onClick={() => setOpen(null)}>
                         <span className="sq" aria-hidden="true" />
@@ -116,7 +116,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
                 </div>
               </div>
             ))}
-            {rows.filter((r) => r.label !== "PRODUCT").map((r) => (
+            {rows.map((r) => (
               <div key={r.label} style={{ marginBottom: "14px" }}>
                 <div className="mono" style={{ fontSize: "10.5px", fontWeight: 800, letterSpacing: ".12em", color: "var(--grey)", marginBottom: "8px" }}>{r.label}</div>
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
