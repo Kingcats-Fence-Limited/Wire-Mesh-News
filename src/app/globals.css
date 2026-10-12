@@ -170,6 +170,8 @@
   button { font-family: inherit; }
   input, select, textarea { font-family: inherit; font-size: inherit; }
   ::selection { background: var(--ink); color: #fff; }
+  /* grid/flex children default to min-width:auto, which lets long chip rows and tables push the page wider than the viewport */
+  .grid > *, .flex > * { min-width: 0; }
 }
 
 /* ------------------------------------------------------------------ */

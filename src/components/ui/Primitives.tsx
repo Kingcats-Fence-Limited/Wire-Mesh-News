@@ -158,9 +158,10 @@ export function Badge({ tone = "neutral", children, className, size = "md" }: { 
 /* ------------------------------------------------------------------ */
 /* Card                                                                */
 /* ------------------------------------------------------------------ */
-export function Card({ children, className, tone = "default", padding = "md" }: { children: ReactNode; className?: string; tone?: "default" | "paper" | "dark" | "outline-strong"; padding?: "none" | "sm" | "md" | "lg" }) {
+export function Card({ children, className, tone = "default", padding = "md", id }: { children: ReactNode; className?: string; tone?: "default" | "paper" | "dark" | "outline-strong"; padding?: "none" | "sm" | "md" | "lg"; id?: string }) {
   return (
     <div
+      id={id}
       className={clsx(
         "rounded-card",
         tone === "default" && "border border-line bg-bg",
