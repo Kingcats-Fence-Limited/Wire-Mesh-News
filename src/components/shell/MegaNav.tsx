@@ -99,7 +99,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
       </nav>
 
       {open && (
-        <div className="megapanel" role="region" aria-label={`${cur?.label ?? open} menu`} onMouseEnter={() => leaveT.current && window.clearTimeout(leaveT.current)} style={{ position: "absolute", left: 0, right: 0, top: "100%", background: "#FFFFFF", borderBottom: "3px solid var(--ink)", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", zIndex: 50 }}>
+        <div className="megapanel" role="region" aria-label={`${cur?.label ?? open} menu`} onMouseEnter={() => leaveT.current && window.clearTimeout(leaveT.current)} style={narrow ? { position: "absolute", left: 0, right: 0, top: "100%", zIndex: 50, pointerEvents: "none" } : { position: "absolute", left: 0, right: 0, top: "100%", background: "#FFFFFF", borderBottom: "3px solid var(--ink)", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", zIndex: 50 }}>
           <div className="wrap" style={{ padding: 0 }}>
             {cur && (
               <div style={{ display: "grid", gridTemplateColumns: "1.08fr 1.05fr 1.12fr 0.86fr", gap: "0", background: "#FFFFFF" }}>
@@ -117,7 +117,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
                   {cur.latest.map((a, i) => (
                     <Link key={a.href} href={a.href} onClick={() => setOpen(null)} style={{ display: "flex", gap: "12px", padding: "13px 0", borderBottom: i < cur.latest.length - 1 ? "1px solid var(--line)" : undefined }}>
                       <span style={{ width: "62px", aspectRatio: "1/1" }} className="ph"></span>
-                      <span style={{ display: "flex", flexDirection: "column", gap: "4px", minWidth: "0" }}><span className="kick"><i></i>{a.kicker}</span><span style={{ fontSize: "13.5px", fontWeight: "800", lineHeight: "1.3" }}>{a.title}</span></span>
+                      <span style={{ display: "flex", flexDirection: "column", gap: "4px", minWidth: "0" }}><span className="kick"><i></i>{a.kicker}</span><span style={{ fontSize: "13.5px", fontWeight: "800", lineHeight: "1.3", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</span></span>
                     </Link>
                   ))}
                 </div>
@@ -146,7 +146,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
                         <span style={{ display: "block", width: "100%", aspectRatio: "16/9", marginBottom: "11px" }} className="ph"></span>
                         <span style={{ marginBottom: "7px" }} className="kick"><i></i>{cur.pick.kicker}</span>
                         <span style={{ display: "block", fontSize: "18px", marginBottom: "7px" }} className="h">{cur.pick.title}</span>
-                        <span style={{ lineHeight: "1.5" }} className="meta">{cur.pick.dek}</span>
+                        <span style={{ lineHeight: "1.5", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }} className="meta">{cur.pick.dek}</span>
                       </Link>
                     )}
                   </div>
@@ -174,7 +174,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
               </div>
             )}
             {narrow && (
-              <div style={{ padding: "22px 26px 22px 0", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "26px", maxWidth: "760px" }}>
+              <div style={{ pointerEvents: "auto", display: "inline-grid", gridTemplateColumns: "auto auto 230px", gap: "26px", padding: "20px 22px 22px", background: "#FFFFFF", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 14px 14px", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", marginLeft: "-22px" }}>
                 <div>
                   <div className="colhd"><span style={{ fontSize: "14px" }} className="h">Directory</span></div>
                   {[["list", "Browse companies", "/directory/"], ["shield", "Standards Index", "/standards/"], ["plus", "Suggest a listing", "/contact/?subject=directory"]].map(([ic, l, h]) => (

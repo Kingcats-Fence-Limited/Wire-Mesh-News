@@ -18,6 +18,7 @@
 .b-meth .lnk{font-weight:800;border-bottom:1.5px solid var(--red)}
 @media (max-width:900px){
 .b-meth .cols{grid-template-columns:1fr !important}
+.b-meth .cols > *{min-width:0}
 .b-meth .pnav{flex-direction:row !important;flex-wrap:wrap;gap:6px 16px !important;position:static !important}
 .b-meth .tablewrap{overflow-x:auto}
 }

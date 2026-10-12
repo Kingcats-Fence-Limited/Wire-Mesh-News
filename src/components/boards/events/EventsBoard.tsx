@@ -55,7 +55,7 @@ Subscribe to calendar
 <div style={{ display: "flex", gap: "9px", flexWrap: "wrap", marginTop: "22px" }}>
 <Link href={href({ when: undefined })} className={`chip${past ? "" : " on"}`}>Upcoming</Link><Link href={href({ when: "past" })} className={`chip${past ? " on" : ""}`}>Past &amp; reports</Link>
 <span style={{ width: "1px", height: "24px", background: "var(--line)", alignSelf: "center", margin: "0 5px" }}></span>
-<Link href={href({ region: undefined })} className={`chip${sp.region ? "" : " on"}`}>All regions</Link><Link href={toggle("region", "asia")} className={`chip${sp.region === "asia" ? " on" : ""}`}>Asia</Link><Link href={toggle("region", "europe")} className={`chip${sp.region === "europe" ? " on" : ""}`}>Europe</Link><Link href={toggle("region", "north_america")} className={`chip${sp.region === "north_america" ? " on" : ""}`}>North America</Link>
+<Link href={href({ region: undefined })} className="chip">All regions</Link><Link href={toggle("region", "asia")} className={`chip${sp.region === "asia" ? " on" : ""}`}>Asia</Link><Link href={toggle("region", "europe")} className={`chip${sp.region === "europe" ? " on" : ""}`}>Europe</Link><Link href={toggle("region", "north_america")} className={`chip${sp.region === "north_america" ? " on" : ""}`}>North America</Link>
 <span style={{ width: "1px", height: "24px", background: "var(--line)", alignSelf: "center", margin: "0 5px" }}></span>
 {(["trade_show", "conference", "webinar"] as const).map((t) => <Link key={t} href={toggle("type", t)} className={`chip${sp.type === t ? " on" : ""}`}>{TYPE_LABEL[t]}</Link>)}
 </div>

@@ -22,6 +22,8 @@ export type SearchDoc = {
   status?: string;
 };
 
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export function buildSearchIndex(): SearchDoc[] {
   const docs: SearchDoc[] = [];
   for (const a of ARTICLES) {
@@ -46,7 +48,7 @@ export function buildSearchIndex(): SearchDoc[] {
     docs.push({ id: `o:${c.slug}`, type: "opinion", title: c.title, href: `/letters/columns/${c.slug}/`, kicker: `${c.author.name} · ${c.author.org}`, meta: `${fmtDate(c.date)} · Opinion`, text: `${c.summary} ${c.body.join(" ")}`, date: c.date });
   }
   for (const c of COMPANIES) {
-    docs.push({ id: `c:${c.slug}`, type: "company", title: c.name, href: `/directory/${c.slug}/`, kicker: `${c.orgType.replace(/_/g, " ")} · ${c.city}, ${COUNTRY_BY_CODE[c.country]?.name ?? c.country}${c.claimed ? " · Claimed" : ""}`, meta: `Company Directory`, text: `${c.summary} ${c.products.join(" ")} ${(c.processes ?? []).join(" ")}` });
+    docs.push({ id: `c:${c.slug}`, type: "company", title: c.name, href: `/directory/${c.slug}/`, kicker: `${cap(c.orgType.replace(/_/g, " "))} · ${c.city}, ${COUNTRY_BY_CODE[c.country]?.name ?? c.country}${c.claimed ? " · Claimed" : ""}`, meta: `Company Directory`, text: `${c.summary} ${c.products.join(" ")} ${(c.processes ?? []).join(" ")}` });
   }
   for (const s of STANDARDS) {
     docs.push({ id: `s:${s.slug}`, type: "standard", title: s.no, href: `/standards/${s.slug}/`, kicker: s.title, meta: `Standards Index · status checked ${fmtDate(s.checked)}`, text: `${s.title} ${s.covers} ${s.whyItMatters.join(" ")} ${(s.adoptedAs ?? []).join(" ")}`, status: s.status });
@@ -55,7 +57,7 @@ export function buildSearchIndex(): SearchDoc[] {
     docs.push({ id: `t:${t.slug}`, type: "topic", title: t.title, href: `/topics/${t.slug}/`, kicker: `${t.startHere.length} articles · updated ${fmtDate(t.updated)}`, meta: "Topics", text: `${t.intro} ${t.outline.join(" ")} ${t.terms.map((x) => x.term).join(" ")}` });
   }
   for (const e of EVENTS) {
-    docs.push({ id: `e:${e.slug}`, type: "event", title: e.name, href: `/events/#${e.slug}`, kicker: `${e.type.replace("_", " ")} · ${e.online ? "Online" : `${e.city}, ${COUNTRY_BY_CODE[e.country ?? ""]?.name ?? ""}`}`, meta: fmtDate(e.start), text: `${e.summary} ${e.focus}`, date: e.start });
+    docs.push({ id: `e:${e.slug}`, type: "event", title: e.name, href: `/events/#${e.slug}`, kicker: `${cap(e.type.replace("_", " "))} · ${e.online ? "Online" : `${e.city}, ${COUNTRY_BY_CODE[e.country ?? ""]?.name ?? ""}`}`, meta: fmtDate(e.start), text: `${e.summary} ${e.focus}`, date: e.start });
   }
   return docs;
 }

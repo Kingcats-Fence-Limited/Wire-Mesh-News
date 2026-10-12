@@ -20,14 +20,14 @@
 .b-cook .banner{background:var(--ink);color:#FFFFFF;padding:22px 28px;display:flex;gap:28px;align-items:center;flex-wrap:wrap}
 .b-cook .banner .btn.out{border-color:#FFFFFF}
 .b-cook.cookroot{position:fixed;left:0;right:0;bottom:0;z-index:35}
-.b-cook .prefwrap{position:fixed;inset:0;z-index:36;display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.b-cook.prefwrap{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center;padding:16px}
 .b-cook .prefscrim{position:absolute;inset:0;background:rgba(21,22,28,.42);border:0;padding:0;cursor:default}
 .b-cook .pref{position:relative;width:100%;max-width:720px;max-height:calc(100vh - 32px);overflow-y:auto;padding:26px 28px;box-shadow:0 30px 80px rgba(21,22,28,.3)}
 @media (max-width:600px){
   .b-cook .banner{padding:18px 16px;gap:14px}
   .b-cook .banner > div:last-child{width:100%}
   .b-cook .banner .btn{flex:1 1 auto;min-width:0 !important}
-  .b-cook .prefwrap{padding:0}
+  .b-cook.prefwrap{padding:0}
   .b-cook .pref{max-height:100vh;border-radius:14px 14px 0 0;padding:22px 16px}
 }
 /* back to top */

@@ -292,9 +292,9 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
                       >
                         <Lead d={d} />
                         <span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: 0, flex: "1 1 auto" }}>
-                          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
                             <span className={`tp ${tp.cls}`}>{tp.label}</span>
-                            {isArt ? <span className="kick"><i />{d.kicker.split(" · ").pop()?.toUpperCase()}</span> : <span className="meta" style={{ fontSize: "11.5px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.kicker}</span>}
+                            {isArt ? <span className="kick"><i />{d.kicker.split(" · ").pop()?.toUpperCase()}</span> : <span className="meta" style={{ fontSize: "11.5px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0, flex: "0 1 auto" }}>{d.kicker}</span>}
                           </span>
                           <span className={`h${d.type === "standard" ? " mono" : ""}`} style={{ fontSize: "17px" }} dangerouslySetInnerHTML={{ __html: highlight(d.title, debounced) }} />
                           <span className="meta" style={{ fontSize: "12px" }}>{d.meta}</span>

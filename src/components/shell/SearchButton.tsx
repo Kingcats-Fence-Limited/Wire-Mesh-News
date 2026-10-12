@@ -11,7 +11,9 @@ export function SearchButton({ size, border }: { size: number; border: string })
 
   function openAt() {
     const header = btn.current?.closest("header");
-    const bottom = header ? header.getBoundingClientRect().bottom : 0;
+    // open below the primary nav row when it is visible (desktop), else below the header
+    const nav = header?.nextElementSibling instanceof HTMLElement && header.nextElementSibling.classList.contains("nav") && getComputedStyle(header.nextElementSibling).display !== "none" ? header.nextElementSibling : header;
+    const bottom = nav ? nav.getBoundingClientRect().bottom : 0;
     setTop(Math.max(0, Math.round(bottom)));
     setOpen(true);
   }

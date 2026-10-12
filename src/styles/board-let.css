@@ -12,5 +12,5 @@
 @media (max-width:900px){
 .b-let .cols{grid-template-columns:1fr !important}
 .b-let h1{font-size:30px !important}
-.b-let .chips{overflow-x:auto;flex-wrap:nowrap !important;scrollbar-width:none;margin:0 -14px;padding:0 14px}
+.b-let .chips{overflow-x:auto;flex-wrap:nowrap !important;scrollbar-width:none}
 }
