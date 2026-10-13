@@ -7,7 +7,7 @@ import { MobileMenu } from "./MobileMenu";
 import { EDITORIAL_SECTIONS, subsectionsOf, subsectionSlug, articleHref, fmtDateShort } from "@/lib/site";
 import { bySection, latest, featured } from "@/lib/content/articles";
 import { snapshotSeries, MARKET_LICENSED, TOPICS } from "@/lib/content/market";
-import { upcomingEvents } from "@/lib/content/directory";
+import { upcomingEvents } from "@/lib/content/source";
 import type { SectionCode } from "@/lib/content/types";
 
 /* Sub-section descriptions and icons for the mega menu (canvas Nav-J shows one line under each). */

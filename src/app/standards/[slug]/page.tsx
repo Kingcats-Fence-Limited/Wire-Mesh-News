@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { STANDARDS, getStandard } from "@/lib/content/standards";
+import { STANDARDS, getStandard } from "@/lib/content/source";
 import { StandardBoard } from "@/components/boards/standards/StandardsBoard";
 
 export function generateStaticParams() {

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { MarketChart } from "./MarketChart";
-import { MARKET_SERIES, MARKET_LICENSED } from "@/lib/content/market";
+import { MARKET_SERIES, MARKET_LICENSED, MARKET_FEED_LIVE } from "@/lib/content/market";
 import { byMarketSeries, bySection } from "@/lib/content/articles";
 import { articleHref, fmtDateShort, fmtNum, sectionByCode } from "@/lib/site";
 import type { MarketSeries } from "@/lib/content/types";
@@ -10,6 +10,8 @@ import "@/styles/board-mkt.css";
 import { demoBg } from "@/lib/demo";
 
 const LIC: Record<MarketSeries["licence"], [string, string]> = { delayed30: ["DELAYED 30M", "bad"], nextday: ["NEXT DAY", "ok"], licensed: ["LICENSED", "warn"], own: ["OWN DATA", "ok"] };
+/* while nothing is licensed, every row says so instead of naming a licence it does not have */
+const LIC_SAMPLE: [string, string] = ["SAMPLE", "warn"];
 const asOf = (s: MarketSeries) => s.licence === "delayed30" ? new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" }).format(new Date(s.asOf)) + " UTC" : s.licence === "nextday" ? "Previous close" : fmtDateShort(s.asOf);
 
 export function MarketBoard({ selected }: { selected?: string }) {
@@ -24,10 +26,10 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "32px", flexWrap: "wrap" }}>
 <div style={{ maxWidth: "680px" }}>
 <h1 style={{ margin: "0 0 10px", fontSize: "50px", letterSpacing: "-.05em", lineHeight: "1" }} className="h">Market data<span style={{ color: "var(--red-text)" }}>.</span></h1>
-<p style={{ margin: "0", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>Six licensed price series behind every quotation — exchange zinc, wire rod, hot-rolled coil, our own panel survey and container freight — with the articles that explain why they moved.</p>
+<p style={{ margin: "0", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>{MARKET_FEED_LIVE ? "Six licensed price series behind every quotation — exchange zinc, wire rod, hot-rolled coil, our own panel survey and container freight — with the articles that explain why they moved." : "The six price series this page will carry — exchange zinc, wire rod, hot-rolled coil, our own panel survey and container freight. The figures below are illustrative while no feed is licensed; they are not prices."}</p>
 </div>
 <div style={{ display: "flex", gap: "10px", flexShrink: "0", alignItems: "center" }}>
-<span className="badge bad"><span style={{ width: "6px", height: "6px", borderRadius: "999px", background: "var(--red)" }}></span>DELAYED 30 MIN</span>
+{MARKET_FEED_LIVE ? <span className="badge bad"><span style={{ width: "6px", height: "6px", borderRadius: "999px", background: "var(--red)" }}></span>DELAYED 30 MIN</span> : <span className="badge warn">SAMPLE DATA &#183; NOT A PRICE FEED</span>}
 <Link href="/market-data/methodology/" style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "2px solid var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}>Methodology</Link>
 </div>
 </div>
@@ -58,7 +60,7 @@ export function MarketBoard({ selected }: { selected?: string }) {
 {MARKET_SERIES.map((s) => {
   const dir = s.changePct === null ? "fl" : s.changePct > 0 ? "up" : s.changePct < 0 ? "dn" : "fl";
   const arrow = s.changePct === null ? "" : s.changePct > 0 ? "▲" : s.changePct < 0 ? "▼" : "▬";
-  const [lab, cls] = LIC[s.licence];
+  const [lab, cls] = MARKET_FEED_LIVE ? LIC[s.licence] : LIC_SAMPLE;
   const down = s.state === "unavailable", stale = s.state === "stale";
   return (
 <tr key={s.code} className={s.code === sel.code ? "on" : undefined}>
@@ -68,7 +70,7 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <td className={`mono ${dir}`}>{s.change === null ? "—" : `${s.change > 0 ? "+" : s.change < 0 ? "−" : ""}${fmtNum(Math.abs(s.change), s.change % 1 ? 1 : 0)}`}</td>
 <td className={`mono ${dir}`}>{s.changePct === null ? "—" : `${arrow} ${Math.abs(s.changePct).toFixed(1)}%`}</td>
 <td className="mono">{asOf(s)}</td>
-<td>{s.source}</td>
+<td>{MARKET_FEED_LIVE ? s.source : "—"}</td>
 <td><span style={{ fontSize: "9px" }} className={`badge ${cls}`}>{lab}</span></td>
 </tr>
   );

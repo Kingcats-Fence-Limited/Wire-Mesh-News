@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { FollowStandard } from "./FollowStandard";
 import { DropMenu } from "@/components/boards/shared/DropMenu";
-import { STANDARDS, getStandardByNo } from "@/lib/content/standards";
+import { STANDARDS, getStandardByNo } from "@/lib/content/source";
 import { byStandard } from "@/lib/content/articles";
 import { COMPANIES } from "@/lib/content/directory";
 import { STANDARDS_BODY, STANDARD_SUBJECT_BY_CODE, STANDARD_STATUS } from "@/data/vocab";

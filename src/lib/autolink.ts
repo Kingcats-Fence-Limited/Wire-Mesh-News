@@ -1,4 +1,4 @@
-import { slugify, getStandardByNo } from "@/lib/content/standards";
+import { slugify, getStandardByNo } from "@/lib/content/source";
 
 /** Link bare standard numbers (EN 10223-4, ASTM A392…) to the Standards Index, skipping text already inside an anchor. */
 const STD_RE = /\b((?:pr)?(?:EN ISO|EN|ISO|ASTM|BS EN|DIN EN|DIN|BS|GB\/T|AASHTO|JIS)\s?[A-Z]?\d{2,5}(?:-\d{1,2})?)\b/g;

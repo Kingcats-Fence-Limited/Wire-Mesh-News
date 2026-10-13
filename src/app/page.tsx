@@ -16,7 +16,7 @@ import { Partners } from "@/components/boards/home/Partners";
 import { ARTICLES, heroSet, latest, bySection, mostRead, byTopic, editorial } from "@/lib/content/articles";
 import { LETTERS, COLUMNS } from "@/lib/content/people";
 import { COMPANIES, recentlyUpdated } from "@/lib/content/directory";
-import { STANDARDS, recentStandardChanges } from "@/lib/content/standards";
+import { STANDARDS, recentStandardChanges } from "@/lib/content/source";
 import { snapshotSeries, MARKET_LICENSED, TOPICS } from "@/lib/content/market";
 import { industryFigures } from "@/lib/content/figures";
 import { fmtDateShort } from "@/lib/site";

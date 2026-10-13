@@ -9,7 +9,7 @@ import { CopyLink } from "./CopyLink";
 import { SocialGlyph } from "@/components/ui/SocialButton";
 import { bySection, readNext } from "@/lib/content/articles";
 import { getAuthor, lettersFor } from "@/lib/content/people";
-import { getStandardByNo } from "@/lib/content/standards";
+import { getStandardByNo } from "@/lib/content/source";
 import { getCompany } from "@/lib/content/directory";
 import { COUNTRY_BY_CODE, ARTICLE_TYPE } from "@/data/vocab";
 import { sectionByCode, subsectionLabel, subsectionSlug, fmtDate, articleHref, SITE, daysAgo } from "@/lib/site";
