@@ -13,13 +13,14 @@ import { BillingPanel } from "./BillingPanel";
 import { ConfirmBtn, Head } from "./ui";
 import type { Company } from "@/lib/content/types";
 import type { SubOpt } from "@/lib/vocab-geo";
+import type { EditorRefs } from "@/components/editor/draft";
 
 const PANELS = ["overview", "profile", "submissions", "comments", "author", "bookmarks", "messages", "company", "billing", "notifications", "settings"] as const;
 type PanelId = (typeof PANELS)[number];
 const ALIAS: Record<string, PanelId> = { "": "overview" };
 const toPanel = (h: string): PanelId => (PANELS as readonly string[]).includes(h) ? (h as PanelId) : ALIAS[h] ?? "overview";
 
-type Props = { seed: Demo; co: Company; related: { title: string; href: string }[]; subs0: SubOpt[] };
+type Props = { seed: Demo; co: Company; related: { title: string; href: string }[]; subs0: SubOpt[]; refs: EditorRefs };
 
 export function AccountApp(props: Props) {
   const [panel, setPanel] = useState<PanelId>("overview");
@@ -48,7 +49,7 @@ export function AccountApp(props: Props) {
   );
 }
 
-function Shell({ co, related, subs0, panel, go, topRef }: Props & { panel: PanelId; go: (p: string) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
+function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel: PanelId; go: (p: string) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
   const { d, reset } = useDemo();
   const unread = d.notices.filter((n) => !n.read && !n.archived).length;
   const needs = d.submissions.filter((s) => s.status === "changes_requested").length;
@@ -105,7 +106,7 @@ function Shell({ co, related, subs0, panel, go, topRef }: Props & { panel: Panel
         <main className="main" aria-live="polite">
           {panel === "overview" && <Overview companyName={co.name} />}
           {panel === "profile" && <Profile />}
-          {panel === "submissions" && <Submissions />}
+          {panel === "submissions" && <Submissions refs={refs} />}
           {panel === "comments" && <Comments />}
           {panel === "author" && <AuthorProfile />}
           {panel === "bookmarks" && <Bookmarks />}

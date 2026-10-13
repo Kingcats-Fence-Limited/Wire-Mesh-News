@@ -291,3 +291,44 @@
 .site .mono, [class^="b-"] .mono { font-family: 'Manrope Variable', 'Manrope', sans-serif; }
 /* Demo imagery: Dark-T asks for a light dark overlay on photos in dark mode */
 :root[data-theme="dark"] .demo, :root[data-theme="dark"] .ph, :root[data-theme="dark"] .thumb, :root[data-theme="dark"] .ph2 { filter: brightness(.9); }
+
+
+/* ------------------------------------------------------------------ */
+/* Print: an article prints as a clean document on white paper.       */
+/* Browsers drop background colours when printing, so anything that    */
+/* relied on a dark background is turned to dark text here, and the   */
+/* site furniture (navigation, ads, share, comments, sidebars) is cut. */
+/* ------------------------------------------------------------------ */
+.print-only{display:none}
+@media print{
+  @page{margin:16mm 15mm 18mm}
+  html,body,.site{background:#FFFFFF !important;color:#111 !important}
+  .print-only{display:block !important}
+  .print-mast{display:flex !important;justify-content:space-between;align-items:baseline;border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:14px;font-size:9.5pt;color:#444}
+  .print-mast b{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-size:15pt;letter-spacing:-.04em;color:#111}
+  .print-mast b span{color:#C41822}
+  .utilbar,.site > header,.site header,#site-footer,.site footer,.ad,.adtag,.adlbl,.b-cook,.btt,.cookroot,.prefwrap,
+  #share,#comments,.toc,.b-art .side,.icobtn,.sharemenu,.site button,nav[aria-label="Breadcrumb"],.b-art .util,
+  [role="dialog"],.noprint{display:none !important}
+  .wrap{max-width:none !important;padding-left:0 !important;padding-right:0 !important}
+  .site *{box-shadow:none !important;text-shadow:none !important}
+  /* Anything that sat on a dark surface: dark text, no background */
+  .site [style*="surface-dark"],.site [style*="surface-dark"] *{background:transparent !important;color:#111 !important;border-color:#BBB !important}
+  .site [style*="surface-dark"] svg[aria-hidden="true"]{display:none !important}
+  /* Article */
+  .b-art .hero{background:transparent !important;color:#111 !important}
+  .b-art .hero > span[aria-hidden="true"]{display:none !important}
+  .b-art .hero .wrap{padding-top:0 !important;padding-bottom:10px !important}
+  .b-art .hero .title{font-size:24pt !important;line-height:1.1 !important}
+  .b-art .hero .dek{font-size:12.5pt !important;color:#333 !important}
+  .b-art .lead{margin-top:6px !important}
+  .b-art .lead figure > div{aspect-ratio:auto !important;height:70mm;border-radius:6px !important}
+  .b-art .cols{display:block !important}
+  .b-art .cols > article,.b-art article{max-width:none !important}
+  .b-art .g3{grid-template-columns:1fr 1fr 1fr !important}
+  .site a{color:#111 !important;text-decoration:none !important}
+  .b-art article p a[href^="http"]::after{content:" (" attr(href) ")";font-size:8.5pt;color:#555;word-break:break-all}
+  h1,h2,h3,h4{break-after:avoid;page-break-after:avoid}
+  figure,table,blockquote,.cell,#sources{break-inside:avoid;page-break-inside:avoid}
+  p{orphans:3;widows:3}
+}

@@ -9,10 +9,10 @@ import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, type Tone } from "./
 import { ENQUIRY_SUBJECT } from "@/data/vocab/enquiry_subject";
 import { SECTION } from "@/data/vocab/section";
 import { demoBg } from "@/lib/demo";
-import { ArticleEditor, emptyDraft, type ArticleDraft } from "@/components/editor/ArticleEditor";
+import { ArticleEditor, emptyDraft, normalizeDraft, type ArticleDraft, type EditorRefs } from "@/components/editor/ArticleEditor";
 
 /* A submission saved before the full editor existed: build its draft from what we have. */
-const toDraft = (s: Submission, byline: string): ArticleDraft => s.draft ?? {
+const toDraft = (s: Submission, byline: string): ArticleDraft => s.draft ? normalizeDraft(s.draft, byline) : {
   ...emptyDraft(byline), title: s.title === "Untitled draft" ? "" : s.title,
   dek: s.excerpt.split("\n")[0] ?? "", body: s.excerpt, section: SECTION.find((x) => x.label === s.section)?.code ?? "",
 };
@@ -24,7 +24,7 @@ const SUB: Record<SubStatus, [string, Tone]> = {
 };
 type SubFilter = "all" | SubStatus;
 
-export function Submissions() {
+export function Submissions({ refs }: { refs: EditorRefs }) {
   const { d, set, toast } = useDemo();
   const [f, setF] = useState<SubFilter>("all");
   const [open, setOpen] = useState<string | null>(null);
@@ -57,7 +57,7 @@ export function Submissions() {
             <div style={{ fontSize: "13.5px", fontWeight: 500, lineHeight: 1.6, color: "var(--fg-3)" }}>{cur.note}</div>
           </div>
         )}
-        <ArticleEditor key={cur.id} initial={toDraft(cur, byline)}
+        <ArticleEditor key={cur.id} refs={refs} initial={toDraft(cur, byline)}
           submitLabel={cur.status === "changes_requested" ? "Resubmit for review" : cur.status === "published" ? "Send edit for review" : "Submit for review"}
           note={cur.status === "published" ? "the live article stays as it is until the edit is approved" : undefined}
           onSave={(dr) => { upd(cur.id, fromDraft(dr)); toast("Draft saved."); }}

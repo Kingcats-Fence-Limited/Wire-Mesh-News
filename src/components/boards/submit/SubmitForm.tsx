@@ -4,15 +4,15 @@
    until accounts go live; submitting shows where the article goes next. */
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArticleEditor, emptyDraft, type ArticleDraft } from "@/components/editor/ArticleEditor";
+import { ArticleEditor, emptyDraft, normalizeDraft, type ArticleDraft, type EditorRefs } from "@/components/editor/ArticleEditor";
 
 const KEY = "wmn-draft-v2";
 
-export function SubmitForm() {
+export function SubmitForm({ refs }: { refs: EditorRefs }) {
   const [initial, setInitial] = useState<ArticleDraft | null>(null);
   const [done, setDone] = useState<ArticleDraft | null>(null);
   useEffect(() => {
-    try { const raw = localStorage.getItem(KEY); setInitial(raw ? { ...emptyDraft(), ...JSON.parse(raw) } : emptyDraft()); } catch { setInitial(emptyDraft()); }
+    try { const raw = localStorage.getItem(KEY); setInitial(raw ? normalizeDraft(JSON.parse(raw)) : emptyDraft()); } catch { setInitial(emptyDraft()); }
   }, []);
   const save = (d: ArticleDraft) => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch { try { localStorage.setItem(KEY, JSON.stringify({ ...d, files: d.files.map((f) => ({ ...f, url: undefined })) })); } catch { /* full */ } } };
   if (done) {
@@ -28,5 +28,5 @@ export function SubmitForm() {
     );
   }
   if (!initial) return <div className="sec" style={{ minHeight: "300px" }} aria-busy="true" />;
-  return <ArticleEditor initial={initial} onSave={save} onSubmit={(d) => { save(d); setDone(d); }} note="you need a verified account to submit" />;
+  return <ArticleEditor initial={initial} refs={refs} onSave={save} onSubmit={(d) => { save(d); setDone(d); }} note="you need a verified account to submit" />;
 }
