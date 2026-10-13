@@ -21,13 +21,23 @@
 .b-contact .polft{margin-top:6px;padding:10px 10px 6px;border-top:1px solid var(--line-soft);font-size:12px;font-weight:500;line-height:1.55;color:var(--slate)}
 .b-contact .polft a{display:inline;padding:0;font-size:12px;font-weight:800;color:var(--red-text);border-radius:0}
 .b-contact .polft a:hover{background:transparent;color:var(--red-text);text-decoration:underline}
+/* phone/tablet disclosure: hidden on desktop */
+.b-contact .polsheet{display:none}
+.b-contact .polsheet summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;cursor:pointer;color:var(--ink)}
+.b-contact .polsheet summary::-webkit-details-marker{display:none}
+.b-contact .polsheet summary .k{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);flex-shrink:0}
+.b-contact .polsheet summary .cur{flex:1 1 auto;min-width:0;font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-contact .polsheet summary svg{flex-shrink:0;color:var(--slate);transition:transform .15s}
+.b-contact .polsheet[open] summary{border-radius:12px 12px 0 0;border-bottom-color:transparent}
+.b-contact .polsheet[open] summary svg{transform:rotate(180deg)}
+.b-contact .pollist{display:flex;flex-direction:column;gap:2px;padding:6px;background:var(--card);border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px}
+.b-contact .pollist a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--fg-3)}
+.b-contact .pollist a .n{font-size:10.5px;font-weight:800;color:var(--grey-2);width:18px;flex-shrink:0}
+.b-contact .pollist a:hover{background:var(--paper);color:var(--ink);text-decoration:none}
+.b-contact .pollist a.on{background:var(--ink);color:var(--on-ink);font-weight:800}
+.b-contact .pollist a.on .n{color:var(--on-ink);opacity:.6}
 @media (max-width:980px){
 .b-contact .cols, .b-contact .g2{grid-template-columns:1fr !important}
-.b-contact .polnav{position:static;flex-direction:row;flex-wrap:wrap;gap:6px;padding:10px;margin-bottom:20px;box-shadow:none}
-.b-contact .polhd{width:100%;border-bottom:0;padding:2px 4px 6px;margin-bottom:2px}
-.b-contact .polhd .c{display:none}
-.b-contact .polnav a{padding:7px 11px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;gap:0}
-.b-contact .polnav a .n{display:none}
-.b-contact .polnav a.on{border-color:var(--ink)}
-.b-contact .polft{display:none}
+.b-contact .polnav{display:none}
+.b-contact .polsheet{display:block;margin-bottom:22px}
 }
