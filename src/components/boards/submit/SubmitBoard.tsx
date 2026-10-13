@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { SubmitForm } from "./SubmitForm";
+import { editorRefs } from "@/lib/editor-refs";
 import { SITE } from "@/lib/site";
 import "@/styles/board-sub.css";
 
@@ -18,7 +19,7 @@ export function SubmitBoard() {
 </div>
 <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 316px", gap: "32px", alignItems: "start" }} className="cols">
 <div>
-<SubmitForm />
+<SubmitForm refs={editorRefs()} />
 </div>
 <aside style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", padding: "22px", background: "var(--card)" }}>

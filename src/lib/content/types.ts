@@ -29,7 +29,10 @@ export type Article = {
   updated?: string;
   readMin: number;
   author: string; // author slug
+  /** Editorial keywords (free text, set by the editors; link to search). */
   tags: string[];
+  /** Controlled facets in the Directory's own codes: "product:…", "application:…", "material:…" (material group), "region:…", "process:…", "surface:…". */
+  facets?: string[];
   standards?: string[]; // standard numbers referenced
   companies?: string[]; // company slugs
   topics?: string[];
@@ -113,6 +116,8 @@ export type EventItem = {
   summary: string;
   weAttend?: boolean;
   website?: string;
+  /** Slug of our show report, once published (past events). */
+  report?: string;
 };
 
 export type StandardStatus = "current" | "under_review" | "withdrawn" | "draft";

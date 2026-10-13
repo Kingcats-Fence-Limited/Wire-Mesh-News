@@ -1,5 +1,7 @@
 /* Ported 1:1 from canvas board Article-C. Header/footer come from the shared shell; everything between is the board's markup with article data. */
 import Link from "next/link";
+import { facetsOf } from "@/lib/facets";
+import { ShareMenu } from "./ShareMenu";
 import { Shell } from "@/components/shell/Shell";
 import { ArticleBody } from "./ArticleBody";
 import { ReadBar } from "./ReadBar";
@@ -39,11 +41,14 @@ export function ArticleBoard({ a }: { a: Article }) {
   return (
     <Shell header="compact" active={a.section} board="b-art">
 {/* ① 深色文章头：网型图案 + 大标题 + 作者条 */}
-<div className="hero" style={{ position: "relative", background: "var(--surface-dark)", color: "#FFFFFF", overflow: "hidden", paddingBottom: 0 }}>
+<div className="hero" style={{ position: "relative", background: "var(--surface-dark)", color: "#FFFFFF", paddingBottom: 0 }}>
+{/* pattern clipped in its own box so the share menu can drop below the header */}
+<span aria-hidden="true" style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
 <svg style={{ position: "absolute", right: "0", top: "0", height: "100%", width: "760px" }} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 760 560">
 <g color="#FFFFFF" opacity=".2"><rect width="760" height="560" fill={`url(#${heroPat})`} /></g>
 <rect width="760" height="560" fill="url(#fadeR)" />
 </svg>
+</span>
 <div style={{ position: "relative", paddingTop: "34px", paddingBottom: "150px" }} className="wrap hero">
 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", marginBottom: "26px" }}>
 <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "12.5px", fontWeight: "700", color: "var(--grey-2)", flexWrap: "wrap" }}>
@@ -77,7 +82,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
 <Link href="/signin/" className="icobtn gh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-5-6 5z" /></svg>Save</Link>
-<a href="#share" className="icobtn gh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 12v7h16v-7M12 16V3M8 7l4-4 4 4" /></svg>Share</a>
+<ShareMenu url={url} title={a.title} />
 <CopyLink url={url} variant="print" />
 </div>
 </div>
@@ -136,7 +141,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <SubscribeModal />
 </aside>
 <article data-article="" style={{ minWidth: "0" }} className="body">
-<details className="mobtoc"><summary><span>ON THIS PAGE · {toc.length + (a.sources?.length ? 1 : 0)}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg></summary>
+<details className="mobtoc noprint"><summary><span>ON THIS PAGE · {toc.length + (a.sources?.length ? 1 : 0)}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg></summary>
 <div>{toc.map((t) => <a key={t.id} href={`#${t.id}`} className="tocl">{t.text}</a>)}{a.sources && a.sources.length > 0 && <a href="#sources" className="tocl">Sources</a>}</div>
 </details>
 {(a.appliesTo || stds.length > 0) && (
@@ -178,9 +183,15 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 )}
 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", paddingTop: "22px", borderTop: "1px solid var(--line)" }}>
-<span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey)", marginRight: "2px" }}>TOPICS</span>
+<span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey)", marginRight: "2px" }}>KEYWORDS</span>
 {a.tags.map((t) => <Link key={t} href={`/search/?q=${enc(t)}`} className="tag">{t}</Link>)}
 </div>
+{facetsOf(a.facets).length > 0 && (
+<div className="covers" style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", paddingTop: "14px", marginTop: "14px", borderTop: "1px solid var(--line)" }}>
+<span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey)", marginRight: "2px" }}>COVERS</span>
+{facetsOf(a.facets).map((f) => <Link key={f.key} href={f.href} title={f.title} className="tag"><span style={{ fontSize: "9.5px", fontWeight: 800, letterSpacing: ".08em", color: "var(--grey)", marginRight: "6px" }}>{f.kind.toUpperCase()}</span>{f.label}</Link>)}
+</div>
+)}
 <div id="share" style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", paddingTop: "18px", marginTop: "18px", borderTop: "1px solid var(--line)" }}>
 <span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey)", marginRight: "2px" }}>SHARE</span>
 <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" className="socl"><SocialGlyph id="linkedin" size={15} /></a>
@@ -294,7 +305,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 </div>
 {/* ⑦ 继续阅读 */}
-<div style={{ marginTop: "52px", marginBottom: "56px" }} className="wrap">
+<div style={{ marginTop: "52px", marginBottom: "56px" }} className="wrap noprint">
 <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "18px" }}>
 <span style={{ fontSize: "26px" }} className="h">Read next</span>
 <span style={{ flex: "1 1 0", height: "2px", background: "var(--ink)" }}></span>

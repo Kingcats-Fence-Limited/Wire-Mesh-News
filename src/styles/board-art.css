@@ -52,3 +52,8 @@
 .b-art .hero{padding-bottom:70px !important}
 .b-art .lead{margin-top:-50px !important}
 }
+.b-art .sharemenu{position:absolute;right:0;top:calc(100% + 8px);z-index:40;min-width:220px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.22);padding:6px;display:flex;flex-direction:column}
+.b-art .sharemenu-hd{font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--grey);padding:8px 10px 6px;text-transform:uppercase}
+.b-art .sharemenu a,.b-art .sharemenu button{display:flex;align-items:center;gap:11px;min-height:42px;padding:0 10px;border:0;border-radius:9px;background:transparent;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;text-align:left}
+.b-art .sharemenu a:hover,.b-art .sharemenu button:hover,.b-art .sharemenu a:focus-visible,.b-art .sharemenu button:focus-visible{background:var(--paper);color:var(--ink)}
+.b-art .sharemenu .ic{width:30px;height:30px;border-radius:999px;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}

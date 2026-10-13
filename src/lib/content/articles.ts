@@ -216,6 +216,20 @@ const seeds: Seed[] = [
   { slug: "sponsored-cleanroom-screens-selection", section: "technical_guides", subsection: "materials", type: "sponsored", sponsor: "SilverMesh Filtration", title: "Selecting cleanroom-grade screens: a supplier's checklist", dek: "Paid for by SilverMesh Filtration. Mesh count, weave and finish for pharmaceutical screening.", date: "2026-09-15", author: AUTH.kra, tags: ["Sponsored"], companies: ["silvermesh-filtration"] },
 ];
 
+/* Seed articles carry editorial keywords; derive the controlled facets the Directory uses
+   from the ones that name a vocabulary item. Explicit facets (from the editor/CMS) win. */
+const KEYWORD_FACETS: Record<string, string[]> = {
+  "Welded mesh": ["product:welded_mesh_panel"], "Chain link": ["product:chain_link"], "358 mesh": ["product:anti_climb_358"], "Twin-wire": ["product:twin_wire_panel"],
+  "Gabions": ["product:gabion"], "Grating": ["product:steel_grating"], "Expanded metal": ["product:expanded_metal"], "Woven wire": ["product:woven_wire_cloth"],
+  "Wire rod": ["product:wire_rod"], "Posts": ["product:fence_post"], "Machinery": ["product:mesh_machinery"], "Façades": ["product:architectural_mesh", "application:architecture"],
+  "Galvanizing": ["process:galvanizing"], "Welding": ["process:welding"], "Powder coating": ["surface:powder"], "Coatings": ["surface:hdg"],
+  "Stainless": ["material:stainless"], "Steel": ["material:carbon_steel"], "Filtration": ["application:energy_environment"],
+  "Perimeter security": ["application:industrial_security"], "Security": ["application:industrial_security"], "Data centres": ["application:industrial_security"],
+  "Agriculture": ["application:agriculture"], "Architecture": ["application:architecture"], "Infrastructure": ["application:architecture"], "Sports": ["application:sports_lifestyle"], "Solar": ["application:energy_environment"],
+  "EU": ["region:europe"], "Europe": ["region:europe"], "US tariffs": ["region:north_america"], "Section 232": ["region:north_america"],
+};
+const facetsFor = (tags: string[]) => [...new Set(tags.flatMap((t) => KEYWORD_FACETS[t] ?? []))];
+
 function wordsToMin(body: Block[]): number {
   const words = body.reduce((n, b) => n + ("html" in b ? b.html.split(/\s+/).length : "text" in b ? String(b.text).split(/\s+/).length : 40), 0);
   return Math.max(4, Math.round(words / 180));
@@ -228,7 +242,7 @@ export const ARTICLES: Article[] = seeds
     // generic bodies all weigh the same; spread read times deterministically 5–9 min
     const hash = [...s.slug].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7);
     const readMin = s.readMin ?? (generic ? 5 + (hash % 5) : wordsToMin(body));
-    return { ...s, body, readMin } as Article;
+    return { ...s, body, readMin, facets: s.facets ?? facetsFor(s.tags) } as Article;
   })
   .sort((a, b) => (a.date < b.date ? 1 : -1));
 

@@ -14,22 +14,23 @@ import { SUBSECTION } from "@/data/vocab/subsection";
 import { ARTICLE_TYPE } from "@/data/vocab/article_type";
 import { PRODUCT } from "@/data/vocab/product";
 import { APPLICATION_AREA } from "@/data/vocab/application_area";
-import { MATERIAL } from "@/data/vocab/material";
+import { MATERIAL_GROUP } from "@/data/vocab/material_group";
 import { PROCESS } from "@/data/vocab/process";
 import { SURFACE_TREATMENT } from "@/data/vocab/surface_treatment";
 import { REGION } from "@/data/vocab/region";
 import "@/styles/editor.css";
 
-import type { ArticleDraft, EditorFile } from "./draft";
-export { emptyDraft, type ArticleDraft, type EditorFile } from "./draft";
+import type { ArticleDraft, EditorFile, EditorRefs } from "./draft";
+export { emptyDraft, normalizeDraft, type ArticleDraft, type EditorFile, type EditorRefs } from "./draft";
 
 const SECTIONS = SECTION.filter((s) => s.code !== "letters_opinion");
-const TYPES = ARTICLE_TYPE.filter((t) => ["news", "analysis", "guide", "case_study", "interview", "explainer"].includes(t.code));
+/* Only the types the site can publish and label (Article.type); opinion, letters and sponsored content have their own routes. */
+const TYPES = ARTICLE_TYPE.filter((t) => ["news", "analysis", "guide", "case_study"].includes(t.code));
 const LICENCES = ["Own photo or own work", "Supplied by the company shown, with permission", "Licensed from an agency or stock library", "Public domain or Creative Commons (state which)"];
 const TAGS = [
   ...PRODUCT.map((x) => ({ k: `product:${x.code}`, label: x.labelEn, group: "Product" })),
   ...APPLICATION_AREA.map((x) => ({ k: `application:${x.code}`, label: x.labelEn, group: "Application" })),
-  ...MATERIAL.map((x) => ({ k: `material:${x.code}`, label: x.labelEn, group: "Material" })),
+  ...MATERIAL_GROUP.map((x) => ({ k: `material:${x.code}`, label: x.labelEn, group: "Material" })),
   ...PROCESS.map((x) => ({ k: `process:${x.code}`, label: x.labelEn, group: "Process" })),
   ...SURFACE_TREATMENT.map((x) => ({ k: `surface:${x.code}`, label: x.labelEn, group: "Surface" })),
   ...REGION.map((x) => ({ k: `region:${x.code}`, label: x.labelEn, group: "Region" })),
@@ -98,8 +99,28 @@ function Rendered({ body, files }: { body: string; files: EditorFile[] }) {
   return <div className="aed-prose">{blocks}</div>;
 }
 
-export function ArticleEditor({ initial, onSave, onSubmit, onClose, submitLabel = "Submit for review", note }: {
-  initial: ArticleDraft; onSave: (d: ArticleDraft) => void; onSubmit: (d: ArticleDraft) => void; onClose?: () => void; submitLabel?: string; note?: React.ReactNode;
+/* Multi-select from a fixed list, with type-to-filter. */
+function Picker({ id, label, hint, value, onChange, options, max }: { id: string; label: string; hint: string; value: string[]; onChange: (v: string[]) => void; options: { k: string; label: string; sub?: string }[]; max: number }) {
+  const [q, setQ] = useState("");
+  const hits = q.trim() ? options.filter((o) => !value.includes(o.k) && `${o.label} ${o.sub ?? ""}`.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 8) : [];
+  const lab = (k: string) => options.find((o) => o.k === k)?.label ?? k;
+  return (
+    <div className="aed-fld" style={{ marginBottom: 0 }}>
+      <label htmlFor={id}>{label}</label>
+      {value.length > 0 && <div className="aed-tags">{value.map((k) => <span key={k} className="aed-tag">{lab(k)}<button type="button" aria-label={`Remove ${lab(k)}`} onClick={() => onChange(value.filter((x) => x !== k))}>×</button></span>)}</div>}
+      {value.length < max && (
+        <div style={{ position: "relative" }}>
+          <input id={id} className="aed-inp sm" value={q} autoComplete="off" placeholder="Type to search…" onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (hits[0]) { onChange([...value, hits[0].k]); setQ(""); } } }} />
+          {hits.length > 0 && <div className="aed-menu" role="listbox">{hits.map((o) => <button key={o.k} type="button" role="option" aria-selected={false} onClick={() => { onChange([...value, o.k]); setQ(""); }}><span style={{ fontWeight: 800 }}>{o.label}</span>{o.sub && <span style={{ color: "var(--slate)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.sub}</span>}</button>)}</div>}
+        </div>
+      )}
+      <span className="aed-hint">{hint}</span>
+    </div>
+  );
+}
+
+export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submitLabel = "Submit for review", note }: {
+  initial: ArticleDraft; refs: EditorRefs; onSave: (d: ArticleDraft) => void; onSubmit: (d: ArticleDraft) => void; onClose?: () => void; submitLabel?: string; note?: React.ReactNode;
 }) {
   const [d, setD] = useState<ArticleDraft>(initial);
   const [view, setView] = useState<"edit" | "preview">("edit");
@@ -155,7 +176,7 @@ export function ArticleEditor({ initial, onSave, onSubmit, onClose, submitLabel 
     !d.section && "Section",
     d.section && !d.subsection && "Sub-section",
     !d.type && "Article type",
-    d.tags.length === 0 && "At least one tag",
+    d.tags.length === 0 && "What it covers: at least one product, application, material or region",
     ...d.files.filter((f) => !f.caption.trim() || !f.credit.trim() || !f.licence).map((f) => `Caption, credit and licence for “${f.name}”`),
     d.sources.filter((s) => s.trim()).length === 0 && "At least one source",
     !d.byline.trim() && "By-line",
@@ -189,7 +210,9 @@ export function ArticleEditor({ initial, onSave, onSubmit, onClose, submitLabel 
           <div className="aed-meta" style={{ marginBottom: "18px" }}>By {d.byline || "—"} · {wc.toLocaleString("en-US")} words · about {Math.max(1, Math.round(wc / 230))} min read</div>
           {d.disclosure === "yes" && <div className="aed-disc"><b>Disclosure.</b> {d.disclosureText}</div>}
           <Rendered body={d.body} files={d.files} />
-          {d.tags.length > 0 && <div className="aed-tags" style={{ marginTop: "18px" }}>{d.tags.map((t) => <span key={t} className="aed-tag ro">{TAG[t]?.label ?? t}</span>)}</div>}
+          {d.tags.length > 0 && <div className="aed-tags" style={{ marginTop: "18px" }}><span className="aed-kick" style={{ alignSelf: "center", color: "var(--slate)" }}>COVERS</span>{d.tags.map((t) => <span key={t} className="aed-tag ro">{TAG[t]?.label ?? t}</span>)}</div>}
+          {d.standards.length > 0 && <div className="aed-tags" style={{ marginTop: "8px" }}><span className="aed-kick" style={{ alignSelf: "center", color: "var(--slate)" }}>STANDARDS</span>{d.standards.map((t) => <span key={t} className="aed-tag ro">{t}</span>)}</div>}
+          {d.companies.length > 0 && <div className="aed-tags" style={{ marginTop: "8px" }}><span className="aed-kick" style={{ alignSelf: "center", color: "var(--slate)" }}>COMPANIES</span>{d.companies.map((t) => <span key={t} className="aed-tag ro">{refs.companies.find((c) => c.slug === t)?.name ?? t}</span>)}</div>}
           {d.sources.some((s) => s.trim()) && <div className="aed-src"><b>Sources</b><ol>{d.sources.filter((s) => s.trim()).map((s, i) => <li key={i}>{s}</li>)}</ol></div>}
         </div>
       ) : (
@@ -223,17 +246,23 @@ export function ArticleEditor({ initial, onSave, onSubmit, onClose, submitLabel 
             </div>
             <span className="aed-hint" style={{ marginTop: "-8px", display: "block" }}>Your suggestion; the final section, placement and publication date are the editors&apos; decision. Sponsored content goes through <Link href="/advertise/">Advertise</Link>, not here.</span>
             <div className="aed-fld" style={{ marginTop: "16px", marginBottom: 0 }}>
-              <label htmlFor="ae-tag">TAGS · {d.tags.length} / {MAX_TAGS}</label>
+              <label htmlFor="ae-tag">WHAT IT COVERS · {d.tags.length} / {MAX_TAGS}</label>
+              <span className="aed-hint" style={{ marginTop: "-2px" }}>Products, application areas, materials and regions use the same codes as the Directory filters, so readers can go from the article to the companies that make or use what it describes. Editors add search keywords at publication.</span>
               <div className="aed-tags">
                 {d.tags.map((t) => <span key={t} className="aed-tag"><small>{TAG[t]?.group}</small>{TAG[t]?.label ?? t}<button type="button" aria-label={`Remove ${TAG[t]?.label}`} onClick={() => set("tags", d.tags.filter((x) => x !== t))}>×</button></span>)}
               </div>
               {d.tags.length < MAX_TAGS && (
                 <div style={{ position: "relative" }}>
-                  <input id="ae-tag" className="aed-inp" value={tagQ} onChange={(e) => setTagQ(e.target.value)} placeholder="Type to find a product, application, material, process, coating or region" autoComplete="off" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (tagHits[0]) { set("tags", [...d.tags, tagHits[0].k]); setTagQ(""); } } }} />
+                  <input id="ae-tag" className="aed-inp" value={tagQ} onChange={(e) => setTagQ(e.target.value)} placeholder="Type to find a product, application area, material, process, coating or region" autoComplete="off" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (tagHits[0]) { set("tags", [...d.tags, tagHits[0].k]); setTagQ(""); } } }} />
                   {tagHits.length > 0 && <div className="aed-menu" role="listbox">{tagHits.map((t) => <button key={t.k} type="button" role="option" aria-selected={false} onClick={() => { set("tags", [...d.tags, t.k]); setTagQ(""); }}><small>{t.group}</small>{t.label}</button>)}</div>}
                   {tagQ.trim() && tagHits.length === 0 && <span className="aed-hint">No match in the site vocabulary. Tags come from fixed lists so they work as filters; write to the editors if one is missing.</span>}
                 </div>
               )}
+            </div>
+            <div className="aed-g3" style={{ marginTop: "16px" }}>
+              <Picker id="ae-std" label="STANDARDS REFERENCED" hint="Linked to the Standards index; the article appears on each standard's page." value={d.standards} onChange={(v) => set("standards", v)} options={refs.standards.map((x) => ({ k: x.no, label: x.no, sub: x.title }))} max={8} />
+              <Picker id="ae-co" label="COMPANIES NAMED" hint="Linked to their Directory profiles as related coverage. Named companies get a right of reply." value={d.companies} onChange={(v) => set("companies", v)} options={refs.companies.map((x) => ({ k: x.slug, label: x.name }))} max={6} />
+              <Picker id="ae-top" label="TOPIC (OPTIONAL)" hint="Adds the article to a running topic page." value={d.topics} onChange={(v) => set("topics", v)} options={refs.topics.map((x) => ({ k: x.slug, label: x.name }))} max={2} />
             </div>
           </section>
 
