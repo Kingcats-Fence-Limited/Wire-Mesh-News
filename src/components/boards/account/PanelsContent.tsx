@@ -7,6 +7,15 @@ import { useState } from "react";
 import { useDemo, download, today, uid, type SubStatus, type Submission, type CommentStatus, type Bookmark, type MsgStatus, type Message } from "./store";
 import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, type Tone } from "./ui";
 import { ENQUIRY_SUBJECT } from "@/data/vocab/enquiry_subject";
+import { SECTION } from "@/data/vocab/section";
+import { demoBg } from "@/lib/demo";
+import { ArticleEditor, emptyDraft, type ArticleDraft } from "@/components/editor/ArticleEditor";
+
+/* A submission saved before the full editor existed: build its draft from what we have. */
+const toDraft = (s: Submission, byline: string): ArticleDraft => s.draft ?? {
+  ...emptyDraft(byline), title: s.title === "Untitled draft" ? "" : s.title,
+  dek: s.excerpt.split("\n")[0] ?? "", body: s.excerpt, section: SECTION.find((x) => x.label === s.section)?.code ?? "",
+};
 
 /* ------------------------------- Submissions ------------------------------- */
 const SUB: Record<SubStatus, [string, Tone]> = {
@@ -20,7 +29,6 @@ export function Submissions() {
   const [f, setF] = useState<SubFilter>("all");
   const [open, setOpen] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
-  const [draft, setDraft] = useState({ title: "", excerpt: "" });
   const n = (s: SubStatus) => d.submissions.filter((x) => x.status === s).length;
   const list = d.submissions.filter((x) => f === "all" || x.status === f);
   const upd = (id: string, patch: Partial<Submission>) => set((x) => ({ ...x, submissions: x.submissions.map((s) => (s.id === id ? { ...s, ...patch } : s)) }));
@@ -29,16 +37,44 @@ export function Submissions() {
     set((x) => ({ ...x, submissions: x.submissions.filter((y) => y.id !== s.id) }));
     toast(`Draft “${s.title}” deleted.`, () => set((x) => ({ ...x, submissions: before })));
   };
-  const startEdit = (s: Submission) => { setEditing(s.id); setOpen(s.id); setDraft({ title: s.title, excerpt: s.excerpt }); };
+  const startEdit = (s: Submission) => { setEditing(s.id); window.scrollTo({ top: 0 }); };
   const newDraft = () => {
-    const s: Submission = { id: uid(), title: "Untitled draft", status: "draft", section: "Technical Guides", updated: today(), excerpt: "", words: 0 };
+    const s: Submission = { id: uid(), title: "Untitled draft", status: "draft", section: "—", updated: today(), excerpt: "", words: 0, draft: emptyDraft(`${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`) };
     set((x) => ({ ...x, submissions: [s, ...x.submissions] }));
     setF("all"); startEdit(s);
   };
+  const fromDraft = (dr: ArticleDraft): Partial<Submission> => ({ title: dr.title.trim() || "Untitled draft", excerpt: dr.dek || dr.body.slice(0, 280), words: dr.body.trim() ? dr.body.trim().split(/\s+/).length : 0, section: SECTION.find((x) => x.code === dr.section)?.label ?? "—", draft: dr, updated: today() });
+
+  const cur = editing ? d.submissions.find((x) => x.id === editing) : undefined;
+  if (cur) {
+    const byline = `${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`;
+    return (
+      <>
+        <Head title={cur.status === "changes_requested" ? "Edit & resubmit" : cur.status === "published" ? "Submit an edit" : "Edit draft"} sub={<><button type="button" className="tbtn" style={{ color: "var(--red-text)", fontSize: "13px" }} onClick={() => setEditing(null)}>← Back to My submissions</button></>} actions={<Pill tone={SUB[cur.status][1]}>{SUB[cur.status][0]}</Pill>} />
+        {cur.note && (
+          <div style={{ background: "var(--st-red-bg)", borderLeft: "4px solid var(--red)", borderRadius: "0 8px 8px 0", padding: "11px 15px" }}>
+            <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--red-deep)", marginBottom: "4px" }}>EDITOR&apos;S NOTE</div>
+            <div style={{ fontSize: "13.5px", fontWeight: 500, lineHeight: 1.6, color: "var(--fg-3)" }}>{cur.note}</div>
+          </div>
+        )}
+        <ArticleEditor key={cur.id} initial={toDraft(cur, byline)}
+          submitLabel={cur.status === "changes_requested" ? "Resubmit for review" : cur.status === "published" ? "Send edit for review" : "Submit for review"}
+          note={cur.status === "published" ? "the live article stays as it is until the edit is approved" : undefined}
+          onSave={(dr) => { upd(cur.id, fromDraft(dr)); toast("Draft saved."); }}
+          onSubmit={(dr) => {
+            if (cur.status === "published") upd(cur.id, { ...fromDraft(dr), status: "published", editPending: true });
+            else upd(cur.id, { ...fromDraft(dr), status: "pending", submitted: today(), note: undefined, reviewed: undefined });
+            set((x) => ({ ...x, notices: [{ id: uid(), kind: "submission", text: `“${dr.title}” was sent to the editors. A reply usually takes five working days.`, date: today(), read: false }, ...x.notices] }));
+            setEditing(null); setF("all"); toast("Submitted. The text is locked while the editors review it.");
+          }}
+          onClose={() => setEditing(null)} />
+      </>
+    );
+  }
 
   return (
     <>
-      <Head title="My submissions" sub="Everything you have sent to the editors, with where it stands. Drafts are visible to you only." actions={<><button type="button" className="btn dark" onClick={newDraft}>+ New draft here</button><Link href="/submit/" className="btn">Open the full editor</Link></>} />
+      <Head title="My submissions" sub="Everything you have sent to the editors, with where it stands. Drafts are visible to you only." actions={<><button type="button" className="btn dark" onClick={newDraft}>+ New submission</button></>} />
       <Chips label="Filter by status" value={f} onChange={setF} items={[
         { k: "all", label: "All", n: d.submissions.length }, { k: "draft", label: "Draft", n: n("draft") }, { k: "pending", label: "Pending", n: n("pending") },
         { k: "changes_requested", label: "Changes requested", n: n("changes_requested") }, { k: "published", label: "Published", n: n("published") }, { k: "rejected", label: "Not accepted", n: n("rejected") },
@@ -47,7 +83,7 @@ export function Submissions() {
       <div className="panel">
         {list.length === 0 && <div style={{ padding: "20px" }}><Empty>Nothing with this status.</Empty></div>}
         {list.map((s) => {
-          const isOpen = open === s.id, isEdit = editing === s.id;
+          const isOpen = open === s.id;
           return (
             <div key={s.id} className="row">
               <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", gap: "7px", minWidth: 0 }}>
@@ -56,18 +92,6 @@ export function Submissions() {
                   {s.editPending && <Pill tone="amber">EDIT IN REVIEW</Pill>}
                   <span className="meta">{s.section} · {s.submitted ? `Submitted ${s.submitted}` : `Saved ${s.updated}`}{s.reviewed ? ` · Reviewed ${s.reviewed}` : ""} · {s.words.toLocaleString("en-US")} words</span>
                 </div>
-                {isEdit ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <Field id={`st-${s.id}`} label="TITLE"><input id={`st-${s.id}`} className="inp" value={draft.title} maxLength={120} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /></Field>
-                    <Field id={`sx-${s.id}`} label="TEXT" aside={<span className="meta">{draft.excerpt.trim() ? draft.excerpt.trim().split(/\s+/).length : 0} words</span>}><textarea id={`sx-${s.id}`} rows={6} className="inp" value={draft.excerpt} onChange={(e) => setDraft({ ...draft, excerpt: e.target.value })} placeholder="Start writing. The full editor adds images, sources and the disclosure form." /></Field>
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                      <button type="button" className="btn dark" onClick={() => { upd(s.id, { title: draft.title || "Untitled draft", excerpt: draft.excerpt, words: draft.excerpt.trim() ? draft.excerpt.trim().split(/\s+/).length : 0, updated: today() }); setEditing(null); toast("Draft saved."); }}>Save draft</button>
-                      <button type="button" className="btn" disabled={!draft.title.trim() || draft.excerpt.trim().split(/\s+/).length < 30} title="At least 30 words to submit" onClick={() => { upd(s.id, { title: draft.title, excerpt: draft.excerpt, words: draft.excerpt.trim().split(/\s+/).length, status: "pending", submitted: today(), note: undefined, updated: today() }); setEditing(null); toast("Submitted for review. Editors usually reply within five working days."); }}>{s.status === "changes_requested" ? "Resubmit" : "Submit for review"}</button>
-                      <button type="button" className="btn" onClick={() => setEditing(null)}>Cancel</button>
-                    </div>
-                    <span className="meta">Submitting needs at least 30 words here; the full editor checks sources and rights.</span>
-                  </div>
-                ) : (
                   <>
                     <button type="button" onClick={() => setOpen(isOpen ? null : s.id)} aria-expanded={isOpen} className="tbtn h" style={{ fontSize: "19px", color: s.status === "rejected" ? "var(--slate)" : undefined }}>{s.title}</button>
                     {s.note && (
@@ -80,18 +104,15 @@ export function Submissions() {
                     {s.status === "pending" && <p style={{ margin: 0, lineHeight: 1.5 }} className="meta">With the editors; the text is locked while in review. Withdraw it to draft to change it.</p>}
                     {s.status === "published" && <p style={{ margin: 0, lineHeight: 1.5 }} className="meta">While an edit is in review the live article stays as it is; the new version replaces it once approved.</p>}
                   </>
-                )}
               </div>
-              {!isEdit && (
                 <div className="acts">
                   <button type="button" className="btn" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : s.id)}>{isOpen ? "Close preview ▴" : "Preview text ▾"}</button>
                   {(s.status === "draft" || s.status === "changes_requested" || s.status === "withdrawn") && <button type="button" className="btn dark" onClick={() => startEdit(s)}>{s.status === "changes_requested" ? "Edit & resubmit" : "Continue editing"}</button>}
                   {s.status === "pending" && <ConfirmBtn label="Withdraw to draft" confirm="Withdraw" onConfirm={() => { upd(s.id, { status: "draft", submitted: undefined, updated: today() }); toast("Withdrawn to draft. You can edit and resubmit."); }} />}
-                  {s.status === "published" && <>{s.href && <Link href={s.href} className="btn">View live</Link>}<button type="button" className="btn" disabled={s.editPending} onClick={() => { upd(s.id, { editPending: true }); toast("Edit sent for review. The live article is unchanged until it is approved."); }}>{s.editPending ? "Edit in review" : "Submit an edit"}</button></>}
+                  {s.status === "published" && <>{s.href && <a href={s.href} target="_blank" rel="noopener" className="btn">View live ↗</a>}<button type="button" className="btn" disabled={s.editPending} onClick={() => startEdit(s)}>{s.editPending ? "Edit in review" : "Submit an edit"}</button></>}
                   {s.status === "draft" && <ConfirmBtn label="Delete" confirm="Delete draft" danger onConfirm={() => remove(s)} />}
                   {s.status === "rejected" && <Link href="/policies/submission-guidelines/" className="btn">Guidelines</Link>}
                 </div>
-              )}
             </div>
           );
         })}
@@ -119,7 +140,15 @@ export function Comments() {
           <div key={c.id} className="row">
             <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", gap: "7px", minWidth: 0 }}>
               <div style={{ display: "flex", gap: "9px", alignItems: "center", flexWrap: "wrap" }}><Pill tone={COM[c.status][1]}>{COM[c.status][0]}</Pill><span className="meta">{c.date}</span></div>
-              <Link href={c.on.href} style={{ fontSize: "12.5px", fontWeight: 800, color: "var(--red-text)" }}>On: {c.on.title}</Link>
+              <a href={`${c.on.href}#comments`} target="_blank" rel="noopener" className="oncard" title="Open the article in a new tab">
+                {c.on.slug && <span className="oncard-th" style={demoBg(c.on.slug)} aria-hidden="true" />}
+                <span style={{ minWidth: 0, flex: "1 1 auto" }}>
+                  <span className="oncard-k">COMMENT ON{c.on.section ? ` · ${c.on.section.toUpperCase()}` : ""}</span>
+                  <span className="oncard-t">{c.on.title}</span>
+                  {c.on.date && <span className="meta">Published {c.on.date}</span>}
+                </span>
+                <span className="oncard-go">Open article <span aria-hidden="true">↗</span></span>
+              </a>
               {edit?.id === c.id ? (
                 <>
                   <textarea className="inp" rows={3} value={edit.text} maxLength={1500} onChange={(e) => setEdit({ id: c.id, text: e.target.value })} aria-label="Edit comment" />
@@ -128,7 +157,7 @@ export function Comments() {
                     <button type="button" className="btn" onClick={() => setEdit(null)}>Cancel</button>
                   </div>
                 </>
-              ) : <span style={{ fontSize: "14px", fontWeight: 500, lineHeight: 1.6 }}>{c.text}</span>}
+              ) : <blockquote className="cq">{c.text}</blockquote>}
               {c.reason && <span className="meta">Reason: {c.reason}</span>}
             </div>
             {edit?.id !== c.id && (

@@ -4,12 +4,13 @@
    seed from the site's own content, the browser keeps edits in localStorage so a reviewer
    can change things, reload and still see them, and "Reset demo data" goes back to the
    seed. Nothing leaves the browser. */
+import type { ArticleDraft } from "@/components/editor/ArticleEditor";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 export type SubStatus = "draft" | "pending" | "changes_requested" | "rejected" | "published" | "withdrawn";
-export type Submission = { id: string; title: string; status: SubStatus; section: string; updated: string; submitted?: string; reviewed?: string; note?: string; excerpt: string; href?: string; editPending?: boolean; words: number };
+export type Submission = { id: string; title: string; status: SubStatus; section: string; updated: string; submitted?: string; reviewed?: string; note?: string; excerpt: string; href?: string; editPending?: boolean; words: number; draft?: ArticleDraft };
 export type CommentStatus = "pending" | "approved" | "rejected" | "removed";
-export type Comment = { id: string; text: string; status: CommentStatus; date: string; on: { title: string; href: string }; reason?: string };
+export type Comment = { id: string; text: string; status: CommentStatus; date: string; on: { title: string; href: string; slug?: string; section?: string; date?: string }; reason?: string };
 export type Bookmark = { id: string; kind: "article" | "company" | "standard" | "event"; title: string; href: string; meta: string; saved: string };
 export type MsgStatus = "awaiting_reply" | "replied" | "no_reply" | "sent";
 export type Message = { id: string; subject: string; to: { name: string; href: string }; status: MsgStatus; sent: string; replied?: string; body: string; product?: string; quantity?: string };
@@ -35,7 +36,7 @@ export type Demo = {
 };
 
 const KEY = "wmn-demo-account";
-const VERSION = 3;
+const VERSION = 5;
 
 type Toast = { id: number; text: string; undo?: () => void };
 type Ctx = { d: Demo; set: (fn: (d: Demo) => Demo) => void; reset: () => void; toast: (text: string, undo?: () => void) => void; go: (panel: string) => void };
