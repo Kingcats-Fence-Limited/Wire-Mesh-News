@@ -15,3 +15,12 @@
 - Pages: home, section + subsection, article, letters (list / letter / column), directory (filters) + company + contact form, events, standards index + detail (follow + change log), market data + methodology, topics, authors, search, about, contact, advertise, submit, sign-in / register / subscribe, 404, RSS
 - One search index and one result renderer shared by the overlay and the results page
 - Responsive at 390 / 900 / 1340 with no horizontal overflow
+
+## 0.3.0 — Account preview, favicon (2026-10-13)
+- /account rebuilt as an in-place app: the sidebar switches panels (URL hash follows; back button works), phones get a sticky tab strip
+- Full sample data built from site content; every panel is editable and every button acts on browser-local demo state (localStorage, "Reset demo data")
+- Panels: Overview, Profile (photo upload), Author profile (live card preview), Account settings (email change with confirmation, password strength, email preferences, devices, data download, delete with typed confirm), Submissions (filters, edit/resubmit, withdraw, delete with undo), Comments, Bookmarks (filter/search/sort), Messages (read, CSV export), Notifications
+- My company editor: name and logo, registered address (country → ISO 3166-2 subdivision via /api/vocab/subdivisions/{CC}/), phone calling-code drop-down, product range, product cards with photo picking, company facts, certificates (locked after submission), editor-controlled fields
+- Billing: payment methods (card entry is the processor's page), invoice details, invoice view, monthly/annual, cancel and resume
+- Section pages: "Most read" only from ranked data
+- Favicon set from the logo pack: favicon.ico, icon.svg, apple-icon.png, web manifest 192/512

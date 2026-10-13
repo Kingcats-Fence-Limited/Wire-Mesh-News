@@ -7,7 +7,7 @@
    reviewed before they go live; company type, related coverage and editorial notes stay
    with the editors; certification details lock once submitted. */
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PRODUCT, PRODUCT_BY_CODE } from "@/data/vocab/product";
 import { CATEGORY, CATEGORY_BY_CODE } from "@/data/vocab/category";
 import { REGION } from "@/data/vocab/region";
@@ -16,16 +16,28 @@ import { CERTIFICATION_TYPE, CERTIFICATION_TYPE_BY_CODE } from "@/data/vocab/cer
 import { CERTIFICATION_ISSUER } from "@/data/vocab/certification_issuer";
 import { ORGANISATION_TYPE_BY_CODE } from "@/data/vocab/organisation_type";
 import { APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
-import { COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { demoBg } from "@/lib/demo";
 import type { Company } from "@/lib/content/types";
+import type { SubOpt } from "@/lib/vocab-geo";
 
 type Related = { title: string; href: string };
 type Mode = "view" | "edit" | "sent";
 
 const SUMMARY_MAX = 400;
+const MAX_PHOTOS = 6;
+/* Calling codes from the country vocabulary, sorted by country name; the option shows the ISO code so +1 / +44 etc. stay distinguishable. */
+const DIAL_ALL = COUNTRY.slice().sort((a, b) => a.name.localeCompare(b.name));
+const DIAL = COUNTRY.filter((c) => c.dialCode).slice().sort((a, b) => a.name.localeCompare(b.name));
 /* The pending edit shown in review: one product added to the range. */
-const PENDING_ADD = "twin_wire_panel";
+const PENDING_ADD = "razor_wire";
 
+const LogoMark = ({ src, name, size = 46 }: { src: string | null; name: string; size?: number }) => (
+  <span style={{ width: size, height: size, borderRadius: size > 60 ? "16px" : "11px", background: src ? "var(--card)" : "var(--ink)", border: src ? "1px solid var(--line)" : undefined, color: "var(--on-ink)", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: size > 60 ? "26px" : "15px", fontWeight: 800, overflow: "hidden" }}>
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    {src ? <img src={src} alt="Company logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()}
+  </span>
+);
 const Lock = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
 );
@@ -60,31 +72,64 @@ const HISTORY: { date: string; field: string; change: string; status: "review" |
   { date: "30 Sep 2026", field: "Claim", change: "Profile claimed with a company-domain email", status: "approved", note: "Verified by the directory editor" },
 ];
 
-export function CompanyPanel({ co, related }: { co: Company; related: Related[] }) {
+export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Related[]; subs0: SubOpt[] }) {
   const [mode, setMode] = useState<Mode>("view");
   const [showHistory, setShowHistory] = useState(false);
 
   const initial = useMemo(() => ({
+    name: co.name,
+    legalName: co.legalName ?? "",
     summary: co.summary,
     products: co.products,
     website: co.website ?? "",
     email: "",
+    dial: co.country,
     phone: "",
+    country: co.country,
+    subdivision: co.subdivision ?? "",
     city: co.city,
+    street: "",
+    postcode: "",
+    showStreet: false,
     employees: co.employees ?? "",
     markets: co.exportMarkets ?? [],
   }), [co]);
   const [f, setF] = useState(initial);
+  const initialCards = useMemo<Card[]>(() => co.productCards.map((p, i) => ({ id: `c${i}`, product: p.product ?? "", name: p.name, spec: p.spec, live: p.photos, added: [], existing: true })), [co]);
+  const [cards, setCards] = useState<Card[]>(initialCards);
   const [newCert, setNewCert] = useState({ type: "", issuer: "", no: "", expires: "" });
+  const [subs, setSubs] = useState<{ country: string; list: SubOpt[] | null }>({ country: co.country, list: subs0 });
+  const subsFor = useRef<string>(co.country);
+  useEffect(() => {
+    if (subsFor.current === f.country) return;
+    subsFor.current = f.country;
+    const want = f.country;
+    setSubs({ country: want, list: null });
+    fetch(`/api/vocab/subdivisions/${want}/`).then((r) => (r.ok ? r.json() : [])).then((list: SubOpt[]) => { if (subsFor.current === want) setSubs({ country: want, list }); }).catch(() => { if (subsFor.current === want) setSubs({ country: want, list: [] }); });
+  }, [f.country]);
+  const setCountry = (c: string) => setF((x) => ({ ...x, country: c, subdivision: "", dial: x.dial === x.country ? c : x.dial }));
   const [catOpen, setCatOpen] = useState<string>(co.categories[0] ?? "fencing");
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((x) => ({ ...x, [k]: v }));
   const toggle = (k: "products" | "markets", code: string) => set(k, f[k].includes(code) ? f[k].filter((c) => c !== code) : [...f[k], code]);
 
+  const [logo, setLogo] = useState<string | null>(null);
+  const [logoErr, setLogoErr] = useState<string | null>(null);
+  const onLogo = (file?: File) => {
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 2 * 1024 * 1024) { setLogoErr("PNG, JPG, WebP or SVG, up to 2 MB."); return; }
+    setLogoErr(null);
+    if (logo) URL.revokeObjectURL(logo);
+    setLogo(URL.createObjectURL(file));
+  };
   const changed = [
+    (f.name !== initial.name || f.legalName !== initial.legalName) && "Company name",
+    logo && "Logo",
     f.summary !== initial.summary && "Description",
     (f.products.length !== initial.products.length || f.products.some((p) => !initial.products.includes(p))) && "Product range",
-    (f.website !== initial.website || f.email !== initial.email || f.phone !== initial.phone || f.city !== initial.city) && "Contact details",
+    (f.website !== initial.website || f.email !== initial.email || f.phone !== initial.phone || f.dial !== initial.dial) && "Contact details",
+    (f.country !== initial.country || f.subdivision !== initial.subdivision || f.city !== initial.city || f.street !== initial.street || f.postcode !== initial.postcode || f.showStreet !== initial.showStreet) && "Registered address",
     (f.employees !== initial.employees || f.markets.length !== initial.markets.length || f.markets.some((m) => !initial.markets.includes(m))) && "Company facts",
+    (cards.length !== initialCards.length || cards.some((c, i) => { const o = initialCards[i]; return !o || c.added.length > 0 || c.live !== o.live || c.name !== o.name || c.spec !== o.spec || c.product !== o.product; })) && "Products & photos",
     newCert.type && "New certificate",
   ].filter(Boolean) as string[];
 
@@ -92,12 +137,12 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
 
   /* ---------- compact view ---------- */
   const head = (
-    <div className="minihd"><span style={{ fontSize: "17px" }} className="h">My company</span><span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="st">CLAIMED</span></div>
+    <div className="minihd"><span style={{ fontSize: "17px" }} className="h">Profile status</span><span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="st">CLAIMED</span></div>
   );
   const summaryBlock = (
     <div style={{ display: "flex", gap: "13px", alignItems: "flex-start" }}>
-      <span style={{ width: "46px", height: "46px", borderRadius: "11px", background: "var(--ink)", color: "var(--on-ink)", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "15px", fontWeight: 800 }}>{co.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</span>
-      <div style={{ minWidth: 0 }}><div style={{ fontSize: "15px", fontWeight: 800 }}>{co.name}</div><div className="meta">{ORGANISATION_TYPE_BY_CODE[co.orgType]?.labelEn ?? co.orgType} · {co.city}, {country}</div><Link href={`/directory/${co.slug}/`} style={{ fontSize: "12px", fontWeight: 800, color: "var(--red-text)" }}>View public profile &#8594;</Link></div>
+      <LogoMark src={logo} name={f.name || co.name} />
+      <div style={{ minWidth: 0 }}><div style={{ fontSize: "15px", fontWeight: 800 }}>{f.name || co.name}</div><div className="meta">{ORGANISATION_TYPE_BY_CODE[co.orgType]?.labelEn ?? co.orgType} · {co.city}, {country}</div><Link href={`/directory/${co.slug}/`} style={{ fontSize: "12px", fontWeight: 800, color: "var(--red-text)" }}>View public profile &#8594;</Link></div>
     </div>
   );
 
@@ -112,7 +157,7 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
         </div>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <button type="button" className="btn dark" onClick={() => setMode("edit")}>Back to the editor</button>
-          <button type="button" className="btn" onClick={() => { setF(initial); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Done</button>
+          <button type="button" className="btn" onClick={() => { setF(initial); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Done</button>
         </div>
       </div>
     );
@@ -135,9 +180,9 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
             <div className="note">Your change to <b>Product range</b> (adding “{PRODUCT_BY_CODE[PENDING_ADD]?.labelEn}”) is in review. The public page keeps the previous content until it is approved.</div>
             <div style={{ fontSize: "13px", fontWeight: 500, lineHeight: 1.6 }}>
               <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", marginBottom: "4px" }}>YOU CAN EDIT</div>
-              Description · Product range · Product photos · Contact details · Employees and export markets (shown as self-reported) · New certificates
+              Name and logo · Description · Product range · Product cards and photos · Contact details · Registered address (a country change is re-verified) · Employees and export markets (shown as self-reported) · New certificates
               <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", margin: "10px 0 4px" }}>KEPT BY THE EDITORS</div>
-              Company type · Directory categories · Application areas · Country · Related coverage · Editorial notes · Certificates already submitted
+              Company type · Directory categories · Application areas · Related coverage · Editorial notes · Certificates already submitted
             </div>
           </div>
         </div>
@@ -161,6 +206,25 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
       </div>
       {summaryBlock}
 
+      <Group title="Name & logo" tag={<Tag kind="review">NAME CHANGES ARE RE-VERIFIED</Tag>} hint="The display name is what readers see. The legal name must match your registration documents; changing either is checked by the directory editor before it goes live.">
+        <div style={{ display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gap: "16px", alignItems: "start" }} className="identity">
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+            <LogoMark src={logo} name={f.name || co.name} size={88} />
+            <label className="btn" style={{ position: "relative", minHeight: "32px", fontSize: "12px", cursor: "pointer" }}>{logo ? "Replace logo" : "Upload logo"}<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(e) => { onLogo(e.target.files?.[0]); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
+            {logo && <button type="button" className="btn" style={{ minHeight: "28px", fontSize: "11.5px" }} onClick={() => { URL.revokeObjectURL(logo); setLogo(null); }}>Remove</button>}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", minWidth: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }} className="g2f">
+              <Field id="co-nm" label="DISPLAY NAME"><input id="co-nm" className="inp" value={f.name} maxLength={80} onChange={(e) => set("name", e.target.value)} /></Field>
+              <Field id="co-ln" label="LEGAL NAME"><input id="co-ln" className="inp" value={f.legalName} maxLength={140} placeholder="As on the business licence" onChange={(e) => set("legalName", e.target.value)} /></Field>
+            </div>
+            <span className="meta">Logo: square, at least 400 × 400 px, PNG / JPG / WebP / SVG up to 2 MB. Shown on your profile and directory card; not used in articles.</span>
+            {logoErr && <span role="alert" className="meta" style={{ color: "var(--red-text)" }}>{logoErr}</span>}
+            {(f.name !== initial.name || f.legalName !== initial.legalName) && <div className="note">A name change needs a registration document (business licence or certificate of incorporation) showing the new name. The public profile keeps <b>{initial.name}</b> until it is confirmed; by-lines on published articles do not change.</div>}
+          </div>
+        </div>
+      </Group>
+
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "16px" }} className="cols">
         <Group title="Description" tag={<Tag kind="self">SELF-REPORTED</Tag>} hint="Plain facts about what you make and for whom. Not published: capacity, market share or performance figures without a third-party source, claims about competitors, promotional copy.">
           <Field id="co-sum" label="SUMMARY" aside={<span className="meta" style={{ color: f.summary.length > SUMMARY_MAX ? "var(--red-text)" : undefined }}>{f.summary.length} / {SUMMARY_MAX}</span>}>
@@ -172,13 +236,42 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }} className="g2f">
             <Field id="co-web" label="WEBSITE"><input id="co-web" type="url" className="inp" value={f.website} placeholder="https://" onChange={(e) => set("website", e.target.value)} /></Field>
             <Field id="co-mail" label="ENQUIRY EMAIL"><input id="co-mail" type="email" className="inp" value={f.email} placeholder={`sales@${co.slug.split("-")[0]}.com`} onChange={(e) => set("email", e.target.value)} /></Field>
-            <Field id="co-tel" label="PHONE"><input id="co-tel" type="tel" className="inp" value={f.phone} placeholder={`${COUNTRY_BY_CODE[co.country]?.dialCode ?? "+"} …`} onChange={(e) => set("phone", e.target.value)} /></Field>
-            <Field id="co-city" label="CITY"><input id="co-city" type="text" className="inp" value={f.city} onChange={(e) => set("city", e.target.value)} /></Field>
+            <div style={{ gridColumn: "1 / -1" }}><Field id="co-tel" label="PHONE">
+              <div style={{ display: "flex", gap: "6px" }}>
+                <select aria-label="Country calling code" className="inp" value={f.dial} onChange={(e) => set("dial", e.target.value)} style={{ flex: "0 0 112px", padding: "0 8px" }}>
+                  {DIAL.map((c) => <option key={c.alpha2} value={c.alpha2}>{c.alpha2} {c.dialCode}</option>)}
+                </select>
+                <input id="co-tel" type="tel" inputMode="tel" className="inp" value={f.phone} placeholder="Number" onChange={(e) => set("phone", e.target.value.replace(/[^\d\s-]/g, ""))} style={{ minWidth: 0 }} />
+              </div>
+            </Field></div>
           </div>
         </Group>
       </div>
 
-      <Group title="Product range" tag={<Tag kind="self">SELF-REPORTED</Tag>} hint={`Tick what you actually supply. ${f.products.length} selected. Products appear as tags on your profile and in directory filters.`}>
+      <Group title="Registered address" tag={<Tag kind="review">COUNTRY CHANGES ARE RE-VERIFIED</Tag>} hint="Where the company is registered. Country and state / province are drop-downs from the ISO 3166 lists; city is free text. Street and postal code are used for verification and stay private unless you choose to show them.">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }} className="g4f">
+          <Field id="co-ctry" label="COUNTRY / TERRITORY">
+            <select id="co-ctry" className="inp" value={f.country} onChange={(e) => setCountry(e.target.value)}>
+              {DIAL_ALL.map((c) => <option key={c.alpha2} value={c.alpha2}>{c.name}</option>)}
+            </select>
+          </Field>
+          <Field id="co-sub" label={`${subs.list?.[0]?.type ? subs.list[0].type.toUpperCase() : "STATE / PROVINCE"}${COUNTRY_BY_CODE[f.country]?.subdivisionRequired === "yes" ? " *" : ""}`}>
+            <select id="co-sub" className="inp" value={f.subdivision} disabled={!subs.list || subs.list.length === 0} onChange={(e) => set("subdivision", e.target.value)}>
+              <option value="">{subs.list === null ? "Loading…" : subs.list.length === 0 ? "Not applicable" : "Choose…"}</option>
+              {subs.list?.map((s) => <option key={s.code} value={s.code}>{s.name}</option>)}
+            </select>
+          </Field>
+          <Field id="co-city" label="CITY"><input id="co-city" type="text" className="inp" value={f.city} onChange={(e) => set("city", e.target.value)} /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "10px" }} className="g2f">
+          <Field id="co-str" label="STREET ADDRESS"><input id="co-str" type="text" className="inp" value={f.street} autoComplete="street-address" placeholder="Building, street, district" onChange={(e) => set("street", e.target.value)} /></Field>
+          <Field id="co-pc" label="POSTAL CODE"><input id="co-pc" type="text" className="inp" value={f.postcode} autoComplete="postal-code" onChange={(e) => set("postcode", e.target.value)} /></Field>
+        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "13.5px", fontWeight: 500, cursor: "pointer" }}><input type="checkbox" checked={f.showStreet} onChange={(e) => set("showStreet", e.target.checked)} style={{ width: "17px", height: "17px", accentColor: "var(--red)" }} /> Show the street address on the public profile</label>
+        {f.country !== initial.country && <div className="note">Changing the country sends the claim back to the directory editor for verification. The public profile keeps <b>{COUNTRY_BY_CODE[initial.country]?.name}</b> until it is confirmed.</div>}
+      </Group>
+
+      <Group title="Product range" tag={<Tag kind="self">SELF-REPORTED</Tag>} hint={`Tick what you actually supply (${f.products.length} selected). Ticked products show as tags on your profile and in directory filters; to show one with photos and a specification, give it a product card below.`}>
         <div role="tablist" aria-label="Product categories" style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
           {productsByCat.map((c) => {
             const n = c.items.filter((p) => f.products.includes(p.code)).length;
@@ -199,17 +292,9 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
         </div>
       </Group>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "16px" }} className="cols">
-        <Group title="Product photos" hint="Your own photos only, up to 6 per product. Each one is checked before it appears.">
-          {co.productCards.map((p) => (
-            <div key={p.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", padding: "8px 0", borderTop: "1px solid var(--line)" }}>
-              <span style={{ minWidth: 0 }}><span style={{ fontSize: "13.5px", fontWeight: 800, display: "block" }}>{p.name}</span><span className="meta">{p.spec} · {p.photos} photo{p.photos === 1 ? "" : "s"}</span></span>
-              <button type="button" className="btn" style={{ minHeight: "34px", fontSize: "12px" }} disabled title="Photo upload arrives with the account release">Add photos</button>
-            </div>
-          ))}
-          <span className="meta">Uploading arrives with the account release.</span>
-        </Group>
+      <ProductCards ranged={f.products} cards={cards} setCards={setCards} />
 
+      <div>
         <Group title="Company facts" tag={<Tag kind="self">SELF-REPORTED</Tag>}>
           <Field id="co-emp" label="EMPLOYEES">
             <select id="co-emp" className="inp" value={f.employees} onChange={(e) => set("employees", e.target.value)}>
@@ -260,7 +345,6 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
           <Locked label="COMPANY TYPE" value={ORGANISATION_TYPE_BY_CODE[co.orgType]?.labelEn ?? co.orgType} note="Set when the company is listed." />
           <Locked label="CATEGORIES" value={co.categories.map((c) => CATEGORY_BY_CODE[c]?.labelEn ?? c).join(" · ")} note="Directory sections the profile is filed under." />
           <Locked label="APPLICATION AREAS" value={co.applications.map((a) => APPLICATION_AREA_BY_CODE[a]?.labelEn ?? a).join(" · ") || "—"} note="Judged from projects we have covered, up to two." />
-          <Locked label="COUNTRY" value={country} note="Verified with the claim." />
           <Locked label="RELATED COVERAGE" value={related.length ? related.map((r, i) => <span key={r.href}>{i > 0 && " · "}<Link href={r.href} style={{ color: "var(--red-text)" }}>{r.title}</Link></span>) : "None yet"} note="Linked automatically from our articles." />
           <Locked label="EDITORIAL NOTES" value="None" note="Relationship labels and editor's notes are written by the newsroom." />
         </div>
@@ -268,10 +352,101 @@ export function CompanyPanel({ co, related }: { co: Company; related: Related[] 
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderTop: "2px solid var(--ink)", paddingTop: "14px" }}>
         <button type="button" className="btn dark" disabled={changed.length === 0} onClick={() => setMode("sent")} style={changed.length === 0 ? { opacity: .45, cursor: "not-allowed" } : undefined}>Submit for review</button>
-        <button type="button" className="btn" onClick={() => { setF(initial); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Cancel</button>
+        <button type="button" className="btn" onClick={() => { setF(initial); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Cancel</button>
         <span className="meta">{changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
       </div>
     </div>
+  );
+}
+
+type Photo = { id: string; url: string; name: string };
+type Card = { id: string; product: string; name: string; spec: string; live: number; added: Photo[]; existing: boolean };
+
+/* Product cards: one per product line, each with up to six photos. Photos picked here are
+   previewed from the device only (object URLs); in the live version they upload and wait
+   for an editor's check. */
+function ProductCards({ ranged, cards, setCards }: { ranged: string[]; cards: Card[]; setCards: React.Dispatch<React.SetStateAction<Card[]>> }) {
+  const [err, setErr] = useState<string | null>(null);
+  const urls = useRef(new Set<string>());
+  useEffect(() => { const u = urls.current; return () => u.forEach((x) => URL.revokeObjectURL(x)); }, []);
+  const upd = (id: string, patch: Partial<Card>) => setCards((cs) => cs.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+  const uncovered = ranged.filter((code) => !cards.some((c) => c.product === code));
+  const add = (product = "") => setCards((cs) => [...cs, { id: `n${Date.now()}`, product, name: product ? PRODUCT_BY_CODE[product]?.labelEn ?? "" : "", spec: "", live: 0, added: [], existing: false }]);
+  const pick = (c: Card, files: FileList | null) => {
+    if (!files) return;
+    const room = MAX_PHOTOS - c.live - c.added.length;
+    const ok = Array.from(files).filter((x) => /^image\/(jpeg|png|webp)$/.test(x.type) && x.size <= 10 * 1024 * 1024);
+    const rejected = files.length - ok.length;
+    const take = ok.slice(0, Math.max(0, room));
+    const msgs = [rejected > 0 && `${rejected} file${rejected > 1 ? "s" : ""} skipped: JPG, PNG or WebP up to 10 MB.`, ok.length > take.length && `Up to ${MAX_PHOTOS} photos per product.`].filter(Boolean);
+    setErr(msgs.length ? msgs.join(" ") : null);
+    const added = take.map((x, i) => { const url = URL.createObjectURL(x); urls.current.add(url); return { id: `${Date.now()}-${i}`, url, name: x.name }; });
+    upd(c.id, { added: [...c.added, ...added] });
+  };
+  const unpick = (c: Card, ph: Photo) => { URL.revokeObjectURL(ph.url); urls.current.delete(ph.url); upd(c.id, { added: c.added.filter((x) => x.id !== ph.id) }); };
+  const thumb: React.CSSProperties = { position: "relative", width: "84px", height: "64px", borderRadius: "8px", overflow: "hidden", flexShrink: 0, background: "var(--line)" };
+  const pill: React.CSSProperties = { position: "absolute", left: "4px", bottom: "4px", fontSize: "8.5px", fontWeight: 800, letterSpacing: ".08em", padding: "2px 5px", borderRadius: "3px" };
+
+  return (
+    <Group title="Product cards & photos" hint={`One card per product line: product, name, short specification and up to ${MAX_PHOTOS} of your own photos. New photos are checked by an editor before they appear.`}>
+      {uncovered.length > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", background: "var(--paper)", borderRadius: "10px", padding: "10px 12px" }}>
+          <span className="meta" style={{ fontWeight: 700 }}>In your range without a card:</span>
+          {uncovered.map((code) => <button key={code} type="button" className="btn" style={{ minHeight: "30px", fontSize: "12px", padding: "0 11px" }} onClick={() => add(code)}>+ {PRODUCT_BY_CODE[code]?.labelEn ?? code}</button>)}
+        </div>
+      )}
+      {cards.map((c) => {
+        const total = c.live + c.added.length;
+        const notInRange = c.product && !ranged.includes(c.product);
+        return (
+          <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: "12px", padding: "14px", display: "flex", flexDirection: "column", gap: "12px", background: c.existing ? undefined : "var(--paper-2)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.4fr", gap: "10px" }} className="g4f">
+              <Field id={`pc-p-${c.id}`} label="PRODUCT">
+                <select id={`pc-p-${c.id}`} className="inp" value={c.product} onChange={(e) => upd(c.id, { product: e.target.value, name: c.name || PRODUCT_BY_CODE[e.target.value]?.labelEn || "" })}>
+                  <option value="">Choose from your range…</option>
+                  {ranged.map((code) => <option key={code} value={code}>{PRODUCT_BY_CODE[code]?.labelEn ?? code}</option>)}
+                  {notInRange && <option value={c.product}>{PRODUCT_BY_CODE[c.product]?.labelEn ?? c.product} (not in range)</option>}
+                </select>
+              </Field>
+              <Field id={`pc-n-${c.id}`} label="CARD NAME"><input id={`pc-n-${c.id}`} className="inp" value={c.name} maxLength={60} onChange={(e) => upd(c.id, { name: e.target.value })} /></Field>
+              <Field id={`pc-s-${c.id}`} label="SPECIFICATION"><input id={`pc-s-${c.id}`} className="inp" value={c.spec} maxLength={90} placeholder="Wire Ø · opening · coating · size" onChange={(e) => upd(c.id, { spec: e.target.value })} /></Field>
+            </div>
+            {notInRange && <span className="meta" style={{ color: "var(--red-text)" }}>This product is no longer ticked in your range; tick it again or remove the card.</span>}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+              {Array.from({ length: c.live }, (_, i) => (
+                <span key={`l${i}`} style={{ ...thumb, ...demoBg(`${c.name}-${i}`) }} title="Published photo">
+                  <span style={{ ...pill, background: "var(--st-current-bg)", color: "var(--up)" }}>LIVE</span>
+                  <button type="button" aria-label="Remove this published photo" onClick={() => upd(c.id, { live: c.live - 1 })} className="phx">×</button>
+                </span>
+              ))}
+              {c.added.map((ph) => (
+                <span key={ph.id} style={thumb} title={ph.name}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={ph.url} alt={ph.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <span style={{ ...pill, background: "var(--st-review-bg)", color: "var(--st-review-fg)" }}>TO CHECK</span>
+                  <button type="button" aria-label={`Remove ${ph.name}`} onClick={() => unpick(c, ph)} className="phx">×</button>
+                </span>
+              ))}
+              {total < MAX_PHOTOS && (
+                <label style={{ ...thumb, background: "transparent", border: "1.5px dashed var(--grey-2, #B9BCC6)", display: "inline-flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2px", cursor: "pointer", fontSize: "11.5px", fontWeight: 800, color: "var(--slate)" }} className="phadd">
+                  <span style={{ fontSize: "20px", lineHeight: 1 }}>+</span>Add photos
+                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => { pick(c, e.target.files); e.target.value = ""; }} style={{ position: "absolute", width: 1, height: 1, opacity: 0 }} />
+                </label>
+              )}
+              <span className="meta">{total} / {MAX_PHOTOS}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button type="button" className="btn" style={{ minHeight: "32px", fontSize: "12px", color: "var(--red-deep)" }} onClick={() => { c.added.forEach((ph) => URL.revokeObjectURL(ph.url)); setCards((cs) => cs.filter((x) => x.id !== c.id)); }}>Remove card</button>
+            </div>
+          </div>
+        );
+      })}
+      {err && <span role="alert" className="meta" style={{ color: "var(--red-text)" }}>{err}</span>}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+        <button type="button" className="btn dark" onClick={() => add(uncovered[0] ?? "")}>+ Add a product card</button>
+        <span className="meta">Photos picked here stay on this device in the preview; nothing is uploaded.</span>
+      </div>
+    </Group>
   );
 }
 
