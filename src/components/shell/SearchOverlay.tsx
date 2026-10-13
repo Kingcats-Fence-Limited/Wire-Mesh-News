@@ -220,7 +220,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
                         <div key={r} className="row" style={{ cursor: "default" }}>
                           <Clock />
                           <button type="button" onClick={() => setQ(r)} style={{ border: 0, background: "transparent", padding: 0, font: "inherit", fontSize: "14.5px", fontWeight: 700, color: "inherit", cursor: "pointer", textAlign: "left", flex: "1 1 auto", minWidth: 0 }}>{r}</button>
-                          <button type="button" aria-label={`Remove ${r}`} onClick={() => remove(r)} style={{ marginLeft: "auto", color: "var(--grey-4)", fontSize: "13px", border: 0, background: "transparent", cursor: "pointer", padding: 0 }}>✕</button>
+                          <button type="button" aria-label={`Remove ${r}`} onClick={() => remove(r)} style={{ marginLeft: "auto", color: "var(--grey)", fontSize: "13px", border: 0, background: "transparent", cursor: "pointer", padding: 0 }}>✕</button>
                         </div>
                       ))}
                       <button type="button" onClick={clear} style={{ border: 0, background: "transparent", padding: "10px 0 0", fontFamily: "inherit", fontSize: "12px", fontWeight: 800, color: "var(--grey)", cursor: "pointer" }}>Clear history</button>

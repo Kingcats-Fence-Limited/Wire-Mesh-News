@@ -11,7 +11,7 @@ export function SectionNewsletter({ id, button = "ink", label = "EMAIL" }: { id:
     <form onSubmit={(e) => { e.preventDefault(); if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) setSent(true); }} noValidate>
 <label htmlFor={id} style={{ display: "block", fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", marginBottom: "6px" }}>{label}</label>
 <input id={id} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" style={{ width: "100%", boxSizing: "border-box", minHeight: "46px", borderRadius: "10px", border: "0", padding: "0 14px", fontSize: "15px", fontFamily: "inherit", marginBottom: "10px" }} />
-<button type="submit" style={{ width: "100%", minHeight: "46px", border: "0", borderRadius: "10px", background: button === "red" ? "var(--red)" : "var(--ink)", color: "#FFFFFF", fontWeight: "800", fontSize: "15px", fontFamily: "inherit", cursor: "pointer" }}>Subscribe</button>
+<button type="submit" style={{ width: "100%", minHeight: "46px", border: "0", borderRadius: "10px", background: button === "red" ? "var(--red)" : "var(--ink)", color: button === "red" ? "#FFFFFF" : "var(--on-ink)", fontWeight: "800", fontSize: "15px", fontFamily: "inherit", cursor: "pointer" }}>Subscribe</button>
     </form>
   );
 }

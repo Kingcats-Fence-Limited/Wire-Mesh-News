@@ -30,7 +30,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 <span aria-hidden="true" style={{ position: "absolute", inset: "0", background: "radial-gradient(120% 90% at 50% -10%, #1A1C24 0%, #121318 52%, #0E0F14 100%)" }}></span>
 <span style={{ position: "absolute", left: "0", right: "0", top: "0", height: "1px", background: "linear-gradient(90deg, rgba(229,36,47,.35) 0%, rgba(229,36,47,0) 30%)" }}></span>
 <div className="wrap" style={{ position: "relative" }}>
-<div className="sec" style={{ marginBottom: "10px" }}><span className="node"></span><h2 style={{ color: "#FFFFFF" }}>Applications</h2><span className="rule" style={{ background: "var(--line-dark)" }}></span><Link href="/applications/">ALL APPLICATIONS &#8594;</Link></div>
+<div className="sec" style={{ marginBottom: "10px" }}><span className="node"></span><h2 style={{ color: "#FFFFFF" }}>Applications</h2><span className="rule" style={{ background: "var(--line-dark)" }}></span><Link href="/applications/" style={{ color: "#FF4A54" }}>ALL APPLICATIONS &#8594;</Link></div>
 <p className="meta" style={{ margin: "0 0 24px", color: "var(--grey-5)", fontSize: "13.5px" }}>Five application areas, the same five used to filter the Directory. Under each are typical uses in that area, not product names.</p>
 <div className="g5 apps" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px" }}>
 {APPLICATION_AREA.map((area, i) => (
@@ -41,7 +41,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "12px", color: "#B9BCC6", background: "rgba(255,255,255,.04)", border: "1px solid var(--line-dark)" }} className="apic" aria-hidden="true">
 <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{ICON[area.code]}</svg>
 </span>
-<span className="mono" style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", color: "#4E5266" }}>{String(i + 1).padStart(2, "0")}</span>
+<span className="mono" style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", color: "#7D8292" }}>{String(i + 1).padStart(2, "0")}</span>
 </span>
 <span className="lbl" style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
 <span className="h aph" style={{ fontSize: "18.5px", color: "#FFFFFF", letterSpacing: "-.035em" }}>{area.labelEn}</span>
@@ -53,7 +53,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 ))}
 </span>
 <span className="apfoot" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-<span className="mono" style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }}>{counts[area.code] ?? 0} {(counts[area.code] ?? 0) === 1 ? "ARTICLE" : "ARTICLES"}</span>
+<span className="mono" style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".08em", color: "#9A9FB0" }}>{counts[area.code] ?? 0} {(counts[area.code] ?? 0) === 1 ? "ARTICLE" : "ARTICLES"}</span>
 <span className="apgo" style={{ width: "28px", height: "28px", borderRadius: "999px", border: "1px solid var(--line-dark)", color: "#B9BCC6", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: "0" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
 </span>
 </span>
@@ -66,7 +66,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 </div>
 <div className="g4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }}>
 {(() => { const seen = new Set<number>(); return latest.slice(0, 4).map((a) => { let off = 0; while (seen.has(demoIndex(a.slug, off))) off += 1; seen.add(demoIndex(a.slug, off)); return (
-<Link key={a.slug} href={articleHref(a)} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><span style={{ position: "relative", overflow: "hidden", borderRadius: "12px", background: "#1C1E27", display: "block", aspectRatio: "16/10" }}><span className="demo" style={{ position: "absolute", inset: "0", display: "block", ...demoBg(a.slug, off) }} aria-hidden="true"></span></span><span className="kick" style={{ color: "var(--grey-2)" }}><i></i>{subsectionLabel(a.section, a.subsection).split(" & ")[0].toUpperCase()}</span><span className="h" style={{ fontSize: "17px", lineHeight: "1.22", color: "#FFFFFF" }}>{a.title}</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "#6E7384" }}>{TYPE_LABEL[a.type]} &#183; {a.readMin} MIN</span></Link>
+<Link key={a.slug} href={articleHref(a)} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><span style={{ position: "relative", overflow: "hidden", borderRadius: "12px", background: "#1C1E27", display: "block", aspectRatio: "16/10" }}><span className="demo" style={{ position: "absolute", inset: "0", display: "block", ...demoBg(a.slug, off) }} aria-hidden="true"></span></span><span className="kick" style={{ color: "var(--grey-2)" }}><i></i>{subsectionLabel(a.section, a.subsection).split(" & ")[0].toUpperCase()}</span><span className="h" style={{ fontSize: "17px", lineHeight: "1.22", color: "#FFFFFF" }}>{a.title}</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "#9A9FB0" }}>{TYPE_LABEL[a.type]} &#183; {a.readMin} MIN</span></Link>
 ); }); })()}
 </div>
 </div>

@@ -24,7 +24,7 @@ function Opt({ it, onPick, tone }: { it: MenuItem; onPick: () => void; tone?: "p
   );
 }
 
-export function FilterBar({ menus, rows, resetHref, count, sort, children }: { menus: Menu[]; rows: { label: string; ticks: Tick[] }[]; resetHref: string; count: number; sort: React.ReactNode; children?: React.ReactNode }) {
+export function FilterBar({ menus, rows, resetHref, count, sort, children, noun = ["company", "companies"] }: { menus: Menu[]; rows: { label: string; ticks: Tick[] }[]; resetHref: string; count: number; sort: React.ReactNode; children?: React.ReactNode; noun?: [string, string] }) {
   const [open, setOpen] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
   const activeCount = menus.reduce((n, m) => n + (m.groups ? m.groups.flatMap((g) => g.items) : m.items).filter((x) => x.on).length, 0) + rows.reduce((n, r) => n + r.ticks.filter((t) => t.on).length, 0);
@@ -76,11 +76,11 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
         <button type="button" className="fchip mobfilter" aria-expanded={open === "sheet"} onClick={() => setOpen(open === "sheet" ? null : "sheet")}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>Filter{activeCount > 0 && <span className="cnt mono">{activeCount}</span>}
         </button>
-        <button type="button" className={`fchip ghost${open === "more" ? " open" : ""}`} aria-expanded={open === "more"} onClick={() => setOpen(open === "more" ? null : "more")}>
+        {rows.length > 0 && <button type="button" className={`fchip ghost${open === "more" ? " open" : ""}`} aria-expanded={open === "more"} onClick={() => setOpen(open === "more" ? null : "more")}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>More filters
-        </button>
+        </button>}
         <div className="sortwrap" style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
-          <span style={{ fontSize: "12.5px", fontWeight: "800", color: "#FFFFFF" }} className="mono">{count}<span style={{ color: "var(--grey-2)", fontWeight: "700" }}> {count === 1 ? "COMPANY" : "COMPANIES"}</span></span>
+          <span style={{ fontSize: "12.5px", fontWeight: "800", color: "#FFFFFF" }} className="mono">{count}<span style={{ color: "var(--grey-2)", fontWeight: "700" }}> {(count === 1 ? noun[0] : noun[1]).toUpperCase()}</span></span>
           {sort}
         </div>
       </div>
@@ -170,7 +170,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
             </div>
             <div className="sheetft">
               <Link href={resetHref} className="chip" scroll={false} onClick={close}>Reset</Link>
-              <button type="button" className="fdone" style={{ flex: "1 1 auto" }} onClick={close}>Show {count} {count === 1 ? "company" : "companies"}</button>
+              <button type="button" className="fdone" style={{ flex: "1 1 auto" }} onClick={close}>Show {count} {count === 1 ? noun[0] : noun[1]}</button>
             </div>
           </div>
         </div>

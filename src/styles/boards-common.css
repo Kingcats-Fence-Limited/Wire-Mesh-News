@@ -20,7 +20,7 @@
 .col3 > *:first-child{padding-left:0;border-left:0}
 .col3 > *:last-child{padding-right:0}
 .ad{border:1px solid var(--line);border-radius:14px;background:var(--paper-2);display:flex;align-items:center;justify-content:center;color:var(--grey-4);font-size:12px;font-weight:700}
-.adtag{display:inline-flex;align-items:center;gap:6px;font-size:9.5px;font-weight:800;letter-spacing:.16em;color:var(--grey-2)}
+.adtag{display:inline-flex;align-items:center;gap:6px;font-size:9.5px;font-weight:800;letter-spacing:.16em;color:var(--grey)}
 .chipline{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700}
 .up{color:var(--up)}
 .dn{color:var(--red-deep)}
@@ -254,3 +254,14 @@ a.figlink:focus-visible{outline:2px solid var(--red);outline-offset:4px}
 .site .dditem .c{font-size:11.5px;color:var(--grey);margin-left:auto;padding-left:12px}
 @media (max-width:600px){.site .ddmenu{position:fixed;left:14px;right:14px;top:auto;min-width:0 !important;max-height:60vh}}
 .site .chip.open{background:var(--ink) !important;color:var(--on-ink) !important}
+
+/* Home hero: legibility over photos. Scrim = light top band (behind the chips) + a deep
+   bottom ramp behind the headline; the photo is dimmed slightly; text gets a soft shadow. */
+.herotop .demo,.heroside .demo{filter:brightness(.8) saturate(.9);transition:transform .5s ease, filter .3s ease}
+.herotop:hover .demo,.heroside:hover .demo{transform:scale(1.03);filter:brightness(.88) saturate(.95)}
+.herotop .scrim,.heroside .scrim{position:absolute;inset:0;pointer-events:none}
+.herotop .scrim{background:linear-gradient(180deg,rgba(12,13,18,.55) 0%,rgba(12,13,18,0) 18%,rgba(12,13,18,0) 30%,rgba(12,13,18,.62) 52%,rgba(12,13,18,.9) 74%,rgba(12,13,18,.97) 100%)}
+.heroside .scrim{background:linear-gradient(180deg,rgba(12,13,18,.5) 0%,rgba(12,13,18,0) 22%,rgba(12,13,18,.35) 38%,rgba(12,13,18,.86) 64%,rgba(12,13,18,.97) 100%)}
+.herobody .heroh,.sidebody .sideh{text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.herodek{text-shadow:0 1px 10px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:reduce){.herotop .demo,.heroside .demo{transition:none}.herotop:hover .demo,.heroside:hover .demo{transform:none}}

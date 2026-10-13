@@ -23,7 +23,7 @@ export function MastheadDateClocks() {
       <span style={{ display: "flex", gap: "16px", paddingTop: "9px", borderTop: "1px solid var(--line)" }}>
         {CITIES.map(([c, tz]) => (
           <span key={c} style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <span className="mono" style={{ fontSize: "9px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-3)" }}>{c}</span>
+            <span className="mono" style={{ fontSize: "9px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)" }}>{c}</span>
             <span className="mono" style={{ fontSize: "14px", fontWeight: "800", color: "var(--ink)" }}>{fmt(tz, d)}</span>
           </span>
         ))}

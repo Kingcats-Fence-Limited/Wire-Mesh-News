@@ -51,7 +51,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--grey)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg>
 <label htmlFor="sq" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Search standards</label>
 <input id="sq" name="q" defaultValue={sp.q ?? ""} type="search" placeholder="EN 10223-4, zinc coating, gabion, weld shear…" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "15.5px", fontWeight: "500", minHeight: "48px", color: "var(--ink)", background: "transparent", minWidth: 0 }} />
-<span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey-4)" }} className="mono util">NUMBERS AND KEYWORDS</span>
+<span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }} className="mono util">NUMBERS AND KEYWORDS</span>
 </form>
 </div>
 </section>
@@ -66,7 +66,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 <div style={{ width: "230px", flexShrink: "0", background: "var(--st-red-bg)", borderRadius: "10px", padding: "16px" }}>
 <div style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".12em", color: "var(--red-deep)", marginBottom: "9px" }} className="mono">NEVER ON THIS SITE</div>
 <ul style={{ paddingLeft: "16px" }}>
-{["Standard PDFs or scans", "Verbatim clauses", "Copied parameter tables", "Links to pirated copies"].map((t) => <li key={t} style={{ fontSize: "12.5px", lineHeight: "1.65", color: "#8A1620" }}>{t}</li>)}
+{["Standard PDFs or scans", "Verbatim clauses", "Copied parameter tables", "Links to pirated copies"].map((t) => <li key={t} style={{ fontSize: "12.5px", lineHeight: "1.65", color: "var(--red-text)" }}>{t}</li>)}
 </ul>
 </div>
 </div>

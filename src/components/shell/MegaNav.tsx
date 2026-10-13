@@ -87,7 +87,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
   const cur = data.sections.find((s) => s.code === open);
   const isMarket = open === "market_insights";
   const narrow = open === "directory" || open === "events" || open === "standards";
-  const navLink = (on: boolean) => ({ display: "inline-flex", alignItems: "center", gap: "6px", color: on ? "var(--red)" : undefined, position: "relative" as const });
+  const navLink = (on: boolean) => ({ display: "inline-flex", alignItems: "center", gap: "6px", color: on ? "var(--red-text)" : undefined, position: "relative" as const });
 
   return (
     <div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "var(--bg)", position: "relative", zIndex: 40 }} onMouseLeave={hide}>

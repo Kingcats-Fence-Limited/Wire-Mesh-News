@@ -48,7 +48,7 @@ export function Footer() {
         <div className="wrap" style={{ position: "relative", paddingTop: "16px", paddingBottom: "18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", flexWrap: "wrap" }}>
           <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--grey-5)" }}>&#169; {year} Wire Mesh News. All rights reserved. <Link href="/about/" style={{ color: "var(--grey-3)", textDecoration: "underline" }}>About this publication</Link></span>
           <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ fontSize: "12.5px", fontWeight: "600", color: "#6E7384" }}>English only</span>
+            <span style={{ fontSize: "12.5px", fontWeight: "600", color: "#9A9FB0" }}>English only</span>
             <ThemeSwitch />
             <a href="#top" aria-label="Back to top" style={{ display: "inline-flex", alignItems: "center", gap: "8px", minHeight: "36px", padding: "0 15px", border: "1px solid var(--line-dark)", borderRadius: "999px", color: "#FFFFFF", fontSize: "12.5px", fontWeight: "800" }}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>Top</a>
           </span>

@@ -74,7 +74,7 @@ export function LettersBoard({ sp }: { sp: LetParams }) {
 {tab === "letters" ? (<>
 <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 0 10px" }}>
 <span style={{ fontSize: "13px", letterSpacing: ".08em", color: "var(--grey)" }} className="h">FROM OUR READERS</span>
-<span style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey-4)" }} className="mono">{month} THIS MONTH</span>
+<span style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey)" }} className="mono">{month} THIS MONTH</span>
 </div>
 {slice.length === 0 && <p className="meta" style={{ padding: "16px 0" }}>No letters match. <Link href="/letters/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear filters</Link></p>}
 {slice.map((l) => {
