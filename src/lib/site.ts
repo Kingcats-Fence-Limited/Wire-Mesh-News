@@ -12,7 +12,14 @@ export const SITE = {
    *  Advertise and in the footer, so it has to be where the company actually is — the
    *  entity is incorporated in Hong Kong. `jurisdiction` is named in the Terms.
    *  The phone number is a contact line, not a location claim. */
-  operator: { legalName: "KINGCATS FENCE LIMITED", region: "Hong Kong SAR", jurisdiction: "Hong Kong SAR" },
+  operator: {
+    legalName: "KINGCATS FENCE LIMITED",
+    region: "Hong Kong SAR",
+    jurisdiction: "Hong Kong SAR",
+    /** Registered address. Shown in the Privacy Policy and the Terms, which is where
+     *  the law wants it; it is not on the public contact pages. */
+    address: "Flat 08A, 19/F, China Shipbuilding Tower, 650 Cheung Sha Wan Road, Kowloon, Hong Kong SAR",
+  },
   launched: 2026,
   /** Operator phone / WhatsApp (shown in footer, About, Contact, Advertise). */
   phone: "+1 415 430 7914",
