@@ -35,6 +35,7 @@ export const recentStandardChanges = (n = 3) =>
 /* Events */
 export const getEvent = (slug: string) => EVENTS.find((e) => e.slug === slug);
 /** Defaults to the build date, so the calendar rolls forward on every rebuild. */
-export const upcomingEvents = (from: string = new Date().toISOString().slice(0, 10)) => EVENTS.filter((e) => e.start >= from).sort((a, b) => (a.start > b.start ? 1 : -1));
+/** Upcoming includes events already under way (they move to past the day after they end). */
+export const upcomingEvents = (from: string = new Date().toISOString().slice(0, 10)) => EVENTS.filter((e) => (e.end ?? e.start) >= from).sort((a, b) => (a.start > b.start ? 1 : -1));
 
 export { slugify };
