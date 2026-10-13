@@ -92,24 +92,29 @@ export function Latest({ items, sponsored, changes, mostRead, standardsCount }: 
   );
 }
 
-export function InNumbers({ figures }: { figures: { value: string; unit?: string; label: string; source: string }[] }) {
+export function InNumbers({ figures }: { figures: { value: string; unit?: string; label: string; source: string; href?: string }[] }) {
   return (
     <>
 <section style={{ background: "var(--paper)", borderBottom: "1px solid var(--line)" }}>
 <div className="wrap" style={{ paddingTop: "34px", paddingBottom: "34px" }}>
 <div style={{ display: "flex", alignItems: "baseline", gap: "14px", marginBottom: "22px" }}>
-<span className="h" style={{ fontSize: "15px", letterSpacing: ".08em" }}>THE INDUSTRY IN NUMBERS</span>
+<span className="h" style={{ fontSize: "15px", letterSpacing: ".08em" }}>THE INDEX IN NUMBERS</span>
 <span style={{ flex: "1 1 0", height: "2px", background: "var(--ink)" }}></span>
-<span className="mono" style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>EACH FIGURE CARRIES ITS SOURCE</span>
+<span className="mono" style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>COUNTED FROM OUR OWN PAGES &#183; OPEN ANY FIGURE TO CHECK IT</span>
 </div>
 <div className="fignum" style={{ display: "flex" }}>
-{figures.map((f) => (
-<div key={f.label} className="figcol">
-<div className="h mono" style={{ fontSize: "54px", lineHeight: "1" }}>{f.value}{f.unit && <span style={{ fontSize: f.unit.length > 2 ? "22px" : "24px", color: "var(--red-text)" }}>{f.unit}</span>}</div>
+{figures.map((f) => {
+  const inner = (
+    <>
+<div className="h mono fignumv" style={{ fontSize: "54px", lineHeight: "1" }}>{f.value}{f.unit && <span style={{ fontSize: f.unit.length > 2 ? "22px" : "24px", color: "var(--red-text)" }}>{f.unit}</span>}</div>
 <div style={{ fontSize: "14px", fontWeight: "800", margin: "8px 0 5px" }}>{f.label}</div>
 <div className="mono" style={{ fontSize: "10.5px", fontWeight: "700", letterSpacing: ".08em", color: "var(--grey)" }}>{f.source}</div>
-</div>
-))}
+    </>
+  );
+  return f.href
+    ? <Link key={f.label} href={f.href} className="figcol figlink">{inner}</Link>
+    : <div key={f.label} className="figcol">{inner}</div>;
+})}
 </div>
 </div>
 </section>

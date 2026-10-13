@@ -27,7 +27,7 @@ export function PolicyBoard({ p }: { p: Policy }) {
 <nav aria-label="Breadcrumb" style={{ marginBottom: "12px" }} className="meta"><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / Policies / <b style={{ color: "var(--ink)" }}>{p.title}</b></nav>
 <h1 style={{ margin: "0 0 10px", fontSize: "34px", letterSpacing: "-.045em" }} className="h">{p.title}</h1>
 <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", alignItems: "center", paddingBottom: "16px", borderBottom: "1px solid var(--line)", marginBottom: "18px" }}>
-<span className="meta">Last updated 10 October 2026</span>
+<span className="meta">Last updated {p.updated ?? "10 October 2026"}</span>
 <span style={{ width: "1px", height: "14px", background: "var(--line)" }}></span>
 <span className="meta">Version 1</span>
 {p.draft && <><span style={{ width: "1px", height: "14px", background: "var(--line)" }}></span><span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)", fontSize: "10px", fontWeight: 800, letterSpacing: ".1em", padding: "4px 8px", borderRadius: "4px" }}>DRAFT · UNDER LEGAL REVIEW</span></>}

@@ -193,4 +193,6 @@ export type Policy = {
   /** For counsel-drafted policies: the section outline only. */
   sections: string[];
   draft: boolean;
+  /** Human-readable effective date shown in the page header. */
+  updated?: string;
 };

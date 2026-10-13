@@ -18,6 +18,7 @@ import { LETTERS, COLUMNS } from "@/lib/content/people";
 import { COMPANIES, recentlyUpdated } from "@/lib/content/directory";
 import { STANDARDS, recentStandardChanges } from "@/lib/content/standards";
 import { snapshotSeries, MARKET_LICENSED, TOPICS } from "@/lib/content/market";
+import { industryFigures } from "@/lib/content/figures";
 import { fmtDateShort } from "@/lib/site";
 
 const TODAY = "2026-10-12";
@@ -50,12 +51,7 @@ export default function HomePage() {
   const articleCounts = Object.fromEntries(COMPANIES.map((c) => [c.slug, ARTICLES.filter((a) => a.companies?.includes(c.slug)).length]));
   const updatedThisWeek = COMPANIES.filter((c) => c.updated >= "2026-10-06").length;
 
-  const figures = [
-    { value: "31.7", unit: "%", label: "Duty on imported welded mesh panels", source: "SOURCE: EU OFFICIAL JOURNAL · OCT 2026" },
-    { value: "275", unit: " g/m²", label: "Zinc coating specified in C3 jobs", source: "SOURCE: EN ISO 1461 · 2022" },
-    { value: "25", unit: " yr", label: "Design life before first re-coat", source: "SOURCE: EN ISO 14713-1 · 2017" },
-    { value: String(COMPANIES.length), label: "Companies in the directory", source: "EDITORIAL LISTING · UPDATED WEEKLY" },
-  ];
+  const figures = industryFigures(TODAY);
 
   return (
     <Shell header="full" board="b-home">
