@@ -4,7 +4,7 @@ import { Shell } from "@/components/shell/Shell";
 import { CategoryList, type ListItem } from "./CategoryList";
 import { SectionNewsletter } from "./SectionNewsletter";
 import { bySection, bySubsection, featured, mostRead, sponsoredFor, seriesParts } from "@/lib/content/articles";
-import { STANDARDS } from "@/lib/content/standards";
+import { STANDARDS } from "@/lib/content/source";
 import { STANDARD_SUBJECT_BY_CODE } from "@/data/vocab/standard_subject";
 import { getAuthor } from "@/lib/content/people";
 import { SECTION_INTRO, articleHref, fmtDate, fmtDateShort, subsectionLabel } from "@/lib/site";

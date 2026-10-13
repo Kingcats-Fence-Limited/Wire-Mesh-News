@@ -1,4 +1,4 @@
-import { EVENTS } from "@/lib/content/directory";
+import { EVENTS } from "@/lib/content/source";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-static";

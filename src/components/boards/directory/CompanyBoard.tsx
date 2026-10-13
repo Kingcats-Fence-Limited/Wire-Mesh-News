@@ -1,7 +1,8 @@
 /* Ported 1:1 from canvas board Company-E. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
-import { COMPANIES, upcomingEvents } from "@/lib/content/directory";
+import { COMPANIES } from "@/lib/content/directory";
+import { upcomingEvents } from "@/lib/content/source";
 import { byCompany } from "@/lib/content/articles";
 import { EMPLOYEE_RANGE_BY_CODE, VERIFICATION_LABEL_BY_CODE, CERTIFICATION_ISSUER, CATEGORY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, COUNTRY_BY_CODE, SUBDIVISION_BY_CODE, PROCESS_BY_CODE, REGION_BY_CODE, CERTIFICATION_TYPE_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
 import { fmtDate, fmtDateShort, articleHref, subsectionLabel } from "@/lib/site";
