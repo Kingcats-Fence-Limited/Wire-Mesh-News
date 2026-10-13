@@ -6,6 +6,11 @@ import type { MarketSeries, Topic } from "./types";
  * deliberately plausible but not real quotes.
  */
 export const MARKET_LICENSED = true; // flip to false to hide the whole module (pre-licence state)
+/** No price feed is licensed yet, so the figures below are illustrative. While this is false the
+ *  module says so on its face and shows no provider name or mark — using an exchange or price
+ *  agency's name or logo without a licence is a trademark and contract problem, and presenting
+ *  invented numbers as a real feed is a bigger one. Set it to true the day a licence is signed. */
+export const MARKET_FEED_LIVE = false;
 
 export const MARKET_SERIES: MarketSeries[] = [
   {

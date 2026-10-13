@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { demoBg } from "@/lib/demo";
+import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
 
 export type ListItem = { slug: string; href: string; kicker: string; title: string; dek: string; date: string; iso: string; readMin: number; author: string; views: number; pick: boolean; sponsor?: string };
 export type SeriesBox = { title: string; href: string; parts: { n: number; title: string; href: string }[] };
@@ -58,7 +59,7 @@ export function CategoryList({ heading, items, sponsored, series, perPage = 12 }
 )}
 {series && series.parts.length > 0 && (
 <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "16px", padding: "26px 28px", margin: "28px 0", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<PageHeadArt src={HEAD_ART.panels} />
 <div style={{ position: "relative" }}>
 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap", marginBottom: "16px" }}>
 <div><span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10px", fontWeight: "800", letterSpacing: ".15em", padding: "5px 11px", borderRadius: "999px", display: "inline-block", marginBottom: "9px" }}>SERIES</span><div style={{ fontSize: "23px", color: "#FFFFFF" }} className="h">{series.title}</div></div>

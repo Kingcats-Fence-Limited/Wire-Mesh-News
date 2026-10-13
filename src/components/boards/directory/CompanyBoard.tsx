@@ -8,6 +8,7 @@ import { fmtDate, fmtDateShort, articleHref, subsectionLabel } from "@/lib/site"
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-co.css";
 import { demoBg, logoSrc } from "@/lib/demo";
+import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
 
 const issuerName = (v?: string) => !v ? "" : CERTIFICATION_ISSUER.find((i) => i.code === v || i.name.toLowerCase() === v.toLowerCase())?.name ?? v;
 
@@ -28,7 +29,7 @@ export function CompanyBoard({ c }: { c: Company }) {
     <Shell header="compact" active="directory" board="b-co">
 {/* 企业头部 */}
 <section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<PageHeadArt src={HEAD_ART.hall} />
 <div style={{ position: "relative", paddingTop: "32px", paddingBottom: "32px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "20px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / <Link href="/directory/" style={{ color: "var(--grey-2)" }}>Directory</Link> / <Link href={`/directory/?category=${c.categories[0]}`} style={{ color: "var(--grey-2)" }}>{cats[0]}</Link> / <span style={{ color: "#FFFFFF", fontWeight: "800" }}>{c.name}</span></nav>
 <div style={{ display: "flex", gap: "24px", alignItems: "flex-start", flexWrap: "wrap" }}>

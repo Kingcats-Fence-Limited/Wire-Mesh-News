@@ -1,5 +1,6 @@
 /* Ported 1:1 from canvas Home-A market snapshot: mesh cells with weld-dot corners, 12-week sparkline, attribution bar. */
 import Link from "next/link";
+import { MARKET_FEED_LIVE } from "@/lib/content/market";
 import type { MarketSeries } from "@/lib/content/types";
 import { fmtNum } from "@/lib/site";
 
@@ -18,7 +19,11 @@ export function MarketSnapshot({ series }: { series: MarketSeries[] }) {
 <div style={{ display: "flex", alignItems: "center", gap: "13px", marginBottom: "20px", flexWrap: "wrap" }}>
 <span style={{ width: "9px", height: "9px", borderRadius: "999px", background: "var(--red)" }}></span>
 <span className="h" style={{ fontSize: "16px", letterSpacing: ".02em" }}>MARKET SNAPSHOT</span>
+{MARKET_FEED_LIVE ? (
 <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--st-red-bg)", color: "var(--red-deep)", fontSize: "10px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 9px", borderRadius: "4px" }}><span style={{ width: "6px", height: "6px", borderRadius: "999px", background: "var(--red)" }}></span>DELAYED 30 MIN</span>
+) : (
+<span style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--st-review-bg)", color: "var(--st-review-fg)", fontSize: "10px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 9px", borderRadius: "4px" }}>SAMPLE DATA &#183; NOT A PRICE FEED</span>
+)}
 <span className="mono" style={{ fontSize: "11px", fontWeight: "700", letterSpacing: ".06em", color: "var(--grey)" }}>AS OF {asOf(live.asOf)}</span>
 <Link href="/market-data/methodology/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--red-text)" }}>METHODOLOGY &#8594;</Link>
 </div>
@@ -43,10 +48,16 @@ export function MarketSnapshot({ series }: { series: MarketSeries[] }) {
 })}
 </div>
 <div className="mktattr" style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap", marginTop: "16px", paddingTop: "14px", borderTop: "1px solid var(--line)" }}>
+{MARKET_FEED_LIVE ? (
+<>
 <span style={{ display: "inline-flex", alignItems: "center", gap: "9px" }}><span style={{ width: "74px", height: "26px", border: "1px solid var(--line)", borderRadius: "5px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey-4)" }}>LOGO</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "var(--slate)" }}>LME &#183; 30-MIN DELAYED</span></span>
 <span style={{ width: "1px", height: "18px", background: "var(--line)" }}></span>
 <span style={{ display: "inline-flex", alignItems: "center", gap: "9px" }}><span style={{ width: "74px", height: "26px", border: "1px solid var(--line)", borderRadius: "5px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey-4)" }}>LOGO</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "var(--slate)" }}>[PRICE AGENCY] &#183; WEEKLY ASSESSMENT</span></span>
-<span className="meta" style={{ marginLeft: "auto", fontSize: "11px", lineHeight: "1.5", maxWidth: "560px", textAlign: "right" }}>Zinc: LME 3-month, delayed 30 minutes. Wire rod, HR coil, freight: assessed prices reproduced under licence. &#169; the respective providers. Not for redistribution, scraping or export. Indicative only — not a quotation.</span>
+<span className="meta" style={{ marginLeft: "auto", fontSize: "11px", lineHeight: "1.5", maxWidth: "560px", textAlign: "right" }}>Zinc: LME 3-month, delayed 30 minutes. Wire rod, HR coil, freight: assessed prices reproduced under licence. &#169; the respective providers. Not for redistribution, scraping or export. Indicative only &#8212; not a quotation.</span>
+</>
+) : (
+<span className="meta" style={{ fontSize: "11.5px", lineHeight: "1.6", maxWidth: "880px" }}>These figures are illustrative and are here to show how the module works. No exchange or price-reporting data is licensed to this site yet, so no provider is named and no provider mark is shown. Nothing here is a price, a quotation or an assessment, and none of it should be used to value or settle anything. <Link href="/market-data/methodology/" style={{ color: "var(--red-text)", fontWeight: 800 }}>How this will work once data is licensed &#8594;</Link></span>
+)}
 </div>
 </div>
 </section>

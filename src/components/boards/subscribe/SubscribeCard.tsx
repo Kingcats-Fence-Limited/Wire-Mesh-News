@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import "@/styles/board-ads.css";
+import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
 
 /* Ads-S subscribe card: left = pitch + form, right = dark "in every issue" column. Used as the /subscribe page and as the one permitted pop-up. */
 
@@ -53,7 +54,7 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
         </div>
       </div>
       <div style={{ background: "var(--surface-dark)", position: "relative", overflow: "hidden", padding: "30px 24px", display: "flex", flexDirection: "column" }}>
-        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+        <PageHeadArt src={HEAD_ART.coils} opacity={0.4} />
         <svg width="230" height="230" viewBox="0 0 120 120" style={{ position: "absolute", right: "-78px", bottom: "-92px", color: "#1C1D26" }} aria-hidden="true"><use href="#w1" width="120" height="120" /></svg>
         {modal && (
           <button type="button" aria-label="Close" onClick={onClose} style={{ position: "absolute", right: "12px", top: "12px", width: "40px", height: "40px", border: 0, background: "rgba(255,255,255,.1)", borderRadius: "999px", color: "#FFFFFF", fontSize: "15px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>✕</button>
