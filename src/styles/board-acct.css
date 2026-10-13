@@ -33,3 +33,14 @@
 .b-acct .navi .ct{margin-left:auto}
 .b-acct h1{font-size:32px !important}
 }
+.b-acct .btn:disabled{opacity:.45;cursor:not-allowed}
+.b-acct select.inp{appearance:auto}
+.b-acct .inp:disabled{background:var(--paper);color:var(--slate)}
+.b-acct .navi[aria-current] .ct{background:var(--red);color:#FFFFFF}
+@media (max-width:760px){
+.b-acct .g4f, .b-acct .g2f{grid-template-columns:1fr 1fr !important}
+.b-acct .lockrow{grid-template-columns:1fr !important}
+}
+@media (max-width:460px){
+.b-acct .g4f, .b-acct .g2f{grid-template-columns:1fr !important}
+}
