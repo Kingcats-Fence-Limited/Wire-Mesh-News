@@ -3,7 +3,7 @@
 .b-std .badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.1em;padding:5px 9px;border-radius:4px;white-space:nowrap}
 .b-std .cur{background:var(--st-current-bg);color:var(--up)}
 .b-std .rev{background:var(--st-review-bg);color:var(--st-review-fg)}
-.b-std .wd{background:#F2F3F5;color:#6E7384}
+.b-std .wd{background:var(--st-withdrawn-bg);color:var(--grey)}
 .b-std .dft{background:var(--st-red-bg);color:var(--red-deep)}
 .b-std .badge.on{background:var(--ink);color:var(--on-ink)}
 .b-std .fchip{border:0;border-radius:999px;padding:0 15px;min-height:38px;display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:700;background:var(--card);color:var(--ink);cursor:pointer}
