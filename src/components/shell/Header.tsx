@@ -62,7 +62,12 @@ export function buildMenu(): MenuData {
 }
 
 function UtilityBar({ live }: { live?: { title: string; href: string } }) {
-  const n = latest(60).filter((a) => a.date >= "2026-10-06").length;
+  /* "this week" is measured back from the newest article, not a date typed into the
+     source, so the count stays right without anyone editing it. */
+  const recent = latest(60);
+  const newest = recent[0]?.date;
+  const weekAgo = newest ? new Date(new Date(newest).getTime() - 6 * 86400000).toISOString().slice(0, 10) : "";
+  const n = newest ? recent.filter((a) => a.date >= weekAgo).length : 0;
   return (
     <div className="utilbar" style={{ background: "var(--surface-dark)", color: "#FFFFFF" }}>
       <div className="wrap" style={{ height: "40px", display: "flex", alignItems: "center", gap: "16px", fontSize: "12.5px", fontWeight: "500" }}>
