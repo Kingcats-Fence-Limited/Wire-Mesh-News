@@ -3,11 +3,13 @@
 .b-dir .chip{border:1px solid var(--line);border-radius:999px;padding:0 15px;min-height:38px;display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;background:var(--card);font-family:inherit;color:var(--ink);cursor:pointer}
 .b-dir .chip.on{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .b-dir .chip.on .mono{color:var(--grey-3) !important}
-.b-dir .fchip{border:0;border-radius:999px;padding:0 15px;min-height:38px;display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:700;background:var(--card);color:var(--ink);cursor:pointer}
+/* the tool bar is always dark, so its controls are fixed light — not theme-flipped */
+.b-dir .fchip{border:1.5px solid transparent;border-radius:999px;padding:0 15px;min-height:38px;display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:700;background:#FFFFFF;color:#15161C;cursor:pointer}
+.b-dir .fchip.has{border-color:var(--red)}
 .b-dir .fchip.ghost{background:transparent;color:#FFFFFF;border:1.5px dashed rgba(255,255,255,.4)}
-.b-dir .seg{display:inline-flex;background:var(--surface-dark-2);border-radius:999px;padding:3px}
-.b-dir .seg a, .b-dir .seg button{border:0;background:transparent;color:var(--grey-3);font-family:inherit;font-size:12.5px;font-weight:800;min-height:32px;padding:0 13px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center}
-.b-dir .seg .on{background:var(--card);color:var(--ink)}
+.b-dir .seg{display:inline-flex;background:rgba(255,255,255,.09);border-radius:999px;padding:3px}
+.b-dir .seg a, .b-dir .seg button{border:0;background:transparent;color:#C4C7D2;font-family:inherit;font-size:12.5px;font-weight:800;min-height:32px;padding:0 13px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center}
+.b-dir .seg .on{background:#FFFFFF;color:#15161C}
 .b-dir .onchip{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#FFFFFF;border-radius:999px;padding:0 14px;min-height:34px;font-size:13px;font-weight:800}
 .b-dir .onchip:hover{color:#FFFFFF;background:var(--red-deep)}
 .b-dir .tickchip{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:10px;padding:0 13px;min-height:40px;font-family:inherit;font-size:13.5px;font-weight:700;background:var(--card);color:var(--ink);cursor:pointer}
@@ -133,3 +135,9 @@
 }
 .b-dir .fchip.open .cnt{background:#FFFFFF;color:var(--red) !important}
 .b-dir .fpill .sub{display:none}
+
+/* tablet: let the sort group drop to its own line instead of squeezing the chips */
+@media (min-width:601px) and (max-width:980px){
+.b-dir .toolbar{row-gap:12px}
+.b-dir .sortwrap{margin-left:0 !important;width:100%;justify-content:space-between;padding-top:11px;border-top:1px solid rgba(255,255,255,.12)}
+}

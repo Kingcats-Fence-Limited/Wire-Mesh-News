@@ -52,24 +52,21 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
     <div ref={root} style={{ border: "2px solid var(--ink)", borderRadius: "16px", position: "relative" }}>
       <div className="toolbar" style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0" }}>
         <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
-        {menus.map((m, i) => {
+        {menus.map((m) => {
           const all = m.groups ? m.groups.flatMap((g) => g.items) : m.items;
           const n = all.filter((x) => x.on).length;
           const isOpen = open === m.key;
           return (
-            <div key={m.key} style={{ display: "contents" }}>
-              <div style={{ position: "relative" }}>
-                <button type="button" className={`fchip${isOpen ? " open" : ""}`} aria-expanded={isOpen} aria-haspopup="menu" onClick={() => setOpen(isOpen ? null : m.key)}>
-                  {m.label}{n > 0 && <span className="cnt mono">{n}</span>}<Chev />
-                </button>
-                {isOpen && !m.groups && (
-                  <div role="menu" className="ddmenu" style={{ minWidth: m.wide ? "340px" : "280px" }}>
-                    {m.note && <div className="ddnote">{m.note}</div>}
-                    {m.items.map((it) => <Opt key={it.href} it={it} onPick={close} />)}
-                  </div>
-                )}
-              </div>
-              {i === 0 && <span style={{ fontSize: "10px", fontWeight: "700", letterSpacing: ".06em", color: "#6E7384" }} className="mono util">= SAME VOCABULARY AS THE APPLICATIONS SECTION</span>}
+            <div key={m.key} style={{ position: "relative" }}>
+              <button type="button" className={`fchip${isOpen ? " open" : ""}${n > 0 ? " has" : ""}`} aria-expanded={isOpen} aria-haspopup="menu" onClick={() => setOpen(isOpen ? null : m.key)}>
+                {m.label}{n > 0 && <span className="cnt mono">{n}</span>}<Chev />
+              </button>
+              {isOpen && !m.groups && (
+                <div role="menu" className="ddmenu" style={{ minWidth: m.wide ? "340px" : "280px" }}>
+                  {m.note && <div className="ddnote">{m.note}</div>}
+                  {m.items.map((it) => <Opt key={it.href} it={it} onPick={close} />)}
+                </div>
+              )}
             </div>
           );
         })}
