@@ -141,3 +141,6 @@
 .b-dir .toolbar{row-gap:12px}
 .b-dir .sortwrap{margin-left:0 !important;width:100%;justify-content:space-between;padding-top:11px;border-top:1px solid rgba(255,255,255,.12)}
 }
+/* the last block inside the filter frame closes its bottom corners */
+.b-dir .fbar > *:last-child{border-bottom-left-radius:14px;border-bottom-right-radius:14px}
+.b-dir .fbar > .sheetwrap{border-radius:0}

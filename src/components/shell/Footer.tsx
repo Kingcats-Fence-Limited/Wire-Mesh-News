@@ -13,9 +13,9 @@ export function Footer() {
     <>
       <div style={{ height: "4px", background: "var(--red)" }}></div>
       <footer id="site-footer" style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-        <svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "#1E2029" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pChain)" /></svg>
+        <span aria-hidden="true" style={{ position: "absolute", inset: "0", background: "radial-gradient(110% 80% at 50% 0%, #191B24 0%, #121319 55%, #0E0F14 100%)" }}></span>
         <div style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg, rgba(21,22,28,.72), var(--surface-dark) 72%)" }}></div>
-        <span className="h" aria-hidden="true" style={{ position: "absolute", left: "50%", transform: "translateX(-42%)", bottom: "-62px", fontSize: "190px", letterSpacing: "-.06em", color: "#1C1D26", lineHeight: "1", whiteSpace: "nowrap" }}>wire mesh news</span>
+        <span className="h" aria-hidden="true" style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "6px", fontSize: "clamp(46px, 10.5vw, 146px)", letterSpacing: "-.06em", color: "#1F212B", lineHeight: "1", whiteSpace: "nowrap", userSelect: "none", pointerEvents: "none" }}>wire mesh news</span>
         <div className="wrap" style={{ position: "relative", paddingTop: "28px", paddingBottom: "26px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "32px", borderBottom: "1px solid var(--line-dark)", flexWrap: "wrap" }}>
           <div style={{ maxWidth: "430px" }}>
             <div className="h" style={{ fontSize: "24px", color: "#FFFFFF", marginBottom: "5px" }}>The weekly brief</div>

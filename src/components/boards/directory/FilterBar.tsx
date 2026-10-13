@@ -47,10 +47,13 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children }: { m
   }, [open]);
 
   const panelMenu = menus.find((m) => m.key === open && m.groups);
+  /* when nothing is open below it the bar is the only block in the frame, so it has to
+     carry all four corners — otherwise its square bottom corners poke out of the frame. */
+  const hasBelow = Boolean(panelMenu) || open === "more" || Boolean(children);
 
   return (
-    <div ref={root} style={{ border: "2px solid var(--ink)", borderRadius: "16px", position: "relative" }}>
-      <div className="toolbar" style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0" }}>
+    <div ref={root} className="fbar" style={{ border: "2px solid var(--ink)", borderRadius: "16px", position: "relative" }}>
+      <div className="toolbar" style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: hasBelow ? "14px 14px 0 0" : "14px" }}>
         <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
         {menus.map((m) => {
           const all = m.groups ? m.groups.flatMap((g) => g.items) : m.items;

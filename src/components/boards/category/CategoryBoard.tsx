@@ -12,6 +12,7 @@ import type { Article, SectionCode } from "@/lib/content/types";
 import "@/styles/board-cat.css";
 import { demoBg } from "@/lib/demo";
 import { initials } from "@/lib/initials";
+import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
 
 type Sub = { code: string; label: string; slug: string };
 
@@ -56,7 +57,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
     <Shell header="compact" active={code} board="b-cat">
 {/* 栏目头：深色 + 纹理 */}
 <section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<PageHeadArt src={HEAD_ART.coils} />
 <svg width="560" height="560" viewBox="0 0 120 120" style={{ position: "absolute", right: "-100px", top: "-130px", color: "#1A1B23" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
 <div style={{ position: "relative", paddingTop: "38px", paddingBottom: "34px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "18px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / {activeSub ? <><Link href={`/${section.slug}/`} style={{ color: "var(--grey-2)" }}>{section.label}</Link> / </> : null}<span style={{ color: "#FFFFFF", fontWeight: "800" }}>{title}</span></nav>
@@ -118,7 +119,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 </div>
 <aside style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
 <div style={{ background: "var(--red)", color: "#FFFFFF", borderRadius: "16px", padding: "24px", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "#D01F29" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<span aria-hidden="true" style={{ position: "absolute", inset: "0", background: "radial-gradient(120% 120% at 88% 0%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 58%)" }}></span>
 <div style={{ position: "relative" }}>
 <div style={{ fontSize: "21px", color: "#FFFFFF", marginBottom: "8px" }} className="h">{cardTitle}</div>
 <p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55" }}>{cardText}</p>

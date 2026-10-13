@@ -13,9 +13,12 @@ export function GET() {
     ...LETTERS.slice(0, 5).map((l) => ({ title: `“${l.title}”`, link: `${SITE.url}/letters/${l.slug}/`, date: l.date, desc: l.teaser, cat: "Letter" })),
   ].sort((a, b) => (a.date < b.date ? 1 : -1));
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>
 <rss version="2.0"><channel>
 <title>${esc(SITE.name)}</title><link>${SITE.url}</link><description>${esc(SITE.tagline)}</description><language>en</language>
 ${items.map((i) => `<item><title>${esc(i.title)}</title><link>${i.link}</link><guid>${i.link}</guid><pubDate>${new Date(i.date).toUTCString()}</pubDate><category>${i.cat}</category><description>${esc(i.desc)}</description></item>`).join("\n")}
 </channel></rss>`;
-  return new Response(xml, { headers: { "Content-Type": "application/rss+xml; charset=utf-8" } });
+  return new Response(xml, { headers: { /* application/xml (not application/rss+xml) so a browser parses the feed and applies
+       /feed.xsl, which turns it into a readable page; every feed reader accepts it. */
+      "Content-Type": "application/xml; charset=utf-8" } });
 }

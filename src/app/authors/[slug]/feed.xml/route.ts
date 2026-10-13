@@ -16,9 +16,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   if (!author) return new Response("Not found", { status: 404 });
   const items = byAuthor(slug).slice(0, 20);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/feed.xsl"?>
 <rss version="2.0"><channel>
 <title>${esc(author.name)} · ${esc(SITE.name)}</title><link>${SITE.url}/authors/${slug}/</link><description>${esc(author.role)}</description><language>en</language>
 ${items.map((a) => `<item><title>${esc(a.title)}</title><link>${SITE.url}${articleHref(a)}</link><guid>${SITE.url}${articleHref(a)}</guid><pubDate>${new Date(a.date).toUTCString()}</pubDate><description>${esc(a.dek)}</description></item>`).join("\n")}
 </channel></rss>`;
-  return new Response(xml, { headers: { "Content-Type": "application/rss+xml; charset=utf-8" } });
+  return new Response(xml, { headers: { /* application/xml (not application/rss+xml) so a browser parses the feed and applies
+       /feed.xsl, which turns it into a readable page; every feed reader accepts it. */
+      "Content-Type": "application/xml; charset=utf-8" } });
 }

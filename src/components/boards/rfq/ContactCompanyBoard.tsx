@@ -5,6 +5,7 @@ import { SimpleForm } from "@/components/boards/shared/SimpleForm";
 import { ENQUIRY_SUBJECT, SURFACE_TREATMENT, PRODUCT_BY_CODE, COUNTRY, COUNTRY_BY_CODE, ORGANISATION_TYPE_BY_CODE } from "@/data/vocab";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-rfq.css";
+import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
 
 export function ContactCompanyBoard({ c }: { c: Company }) {
   const place = `${c.city}, ${COUNTRY_BY_CODE[c.country]?.name ?? c.country}`;
@@ -52,7 +53,7 @@ export function ContactCompanyBoard({ c }: { c: Company }) {
 </div>
 </div>
 <div style={{ padding: "20px 24px", background: "var(--surface-dark)", color: "#FFFFFF", border: "0", position: "relative", overflow: "hidden" }} className="frame">
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<PageHeadArt src={HEAD_ART.hall} />
 <div style={{ position: "relative" }}>
 <div style={{ fontSize: "16px", color: "#FFFFFF", marginBottom: "10px" }} className="h">The rules, in the open</div>
 <div style={{ fontSize: "12.5px", fontWeight: "500", lineHeight: "1.75", color: "var(--on-dark-2)" }}>

@@ -9,6 +9,7 @@ import { fmtDateShort } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-dir.css";
 import { demoBg, logoSrc } from "@/lib/demo";
+import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
 
 export type DirParams = { app?: string; category?: string; product?: string; region?: string; material?: string; claimed?: string; photos?: string; covered?: string; sort?: string; page?: string; q?: string };
 
@@ -69,7 +70,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
     <Shell header="compact" active="directory" board="b-dir">
 {/* 页头 */}
 <section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#mp)" /></svg>
+<PageHeadArt src={HEAD_ART.panels} />
 <svg width="520" height="520" viewBox="0 0 120 120" style={{ position: "absolute", right: "-90px", top: "-120px", color: "#1A1B23" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
 <div style={{ position: "relative", paddingTop: "36px", paddingBottom: "32px" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey-2)", marginBottom: "16px" }}><Link href="/" style={{ color: "var(--grey-2)" }}>Home</Link> / <span style={{ color: "#FFFFFF", fontWeight: "800" }}>Directory</span></nav>
