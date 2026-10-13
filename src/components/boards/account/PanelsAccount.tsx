@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useDemo, download, today, type Notice } from "./store";
 import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, Toggle } from "./ui";
 import { Avatar } from "./PanelsContent";
+import { CodeVerify } from "@/components/ui/CodeVerify";
 import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
 
 const COUNTRIES = COUNTRY.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -14,7 +15,7 @@ const COUNTRIES = COUNTRY.slice().sort((a, b) => a.name.localeCompare(b.name));
 /* --------------------------------- Overview -------------------------------- */
 export function Overview({ companyName }: { companyName: string }) {
   const { d, go } = useDemo();
-  const unread = d.notices.filter((n) => !n.read);
+  const unread = d.notices.filter((n) => !n.read && !n.archived);
   const action = d.submissions.filter((s) => s.status === "changes_requested");
   const pending = d.submissions.filter((s) => s.status === "pending").length;
   const published = d.submissions.filter((s) => s.status === "published").length;
@@ -126,16 +127,19 @@ export function Profile() {
 const KIND: Record<Notice["kind"], string> = { submission: "Submissions", comment: "Comments", company: "Company", billing: "Billing", standard: "Standards" };
 export function Notifications() {
   const { d, set, toast, go } = useDemo();
-  const [f, setF] = useState<"all" | "unread" | Notice["kind"]>("all");
-  const list = d.notices.filter((n) => f === "all" || (f === "unread" ? !n.read : n.kind === f));
-  const unread = d.notices.filter((n) => !n.read).length;
+  const [f, setF] = useState<"all" | "unread" | "archived" | Notice["kind"]>("all");
+  const live = d.notices.filter((n) => !n.archived);
+  const archived = d.notices.filter((n) => n.archived);
+  const list = f === "archived" ? archived : live.filter((n) => f === "all" || (f === "unread" ? !n.read : n.kind === f));
+  const unread = live.filter((n) => !n.read).length;
+  const arch = (id: string, v: boolean) => set((x) => ({ ...x, notices: x.notices.map((n) => (n.id === id ? { ...n, archived: v, read: v ? true : n.read } : n)) }));
   const mark = (id: string, read: boolean) => set((x) => ({ ...x, notices: x.notices.map((n) => (n.id === id ? { ...n, read } : n)) }));
   return (
     <>
       <Head title="Notifications" sub="Only about your own content, company and account. Whether they are also emailed is set under Account settings." actions={<><button type="button" className="btn" disabled={!unread} onClick={() => { const before = d.notices; set((x) => ({ ...x, notices: x.notices.map((n) => ({ ...n, read: true })) })); toast(`${unread} marked as read.`, () => set((x) => ({ ...x, notices: before }))); }}>Mark all read</button><button type="button" className="btn" onClick={() => go("settings")}>Email settings</button></>} />
-      <Chips label="Filter notifications" value={f} onChange={setF} items={[{ k: "all", label: "All", n: d.notices.length }, { k: "unread", label: "Unread", n: unread }, ...(Object.keys(KIND) as Notice["kind"][]).filter((k) => d.notices.some((n) => n.kind === k)).map((k) => ({ k, label: KIND[k] }))]} />
+      <Chips label="Filter notifications" value={f} onChange={setF} items={[{ k: "all", label: "All", n: live.length }, { k: "unread", label: "Unread", n: unread }, ...(Object.keys(KIND) as Notice["kind"][]).filter((k) => live.some((n) => n.kind === k)).map((k) => ({ k, label: KIND[k] })), { k: "archived", label: "Archived", n: archived.length }]} />
       <div className="panel">
-        {list.length === 0 && <div style={{ padding: "20px" }}><Empty>You are all caught up.</Empty></div>}
+        {list.length === 0 && <div style={{ padding: "20px" }}><Empty>{f === "archived" ? "Nothing archived. Archived notifications are kept here and can be restored." : "You are all caught up."}</Empty></div>}
         {list.map((n) => (
           <div key={n.id} className="row" style={{ alignItems: "center", opacity: n.read ? .72 : 1 }}>
             <span className={n.read ? "dot off" : "dot"} aria-label={n.read ? "Read" : "Unread"} />
@@ -144,8 +148,10 @@ export function Notifications() {
               <div className="meta">{KIND[n.kind]} · {n.date}</div>
             </div>
             <div className="acts" style={{ flexDirection: "row" }}>
-              <button type="button" className="btn sm" onClick={() => mark(n.id, !n.read)}>{n.read ? "Mark unread" : "Mark read"}</button>
-              <button type="button" className="btn sm" aria-label="Dismiss" onClick={() => { const before = d.notices; set((x) => ({ ...x, notices: x.notices.filter((y) => y.id !== n.id) })); toast("Notification dismissed.", () => set((x) => ({ ...x, notices: before }))); }}>×</button>
+              {!n.archived && <button type="button" className="btn sm" onClick={() => mark(n.id, !n.read)}>{n.read ? "Mark unread" : "Mark read"}</button>}
+              {n.archived
+                ? <button type="button" className="btn sm dark" onClick={() => { arch(n.id, false); toast("Restored to your notifications."); }}>Restore</button>
+                : <button type="button" className="btn sm" onClick={() => { arch(n.id, true); toast("Archived. Find it under the Archived filter.", () => arch(n.id, false)); }}>Archive</button>}
             </div>
           </div>
         ))}
@@ -173,17 +179,15 @@ export function Settings() {
         <span style={{ fontSize: "17px" }} className="h">Sign-in email</span>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}><b style={{ fontSize: "14px" }}>{d.profile.email}</b><Pill tone="green">VERIFIED</Pill></div>
         {d.profile.pendingEmail ? (
-          <div className="note">We sent a confirmation link to <b>{d.profile.pendingEmail}</b>. The change takes effect when you click it; until then you sign in with the address above.
-            <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
-              <button type="button" className="btn sm dark" onClick={() => { set((x) => ({ ...x, profile: { ...x.profile, email: x.profile.pendingEmail!, pendingEmail: null } })); toast("Demo: confirmation link clicked. Email changed."); }}>Simulate clicking the link</button>
-              <button type="button" className="btn sm" onClick={() => toast("Confirmation email sent again.")}>Resend</button>
-              <button type="button" className="btn sm" onClick={() => set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: null } }))}>Cancel change</button>
-            </div>
+          <div className="compose">
+            <CodeVerify compact email={d.profile.pendingEmail} purpose="the new sign-in address" onVerified={() => { set((x) => ({ ...x, profile: { ...x.profile, email: x.profile.pendingEmail!, pendingEmail: null } })); toast("Email verified and changed. Use it next time you sign in."); }} />
+            <span className="meta">Until you enter the code you keep signing in with the address above.</span>
+            <div><button type="button" className="btn sm" onClick={() => set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: null } }))}>Cancel change</button></div>
           </div>
         ) : (
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
             <div style={{ flex: "1 1 240px" }}><Field id="se-new" label="NEW EMAIL"><input id="se-new" type="email" className="inp" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" /></Field></div>
-            <button type="button" className="btn dark" disabled={!emailOk || email === d.profile.email} onClick={() => { set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: email } })); setEmail(""); toast("Confirmation link sent to the new address."); }}>Change email</button>
+            <button type="button" className="btn dark" disabled={!emailOk || email === d.profile.email} onClick={() => { set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: email } })); setEmail(""); toast("Verification code sent to the new address."); }}>Change email</button>
           </div>
         )}
       </Card>

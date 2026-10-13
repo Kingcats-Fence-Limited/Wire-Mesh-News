@@ -65,6 +65,7 @@ function buildSeed(): Demo {
       { id: "se3", device: "Edge on Windows", place: "Shanghai, China", last: "9 Oct 2026" },
     ],
     deactivated: false,
+    contacts: COMPANIES.filter((c) => c.claimed).map((c) => ({ name: c.name, href: `/directory/${c.slug}/` })),
   };
 }
 

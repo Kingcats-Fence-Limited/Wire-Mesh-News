@@ -50,7 +50,7 @@ export function AccountApp(props: Props) {
 
 function Shell({ co, related, subs0, panel, go, topRef }: Props & { panel: PanelId; go: (p: string) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
   const { d, reset } = useDemo();
-  const unread = d.notices.filter((n) => !n.read).length;
+  const unread = d.notices.filter((n) => !n.read && !n.archived).length;
   const needs = d.submissions.filter((s) => s.status === "changes_requested").length;
   const NAV: { group: string; items: { id: PanelId; label: string; count?: number | string; alert?: boolean }[] }[] = [
     { group: "", items: [{ id: "overview", label: "Overview" }] },

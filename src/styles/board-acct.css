@@ -1,7 +1,7 @@
 /* Account-G — user centre (board CSS, scoped) */
 .b-acct{margin:0}
 .b-acct a{color:var(--ink);text-decoration:none}
-.b-acct a:hover{color:var(--red-text)}
+.b-acct a:where(:not(.btn,.navi)):hover{color:var(--red-text)}
 .b-acct .h{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.04em;line-height:1.12}
 .b-acct .meta{font-size:12.5px;font-weight:500;color:var(--slate)}
 .b-acct .navi{display:flex;align-items:center;gap:11px;min-height:46px;padding:0 14px;border-radius:10px;font-size:14.5px;font-weight:700;color:var(--fg-3)}
@@ -103,3 +103,8 @@
 .b-acct .tbtn:hover{color:var(--red-text)}
 .b-acct .tbtn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 .b-acct .side .navi{min-height:36px}
+.b-acct .prev{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:12px 15px;font-size:13.5px;font-weight:500;line-height:1.65}
+.b-acct .prevhd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.b-acct .compose{border:2px solid var(--ink);border-radius:14px;padding:16px 18px;background:var(--card);display:flex;flex-direction:column;gap:12px}
+.b-acct .row .compose{margin-top:6px}
+@media (max-width:760px){ .b-acct .lockrow > button{justify-self:start} }

@@ -76,7 +76,7 @@ export function Submissions() {
                         <div style={{ fontSize: "13.5px", fontWeight: 500, lineHeight: 1.6, color: "var(--fg-3)" }}>{s.note}</div>
                       </div>
                     )}
-                    {isOpen && <div style={{ background: "var(--paper)", borderRadius: "10px", padding: "12px 15px", fontSize: "13.5px", fontWeight: 500, lineHeight: 1.65, whiteSpace: "pre-wrap" }}>{s.excerpt || <span className="meta">No text yet.</span>}</div>}
+                    {isOpen && <div className="prev"><div className="prevhd"><span className="lbl" style={{ color: "var(--slate)" }}>PREVIEW · ONLY YOU CAN SEE THIS</span><button type="button" className="tbtn" style={{ fontSize: "12px" }} onClick={() => setOpen(null)}>Close ▴</button></div><div style={{ whiteSpace: "pre-wrap" }}>{s.excerpt || <span className="meta">No text yet.</span>}</div></div>}
                     {s.status === "pending" && <p style={{ margin: 0, lineHeight: 1.5 }} className="meta">With the editors; the text is locked while in review. Withdraw it to draft to change it.</p>}
                     {s.status === "published" && <p style={{ margin: 0, lineHeight: 1.5 }} className="meta">While an edit is in review the live article stays as it is; the new version replaces it once approved.</p>}
                   </>
@@ -84,7 +84,7 @@ export function Submissions() {
               </div>
               {!isEdit && (
                 <div className="acts">
-                  <button type="button" className="btn" onClick={() => setOpen(isOpen ? null : s.id)}>{isOpen ? "Hide text" : "View"}</button>
+                  <button type="button" className="btn" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : s.id)}>{isOpen ? "Close preview ▴" : "Preview text ▾"}</button>
                   {(s.status === "draft" || s.status === "changes_requested" || s.status === "withdrawn") && <button type="button" className="btn dark" onClick={() => startEdit(s)}>{s.status === "changes_requested" ? "Edit & resubmit" : "Continue editing"}</button>}
                   {s.status === "pending" && <ConfirmBtn label="Withdraw to draft" confirm="Withdraw" onConfirm={() => { upd(s.id, { status: "draft", submitted: undefined, updated: today() }); toast("Withdrawn to draft. You can edit and resubmit."); }} />}
                   {s.status === "published" && <>{s.href && <Link href={s.href} className="btn">View live</Link>}<button type="button" className="btn" disabled={s.editPending} onClick={() => { upd(s.id, { editPending: true }); toast("Edit sent for review. The live article is unchanged until it is approved."); }}>{s.editPending ? "Edit in review" : "Submit an edit"}</button></>}
@@ -254,9 +254,53 @@ export function Messages() {
     download("wire-mesh-news-messages.csv", rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n"), "text/csv");
     toast("Your message record was downloaded as CSV.");
   };
+  const blank = (to?: { name: string; href: string }, subject = "product_enquiry") => ({ to: to?.href ?? "", subject, product: "", quantity: "", body: "", agree: false });
+  const [c, setC] = useState<ReturnType<typeof blank> | null>(null);
+  const [composeFor, setComposeFor] = useState<string | null>(null); // message id, or "new"
+  const sentToday = d.messages.filter((m) => m.sent === today()).length;
+  const recipient = d.contacts.find((x) => x.href === c?.to);
+  const canSend = !!c && !!recipient && c.body.trim().length >= 20 && c.agree && sentToday < 5;
+  const open_ = (key: string, to?: { name: string; href: string }, subject?: string) => { setComposeFor(key); setC(blank(to, subject)); };
+  const send = () => {
+    if (!c || !recipient) return;
+    const label = ENQUIRY_SUBJECT.find((e) => e.code === c.subject)?.label ?? "Enquiry";
+    const m: Message = { id: uid(), subject: c.product ? `${label} · ${c.product}` : label, to: recipient, status: "awaiting_reply", sent: today(), body: c.body.trim(), product: c.product || undefined, quantity: c.quantity || undefined };
+    set((x) => ({ ...x, messages: [m, ...x.messages], notices: [{ id: uid(), kind: "company", text: `Your message to ${recipient.name} was sent. Replies go to your email.`, date: today(), read: false }, ...x.notices] }));
+    setC(null); setComposeFor(null); setF("all");
+    toast(`Sent to ${recipient.name} only. Their reply comes to your email.`);
+  };
+  const composer = (fixedTo: boolean) => c && (
+    <div className="compose">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" }}><span style={{ fontSize: "16px" }} className="h">{fixedTo && recipient ? `Message to ${recipient.name}` : "New message"}</span><span className="st" style={{ background: "var(--paper)", color: "var(--slate)" }}>1 RECIPIENT ONLY</span></div>
+      <div className="g2f" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+        <Field id="cm-to" label="TO *">
+          <select id="cm-to" className="inp" value={c.to} disabled={fixedTo} onChange={(e) => setC({ ...c, to: e.target.value })}>
+            <option value="">Choose a company…</option>
+            {d.contacts.map((x) => <option key={x.href} value={x.href}>{x.name}</option>)}
+          </select>
+        </Field>
+        <Field id="cm-sub" label="SUBJECT *">
+          <select id="cm-sub" className="inp" value={c.subject} onChange={(e) => setC({ ...c, subject: e.target.value })}>{ENQUIRY_SUBJECT.map((e) => <option key={e.code} value={e.code}>{e.label}</option>)}</select>
+        </Field>
+        <Field id="cm-pr" label="PRODUCT (OPTIONAL)"><input id="cm-pr" className="inp" value={c.product} maxLength={60} placeholder="e.g. Welded mesh panel" onChange={(e) => setC({ ...c, product: e.target.value })} /></Field>
+        <Field id="cm-q" label="QUANTITY (OPTIONAL)"><input id="cm-q" className="inp" value={c.quantity} maxLength={40} placeholder="e.g. 1,200 panels" onChange={(e) => setC({ ...c, quantity: e.target.value })} /></Field>
+      </div>
+      <Field id="cm-b" label="MESSAGE *" aside={<span className="meta" style={{ color: c.body.trim().length > 0 && c.body.trim().length < 20 ? "var(--red-text)" : undefined }}>{c.body.trim().length} / 2000{c.body.trim().length < 20 ? " · at least 20" : ""}</span>}>
+        <textarea id="cm-b" rows={5} className="inp" maxLength={2000} value={c.body} placeholder="Say what you want to know. Describing the application makes the reply far more useful." onChange={(e) => setC({ ...c, body: e.target.value })} />
+      </Field>
+      <span className="meta">Sent as {d.profile.name} · {d.profile.email}{d.profile.company ? ` · ${d.profile.company}` : ""}. Change these under Profile.</span>
+      <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", fontSize: "13px", fontWeight: 500, lineHeight: 1.5, cursor: "pointer" }}><input type="checkbox" checked={c.agree} onChange={(e) => setC({ ...c, agree: e.target.checked })} style={{ width: "17px", height: "17px", accentColor: "var(--red)", flexShrink: 0, marginTop: "1px" }} />I agree to the above being sent to {recipient?.name ?? "this company"} and have read the <Link href="/policies/privacy/" style={{ color: "var(--red-text)", fontWeight: 700 }}>Privacy Policy</Link>.</label>
+      <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+        <button type="button" className="btn danger-solid" disabled={!canSend} onClick={send}>Send message</button>
+        <button type="button" className="btn" onClick={() => { setC(null); setComposeFor(null); }}>Cancel</button>
+        <span className="meta">{sentToday >= 5 ? "Daily limit reached: at most 5 messages per account per day." : `${5 - sentToday} of 5 messages left today.`}</span>
+      </div>
+    </div>
+  );
   return (
     <>
-      <Head title="My messages" sub="Messages you sent through “Contact this company”. Companies reply to your email directly; there is no on-site chat." actions={<><button type="button" className="btn" onClick={exportCsv}>Export record (CSV)</button><Link href="/directory/" className="btn dark">Browse the directory</Link></>} />
+      <Head title="My messages" sub="Messages you sent through “Contact this company”. Companies reply to your email directly; there is no on-site chat." actions={<><button type="button" className="btn dark" onClick={() => open_("new")}>+ New message</button><button type="button" className="btn" onClick={exportCsv}>Export record (CSV)</button><Link href="/directory/" className="btn">Browse the directory</Link></>} />
+      {composeFor === "new" && composer(false)}
       <Chips label="Filter messages" value={f} onChange={setF} items={[{ k: "all", label: "All", n: d.messages.length }, { k: "replied", label: "Replied", n: n("replied") }, { k: "awaiting_reply", label: "Awaiting reply", n: n("awaiting_reply") }, { k: "no_reply", label: "No reply", n: n("no_reply") }]} />
       <div className="panel">
         {list.length === 0 && <div style={{ padding: "20px" }}><Empty>No messages here.</Empty></div>}
@@ -272,11 +316,12 @@ export function Messages() {
                   <div style={{ whiteSpace: "pre-wrap" }}>{m.body}</div>
                 </div>
               )}
+              {composeFor === m.id && composer(true)}
             </div>
             <div className="acts">
-              <button type="button" className="btn" onClick={() => setOpen(open === m.id ? null : m.id)}>{open === m.id ? "Hide" : "Read"}</button>
+              <button type="button" className="btn" aria-expanded={open === m.id} onClick={() => setOpen(open === m.id ? null : m.id)}>{open === m.id ? "Close message ▴" : "Open message ▾"}</button>
               {m.status === "awaiting_reply" && <button type="button" className="btn" onClick={() => { set((x) => ({ ...x, messages: x.messages.map((y) => (y.id === m.id ? { ...y, status: "replied", replied: today() } : y)) })); toast("Marked as replied."); }}>Mark replied</button>}
-              {m.status !== "awaiting_reply" && <Link href={`${m.to.href}contact/`} className="btn">Write again</Link>}
+              {m.status !== "awaiting_reply" && <button type="button" className={`btn${composeFor === m.id ? " dark" : ""}`} onClick={() => (composeFor === m.id ? (setC(null), setComposeFor(null)) : open_(m.id, d.contacts.find((x) => x.href === m.to.href) ?? m.to, ENQUIRY_SUBJECT.find((e) => m.subject.startsWith(e.label))?.code))}>{composeFor === m.id ? "Close" : "Write again"}</button>}
             </div>
           </div>
         ))}
