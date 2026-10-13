@@ -13,7 +13,7 @@
   --on-ink: #ffffff;       /* text on an --ink fill */
   --red: #e5242f;          /* fills: buttons, tags, rules */
   --red-deep: #c41822;
-  --red-text: #e5242f;     /* red used as text/icon colour (#FF4A54 in dark, Dark-T) */
+  --red-text: #d01e29;     /* red used as text/icon colour: a shade deeper than --red so small text on white reaches 4.5:1 (#FF4A54 in dark, Dark-T) */
 
   /* surfaces */
   --bg: #ffffff;           /* page */
@@ -30,7 +30,8 @@
   --fg-2: #23242e;
   --fg-3: #2c2e39;
   --slate: #555a6b;
-  --grey: #8a8f9e;
+  /* --grey is used for small labels on white and paper: #6e7384 keeps them at 4.5:1 or better */
+  --grey: #6e7384;
   --grey-2: #9a9fb0;
   --grey-3: #a7abb8;
   --grey-4: #b4b8c2;
@@ -85,7 +86,7 @@
   --fg-2: #e8e9ed;
   --fg-3: #d8d9e0;
   --slate: #a7abb8;
-  --grey: #8a8f9e;
+  --grey: #9a9fb0;
   --grey-4: #5d6172;
   --line: #2a2c36;
   --line-soft: #23242e;

@@ -38,7 +38,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
 <div>
 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
 <span className="h" style={{ fontSize: "14px", letterSpacing: ".08em", color: "var(--grey)" }}>FROM OUR READERS</span>
-<span className="mono" style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey-4)" }}>{monthCount} THIS MONTH</span>
+<span className="mono" style={{ fontSize: "11px", fontWeight: "800", color: "var(--grey)" }}>{monthCount} THIS MONTH</span>
 </div>
 {letters.slice(0, 3).map((l) => <LetterRow key={l.slug} l={l} />)}
 <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", marginTop: "20px", padding: "16px 18px", background: "var(--paper)", borderRadius: "12px" }}>

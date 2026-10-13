@@ -6,7 +6,7 @@
 .b-co .fact{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 .b-co .fact dt{flex:0 0 184px;font-weight:800;margin:0}
 .b-co .fact dd{margin:0;font-weight:500;flex:1 1 auto;line-height:1.5}
-.b-co .src{font-size:11px;font-weight:700;color:var(--grey-2);display:block;margin-top:3px}
+.b-co .src{font-size:11px;font-weight:700;color:var(--grey);display:block;margin-top:3px}
 .b-co .selfr{display:inline-block;background:var(--st-review-bg);color:var(--st-review-fg);font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:3px 7px;border-radius:3px;margin-left:7px}
 .b-co .certcard{border:1px solid var(--line);border-radius:12px;padding:15px 17px;display:flex;gap:13px;align-items:flex-start;background:var(--card)}
 .b-co .certmark{width:40px;height:40px;border-radius:9px;background:var(--st-current-bg);color:var(--up);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}

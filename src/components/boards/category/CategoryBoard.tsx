@@ -69,8 +69,8 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <p style={{ margin: "0", fontSize: "17px", fontWeight: "500", lineHeight: "1.6", color: "#B9BCC6", maxWidth: "620px" }}>{intro.intro}</p>
 </div>
 <div style={{ display: "flex", gap: "32px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-<div><div style={{ fontSize: "34px", color: "#FFFFFF" }} className="mono h">{all.length}</div><div style={{ color: "var(--grey-5)", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em" }} className="meta">ARTICLES</div></div>
-<div><div style={{ fontSize: "34px", color: "#FFFFFF" }} className="mono h">{subs.length}</div><div style={{ color: "var(--grey-5)", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em" }} className="meta">SUB-SECTIONS</div></div>
+<div><div style={{ fontSize: "34px", color: "#FFFFFF" }} className="mono h">{all.length}</div><div style={{ color: "#9A9FB0", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em" }} className="meta">ARTICLES</div></div>
+<div><div style={{ fontSize: "34px", color: "#FFFFFF" }} className="mono h">{subs.length}</div><div style={{ color: "#9A9FB0", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em" }} className="meta">SUB-SECTIONS</div></div>
 <Link href={`/subscribe/?section=${section.slug}`} style={{ alignSelf: "center", display: "inline-flex", alignItems: "center", gap: "8px", border: "2px solid #FFFFFF", color: "#FFFFFF", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" /><circle cx="5" cy="19" r="1.6" fill="currentColor" stroke="none" /></svg>Follow</Link>
 </div>
 </div>
@@ -121,7 +121,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 </div>
 <aside style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
 <div style={{ background: "var(--red)", color: "#FFFFFF", borderRadius: "16px", padding: "24px", position: "relative", overflow: "hidden" }}>
-<span aria-hidden="true" style={{ position: "absolute", inset: "0", background: "radial-gradient(120% 120% at 88% 0%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 58%)" }}></span>
+
 <div style={{ position: "relative" }}>
 <div style={{ fontSize: "21px", color: "#FFFFFF", marginBottom: "8px" }} className="h">{cardTitle}</div>
 <p style={{ margin: "0 0 14px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55" }}>{cardText}</p>

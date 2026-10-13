@@ -57,7 +57,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <Link href={`/${sec.slug}/${subsectionSlug(a.subsection)}/`} style={{ color: "var(--grey-2)" }}>{subsectionLabel(a.section, a.subsection)}</Link><span>/</span>
 <span style={{ color: "#FFFFFF" }}>This article</span>
 </nav>
-<div style={{ fontSize: "11px", fontWeight: "700", letterSpacing: ".1em", color: "#6E7384" }} className="mono util">{TYPE_LABEL[a.type]?.split(" ")[0]}&nbsp;&nbsp;{String(idx + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</div>
+<div style={{ fontSize: "11px", fontWeight: "700", letterSpacing: ".1em", color: "#9A9FB0" }} className="mono util">{TYPE_LABEL[a.type]?.split(" ")[0]}&nbsp;&nbsp;{String(idx + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</div>
 </div>
 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "22px" }}>
 <span style={{ background: sponsored ? "#FFFFFF" : "var(--red)", color: sponsored ? "var(--ink)" : "#FFFFFF", fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", padding: "7px 12px", borderRadius: "4px" }}>{sponsored ? "SPONSORED CONTENT" : sec.label.toUpperCase()}</span>

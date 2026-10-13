@@ -10,9 +10,11 @@ import { COUNTRY_BY_CODE, REGION } from "@/data/vocab";
 import { fmtDate, articleHref } from "@/lib/site";
 import type { EventItem } from "@/lib/content/types";
 import "@/styles/board-ev.css";
+import "@/styles/board-dir.css";
+import { FilterBar } from "@/components/boards/directory/FilterBar";
 import { demoBg } from "@/lib/demo";
 
-export type EvParams = { when?: string; region?: string; type?: string };
+export type EvParams = { when?: string; region?: string; type?: string; month?: string };
 const TYPE_LABEL: Record<string, string> = Object.fromEntries(EVENT_TYPE.map((t) => [t.code, t.label]));
 /* Region filter uses the site's fixed region table (the same one as the Directory and export
    markets), not a coarse "Asia" bucket; online events have their own chip. */
@@ -33,11 +35,12 @@ const reportHref = (slug: string) => { const a = getArticle(slug); return a ? ar
 export function EventsBoard({ sp }: { sp: EvParams }) {
   const past = sp.when === "past";
   const pool = past ? EVENTS.filter((e) => (e.end ?? e.start) < TODAY).sort((a, b) => (a.start < b.start ? 1 : -1)) : upcomingEvents(TODAY);
-  const byType = pool.filter((e) => !sp.type || e.type === sp.type);
-  const list = byType.filter((e) => !sp.region || regionOf(e) === sp.region);
-  const regions = [...REGION.map((r) => ({ code: r.code, label: r.labelEn })), { code: "online", label: "Online" }].map((r) => ({ ...r, n: byType.filter((e) => regionOf(e) === r.code).length })).filter((r) => r.n > 0 || sp.region === r.code);
-  const typeN = (t: string) => pool.filter((e) => e.type === t && (!sp.region || regionOf(e) === sp.region)).length;
+  const monthOf = (e: EventItem) => e.start.slice(0, 7);
+  const match = (e: EventItem, skip?: keyof EvParams) => (skip === "type" || !sp.type || e.type === sp.type) && (skip === "region" || !sp.region || regionOf(e) === sp.region) && (skip === "month" || !sp.month || monthOf(e) === sp.month);
+  const list = pool.filter((e) => match(e));
   const nPast = EVENTS.filter((e) => (e.end ?? e.start) < TODAY).length, nUp = upcomingEvents(TODAY).length;
+  const months = [...new Set(pool.map(monthOf))].sort(past ? (a, b) => (a < b ? 1 : -1) : undefined);
+  const monthLabel = (m: string) => new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${m}-01`));
   const next = upcomingEvents(TODAY).find((e) => e.weAttend) ?? upcomingEvents(TODAY)[0];
   const reports = bySubsection("news", "events_exhibitions").slice(0, 2);
   const exhibitors = COMPANIES.filter((c) => c.claimed).slice(0, 2);
@@ -63,12 +66,21 @@ Subscribe to calendar
 </a>
 </div>
 </div>
-<div style={{ display: "flex", gap: "9px", flexWrap: "wrap", marginTop: "22px" }}>
-<Link href={href({ when: undefined })} scroll={false} className={`chip${past ? "" : " on"}`}>Upcoming <span className="n">{nUp}</span></Link><Link href={href({ when: "past" })} scroll={false} className={`chip${past ? " on" : ""}`}>Past &amp; reports <span className="n">{nPast}</span></Link>
-<span style={{ width: "1px", height: "24px", background: "var(--line)", alignSelf: "center", margin: "0 5px" }}></span>
-<Link href={href({ region: undefined })} scroll={false} className={`chip${sp.region ? "" : " on"}`}>All regions</Link>{regions.map((r) => <Link key={r.code} href={toggle("region", r.code)} scroll={false} className={`chip${sp.region === r.code ? " on" : ""}`}>{r.label} <span className="n">{r.n}</span></Link>)}
-<span style={{ width: "1px", height: "24px", background: "var(--line)", alignSelf: "center", margin: "0 5px" }}></span>
-{EVENT_TYPE.map((t) => t.code).filter((t) => typeN(t) > 0 || sp.type === t).map((t) => <Link key={t} href={toggle("type", t)} scroll={false} className={`chip${sp.type === t ? " on" : ""}`}>{TYPE_LABEL[t]} <span className="n">{typeN(t)}</span></Link>)}
+<div className="b-dir" style={{ marginTop: "22px" }}>
+<FilterBar
+  count={list.length}
+  noun={["event", "events"]}
+  resetHref={href({ region: undefined, type: undefined, month: undefined })}
+  menus={[
+    { key: "region", label: "Region", note: "The site's fixed regions, the same as the Directory. Online events are listed separately.", items: [...REGION.map((r) => ({ code: r.code, label: r.labelEn })), { code: "online", label: "Online" }].map((r) => ({ label: r.label, href: toggle("region", r.code), on: sp.region === r.code, count: pool.filter((e) => match(e, "region") && regionOf(e) === r.code).length })) },
+    { key: "type", label: "Type", items: EVENT_TYPE.map((t) => ({ label: t.label, href: toggle("type", t.code), on: sp.type === t.code, count: pool.filter((e) => match(e, "type") && e.type === t.code).length })) },
+    { key: "month", label: "Month", items: months.map((m) => ({ label: monthLabel(m), href: toggle("month", m), on: sp.month === m, count: pool.filter((e) => match(e, "month") && monthOf(e) === m).length })) },
+  ]}
+  rows={[]}
+  sort={<div role="group" aria-label="When" className="seg">
+<Link href={href({ when: undefined, month: undefined })} scroll={false} className={past ? undefined : "on"}>Upcoming {nUp}</Link><Link href={href({ when: "past", month: undefined })} scroll={false} className={past ? "on" : undefined}>Past &amp; reports {nPast}</Link>
+</div>}
+/>
 </div>
 </section>
 {/* 重点展会 */}
@@ -109,10 +121,11 @@ Subscribe to calendar
 )}
 {/* 日历列表 */}
 <section style={{ paddingBottom: "50px" }} className="wrap">
+
 <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 320px", gap: "48px", alignItems: "start" }} className="cols">
 <div>
-<h2 style={{ margin: "0 0 2px", fontSize: "23px", borderBottom: "3px solid var(--ink)", paddingBottom: "10px" }} className="h">{past ? "Past events & reports" : "Upcoming"}{(sp.region || sp.type) ? <span className="meta" style={{ fontSize: "13px", marginLeft: "10px", fontFamily: "inherit", letterSpacing: 0 }}>{list.length} of {pool.length}</span> : null}</h2>
-{list.length === 0 && <p className="meta" style={{ padding: "20px 0" }}>No events match these filters. <Link href="/events/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear filters</Link></p>}
+<h2 style={{ margin: "0 0 2px", fontSize: "23px", borderBottom: "3px solid var(--ink)", paddingBottom: "10px" }} className="h">{past ? "Past events & reports" : "Upcoming"}{(sp.region || sp.type || sp.month) ? <span className="meta" style={{ fontSize: "13px", marginLeft: "10px", fontFamily: "inherit", letterSpacing: 0 }}>{list.length} of {pool.length}</span> : null}</h2>
+{list.length === 0 && <p className="meta" style={{ padding: "20px 0" }}>No events match these filters. <Link href={href({ region: undefined, type: undefined, month: undefined })} scroll={false} style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear filters</Link></p>}
 {groups.map((g) => (
 <div key={g.label}>
 <div style={{ fontSize: "15px", color: "var(--slate)", letterSpacing: ".04em", padding: "20px 0 2px" }} className="h">{g.label}</div>

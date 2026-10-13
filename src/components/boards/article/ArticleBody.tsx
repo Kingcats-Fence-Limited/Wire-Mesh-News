@@ -26,7 +26,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
                 {ad && (
                   <div style={{ margin: "34px 0 32px" }} className="noprint">
                     <div style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".18em", color: "var(--grey-2)", marginBottom: "7px" }}>ADVERTISEMENT</div>
-                    <div style={{ height: "180px", border: "1px solid var(--line)", borderRadius: "12px", background: "var(--paper-2)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "5px", color: "var(--grey-4)" }}><span style={{ fontSize: "13px", fontWeight: "700" }}>580 × 180 IN-ARTICLE</span></div>
+                    <div style={{ height: "180px", border: "1px solid var(--line)", borderRadius: "12px", background: "var(--paper-2)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "5px", color: "var(--grey)" }}><span style={{ fontSize: "13px", fontWeight: "700" }}>580 × 180 IN-ARTICLE</span></div>
                   </div>
                 )}
                 <h2 id={b.id} className="h"><span className="no">{String(h).padStart(2, "0")}</span>{b.text.replace(/^\d+\s*[·.\-–]\s*/, "")}</h2>

@@ -42,7 +42,7 @@ export function MarketSnapshot({ series }: { series: MarketSeries[] }) {
 <div style={{ display: "flex", alignItems: "baseline", gap: "9px" }}><span className="mono h" style={{ fontSize: "32px", color: stale ? "var(--grey)" : undefined }}>{fmtNum(s.latest!, s.latest! % 1 ? 1 : 0)}</span><span className="mono meta" style={{ fontSize: "11px", fontWeight: "700" }}>{s.unit}</span>{stale ? <span className="mono" style={{ fontSize: "10px", fontWeight: 800, letterSpacing: ".06em", color: "var(--grey)", marginLeft: "auto" }}>LAST GOOD</span> : <span className={`mono ${dir}`} style={{ fontSize: "13px", fontWeight: "800", marginLeft: "auto" }}>{arrow} {Math.abs(s.changePct ?? 0).toFixed(1)}%</span>}</div>
 )}
 <svg className="spark" width="100%" height="30" viewBox="0 0 120 30" preserveAspectRatio="none" style={{ display: "block", marginTop: "12px" }} aria-hidden="true"><path d={spark(s.points)} fill="none" stroke={stroke} strokeWidth="2" strokeLinejoin="round" /></svg>
-<div className="mono spark" style={{ fontSize: "10px", fontWeight: "700", letterSpacing: ".1em", color: "var(--grey-4)", marginTop: "7px" }}>12 MONTHS</div>
+<div className="mono spark" style={{ fontSize: "10px", fontWeight: "700", letterSpacing: ".1em", color: "var(--grey)", marginTop: "7px" }}>12 MONTHS</div>
 </Link>
   );
 })}
@@ -50,9 +50,9 @@ export function MarketSnapshot({ series }: { series: MarketSeries[] }) {
 <div className="mktattr" style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap", marginTop: "16px", paddingTop: "14px", borderTop: "1px solid var(--line)" }}>
 {MARKET_FEED_LIVE ? (
 <>
-<span style={{ display: "inline-flex", alignItems: "center", gap: "9px" }}><span style={{ width: "74px", height: "26px", border: "1px solid var(--line)", borderRadius: "5px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey-4)" }}>LOGO</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "var(--slate)" }}>LME &#183; 30-MIN DELAYED</span></span>
+<span style={{ display: "inline-flex", alignItems: "center", gap: "9px" }}><span style={{ width: "74px", height: "26px", border: "1px solid var(--line)", borderRadius: "5px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>LOGO</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "var(--slate)" }}>LME &#183; 30-MIN DELAYED</span></span>
 <span style={{ width: "1px", height: "18px", background: "var(--line)" }}></span>
-<span style={{ display: "inline-flex", alignItems: "center", gap: "9px" }}><span style={{ width: "74px", height: "26px", border: "1px solid var(--line)", borderRadius: "5px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey-4)" }}>LOGO</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "var(--slate)" }}>[PRICE AGENCY] &#183; WEEKLY ASSESSMENT</span></span>
+<span style={{ display: "inline-flex", alignItems: "center", gap: "9px" }}><span style={{ width: "74px", height: "26px", border: "1px solid var(--line)", borderRadius: "5px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)" }}>LOGO</span><span className="mono" style={{ fontSize: "11px", fontWeight: "700", color: "var(--slate)" }}>[PRICE AGENCY] &#183; WEEKLY ASSESSMENT</span></span>
 <span className="meta" style={{ marginLeft: "auto", fontSize: "11px", lineHeight: "1.5", maxWidth: "560px", textAlign: "right" }}>Zinc: LME 3-month, delayed 30 minutes. Wire rod, HR coil, freight: assessed prices reproduced under licence. &#169; the respective providers. Not for redistribution, scraping or export. Indicative only &#8212; not a quotation.</span>
 </>
 ) : (
