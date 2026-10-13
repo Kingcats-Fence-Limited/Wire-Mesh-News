@@ -13,7 +13,7 @@ export type Comment = { id: string; text: string; status: CommentStatus; date: s
 export type Bookmark = { id: string; kind: "article" | "company" | "standard" | "event"; title: string; href: string; meta: string; saved: string };
 export type MsgStatus = "awaiting_reply" | "replied" | "no_reply" | "sent";
 export type Message = { id: string; subject: string; to: { name: string; href: string }; status: MsgStatus; sent: string; replied?: string; body: string; product?: string; quantity?: string };
-export type Notice = { id: string; text: string; date: string; read: boolean; kind: "submission" | "comment" | "company" | "billing" | "standard"; href?: string };
+export type Notice = { id: string; text: string; date: string; read: boolean; archived?: boolean; kind: "submission" | "comment" | "company" | "billing" | "standard"; href?: string };
 export type Session = { id: string; device: string; place: string; last: string; current?: boolean };
 
 export type Demo = {
@@ -28,10 +28,14 @@ export type Demo = {
   prefs: { brief: boolean; reviewResults: boolean; commentReplies: boolean; standardAlerts: boolean; companyEnquiries: boolean; productNews: boolean };
   sessions: Session[];
   deactivated: boolean;
+  /** Claimed companies that accept messages (recipients for the composer). */
+  contacts: { name: string; href: string }[];
+  /** Change requests for editor-kept company fields, keyed by field. */
+  companyReqs?: Record<string, { id: string; field: string; from: string; to: string; reason: string; file?: string; date: string }>;
 };
 
 const KEY = "wmn-demo-account";
-const VERSION = 2;
+const VERSION = 3;
 
 type Toast = { id: number; text: string; undo?: () => void };
 type Ctx = { d: Demo; set: (fn: (d: Demo) => Demo) => void; reset: () => void; toast: (text: string, undo?: () => void) => void; go: (panel: string) => void };

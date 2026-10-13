@@ -14,12 +14,16 @@ import { REGION } from "@/data/vocab/region";
 import { EMPLOYEE_RANGE } from "@/data/vocab/employee_range";
 import { CERTIFICATION_TYPE, CERTIFICATION_TYPE_BY_CODE } from "@/data/vocab/certification_type";
 import { CERTIFICATION_ISSUER } from "@/data/vocab/certification_issuer";
-import { ORGANISATION_TYPE_BY_CODE } from "@/data/vocab/organisation_type";
-import { APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
+import { ORGANISATION_TYPE, ORGANISATION_TYPE_BY_CODE } from "@/data/vocab/organisation_type";
+import { APPLICATION_AREA, APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
 import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
 import { demoBg } from "@/lib/demo";
 import type { Company } from "@/lib/content/types";
 import type { SubOpt } from "@/lib/vocab-geo";
+import { useDemo, today } from "./store";
+import { CodeVerify } from "@/components/ui/CodeVerify";
+
+const FREE_MAIL = ["gmail.com", "googlemail.com", "outlook.com", "hotmail.com", "live.com", "yahoo.com", "icloud.com", "me.com", "aol.com", "proton.me", "protonmail.com", "qq.com", "163.com", "126.com", "sina.com", "foxmail.com", "yandex.ru", "mail.ru", "gmx.com"];
 
 type Related = { title: string; href: string };
 type Mode = "view" | "edit" | "sent";
@@ -58,12 +62,66 @@ const Field = ({ id, label, children, aside }: { id: string; label: string; chil
     {children}
   </div>
 );
-const Locked = ({ label, value, note }: { label: string; value: React.ReactNode; note: string }) => (
-  <div style={{ display: "grid", gridTemplateColumns: "150px minmax(0,1fr)", gap: "4px 14px", padding: "10px 0", borderTop: "1px solid var(--line)" }} className="lockrow">
-    <span className="lbl" style={{ color: "var(--slate)", display: "flex", alignItems: "center", gap: "6px" }}><Lock />{label}</span>
-    <span style={{ fontSize: "13.5px", fontWeight: 700 }}>{value}<span className="meta" style={{ display: "block", fontWeight: 500, marginTop: "2px" }}>{note}</span></span>
-  </div>
-);
+type Req = { id: string; field: string; from: string; to: string; reason: string; file?: string; date: string };
+type ReqKind = "orgType" | "categories" | "applications" | "coverage" | "notes" | "cert";
+
+/* A field the editors keep. It was set when the profile was listed or claimed; after that the
+   company asks for a change instead of editing it, and the editor decides. */
+function Locked({ label, value, note, kind, current, pending, onRequest, onWithdraw }: { label: string; value: React.ReactNode; note: string; kind: ReqKind; current: string[]; pending?: Req; onRequest: (r: Omit<Req, "id" | "date">) => void; onWithdraw: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [pick, setPick] = useState<string[]>(current);
+  const [text, setText] = useState("");
+  const [reason, setReason] = useState("");
+  const [file, setFile] = useState<string>("");
+  const opts = kind === "orgType" ? ORGANISATION_TYPE.map((o) => ({ code: o.code, label: o.labelEn })) : kind === "categories" ? CATEGORY.map((o) => ({ code: o.code, label: o.labelEn })) : kind === "applications" ? APPLICATION_AREA.map((o) => ({ code: o.code, label: o.labelEn })) : [];
+  const max = kind === "applications" ? 2 : kind === "orgType" ? 1 : 99;
+  const lbl = (codes: string[]) => codes.map((c) => opts.find((o) => o.code === c)?.label ?? c).join(" · ");
+  const valueChanged = opts.length ? (pick.length > 0 && (pick.length !== current.length || pick.some((x) => !current.includes(x)))) : text.trim().length >= 10;
+  const ok = valueChanged && reason.trim().length >= 10;
+  return (
+    <div style={{ padding: "10px 0", borderTop: "1px solid var(--line)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "150px minmax(0,1fr) auto", gap: "4px 14px", alignItems: "start" }} className="lockrow">
+        <span className="lbl" style={{ color: "var(--slate)", display: "flex", alignItems: "center", gap: "6px", paddingTop: "2px" }}><Lock />{label}</span>
+        <span style={{ fontSize: "13.5px", fontWeight: 700, minWidth: 0 }}>{value}<span className="meta" style={{ display: "block", fontWeight: 500, marginTop: "2px" }}>{note}</span>
+          {pending && <span style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap", marginTop: "6px" }}><Tag kind="review">CHANGE REQUESTED · IN REVIEW</Tag><span className="meta">→ {pending.to} · sent {pending.date}</span></span>}
+        </span>
+        {pending
+          ? <button type="button" className="btn" style={{ minHeight: "32px", fontSize: "12px" }} onClick={onWithdraw}>Withdraw request</button>
+          : <button type="button" className={`btn${open ? " dark" : ""}`} style={{ minHeight: "32px", fontSize: "12px" }} aria-expanded={open} onClick={() => setOpen((v) => !v)}>{open ? "Close" : "Request a change"}</button>}
+      </div>
+      {open && !pending && (
+        <div className="compose" style={{ marginTop: "10px" }}>
+          <span className="meta" style={{ fontWeight: 700 }}>The directory editor checks the request against your evidence and replies by email, usually within five working days. The current value stays until then.</span>
+          {opts.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span className="lbl">PROPOSED {label}{max === 2 ? " · UP TO 2" : ""}</span>
+              {kind === "orgType" ? (
+                <select className="inp" value={pick[0] ?? ""} onChange={(e) => setPick([e.target.value])} aria-label={`Proposed ${label.toLowerCase()}`}>{opts.map((o) => <option key={o.code} value={o.code}>{o.label}</option>)}</select>
+              ) : (
+                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                  {opts.map((o) => { const on = pick.includes(o.code); const full = !on && pick.length >= max; return <button key={o.code} type="button" aria-pressed={on} disabled={full} onClick={() => setPick(on ? pick.filter((x) => x !== o.code) : [...pick, o.code])} className={`btn${on ? " dark" : ""}`} style={{ minHeight: "32px", fontSize: "12px", padding: "0 12px" }}>{o.label}</button>; })}
+                </div>
+              )}
+            </div>
+          ) : (
+            <Field id={`rq-t-${kind}`} label={kind === "coverage" ? "WHICH ARTICLE IS MISSING OR WRONGLY LINKED?" : kind === "cert" ? "WHAT SHOULD CHANGE ON THIS CERTIFICATE?" : "WHAT SHOULD THE EDITORS LOOK AT?"}>
+              <textarea id={`rq-t-${kind}`} rows={2} className="inp" value={text} onChange={(e) => setText(e.target.value)} placeholder={kind === "coverage" ? "Article title or link, and what is wrong" : kind === "cert" ? "e.g. renewed on 1 Oct 2026, new number and expiry date" : "e.g. the relationship note is out of date"} />
+            </Field>
+          )}
+          <Field id={`rq-r-${kind}`} label="REASON *" aside={<span className="meta">{reason.trim().length < 10 ? "at least 10 characters" : ""}</span>}><textarea id={`rq-r-${kind}`} rows={2} className="inp" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Why the current value is wrong, and where the editor can check" /></Field>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+            <label className="btn" style={{ position: "relative", minHeight: "34px", fontSize: "12px", cursor: "pointer" }}>{file ? "Replace document" : "Attach evidence (PDF / image)"}<input type="file" accept="application/pdf,image/*" onChange={(e) => { setFile(e.target.files?.[0]?.name ?? ""); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
+            {file && <span className="meta">{file}</span>}
+          </div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <button type="button" className="btn dark" disabled={!ok} onClick={() => { onRequest({ field: label.charAt(0) + label.slice(1).toLowerCase(), from: typeof value === "string" ? value : current.join(" · ") || "—", to: opts.length ? lbl(pick) : text.trim(), reason: reason.trim(), file: file || undefined }); setOpen(false); setText(""); setReason(""); setFile(""); }}>Send request</button>
+            <button type="button" className="btn" onClick={() => { setOpen(false); setPick(current); }}>Cancel</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const HISTORY: { date: string; field: string; change: string; status: "review" | "approved" | "declined"; note?: string }[] = [
   { date: "11 Oct 2026", field: "Product range", change: `Added “${PRODUCT_BY_CODE[PENDING_ADD]?.labelEn}”`, status: "review", note: "With the directory editor. The public page keeps the previous range until this is approved." },
@@ -74,6 +132,10 @@ const HISTORY: { date: string; field: string; change: string; status: "review" |
 
 export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Related[]; subs0: SubOpt[] }) {
   const [mode, setMode] = useState<Mode>("view");
+  const { d, set: setDemo, toast } = useDemo();
+  const reqs: Record<string, Req> = d.companyReqs ?? {};
+  const request = (key: string) => (r: Omit<Req, "id" | "date">) => { setDemo((x) => ({ ...x, companyReqs: { ...(x.companyReqs ?? {}), [key]: { ...r, id: key, date: today() } } })); toast("Request sent to the directory editor. You will get an email with the decision."); };
+  const withdraw = (key: string) => () => { setDemo((x) => { const y = { ...(x.companyReqs ?? {}) }; delete y[key]; return { ...x, companyReqs: y }; }); toast("Request withdrawn."); };
   const [showHistory, setShowHistory] = useState(false);
 
   const initial = useMemo(() => ({
@@ -82,7 +144,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
     summary: co.summary,
     products: co.products,
     website: co.website ?? "",
-    email: "",
+    email: co.website ? `sales@${co.website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}` : "",
     dial: co.country,
     phone: "",
     country: co.country,
@@ -95,6 +157,15 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
     markets: co.exportMarkets ?? [],
   }), [co]);
   const [f, setF] = useState(initial);
+  /* The enquiry email receives "Contact this company" messages, so it must be proven: a code goes to it, and it must be at the company's own domain. */
+  const [verifiedEmail, setVerifiedEmail] = useState(initial.email);
+  const [verifying, setVerifying] = useState(false);
+  const siteDomain = (co.website ?? "").replace(/^https?:\/\/(www\.)?/, "").split("/")[0].toLowerCase();
+  const mailDomain = f.email.split("@")[1]?.toLowerCase() ?? "";
+  const mailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email);
+  const mailFree = FREE_MAIL.includes(mailDomain);
+  const mailOffDomain = !!siteDomain && mailValid && !mailFree && mailDomain !== siteDomain && !mailDomain.endsWith(`.${siteDomain}`);
+  const mailVerified = mailValid && f.email.toLowerCase() === verifiedEmail.toLowerCase();
   const initialCards = useMemo<Card[]>(() => co.productCards.map((p, i) => ({ id: `c${i}`, product: p.product ?? "", name: p.name, spec: p.spec, live: p.photos, added: [], existing: true })), [co]);
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [newCert, setNewCert] = useState({ type: "", issuer: "", no: "", expires: "" });
@@ -157,7 +228,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
         </div>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <button type="button" className="btn dark" onClick={() => setMode("edit")}>Back to the editor</button>
-          <button type="button" className="btn" onClick={() => { setF(initial); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Done</button>
+          <button type="button" className="btn" onClick={() => { setF(initial); setVerifiedEmail(initial.email); setVerifying(false); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Done</button>
         </div>
       </div>
     );
@@ -173,7 +244,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13.5px", fontWeight: 500, paddingTop: "12px", borderTop: "1px solid var(--line)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Claim approved</span><b>{co.verifiedAt ?? "—"}</b></div>
               <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Verified by</span><b>Company-domain email</b></div>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Edits in review</span><b style={{ color: "var(--st-review-fg)" }}>1</b></div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Edits and requests in review</span><b style={{ color: "var(--st-review-fg)" }}>{1 + Object.keys(reqs).length}</b></div>
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -182,7 +253,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
               <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", marginBottom: "4px" }}>YOU CAN EDIT</div>
               Name and logo · Description · Product range · Product cards and photos · Contact details · Registered address (a country change is re-verified) · Employees and export markets (shown as self-reported) · New certificates
               <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", margin: "10px 0 4px" }}>KEPT BY THE EDITORS</div>
-              Company type · Directory categories · Application areas · Related coverage · Editorial notes · Certificates already submitted
+              Company type · Directory categories · Application areas · Related coverage · Editorial notes · Certificates already submitted. Set at listing or claim; change them with “Request a change” in the editor.
             </div>
           </div>
         </div>
@@ -190,7 +261,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
           <button type="button" className="btn dark" onClick={() => setMode("edit")}>Edit company profile</button>
           <button type="button" className="btn" aria-expanded={showHistory} aria-controls="co-history" onClick={() => setShowHistory((v) => !v)}>{showHistory ? "Hide change history" : "Change history"}</button>
         </div>
-        {showHistory && <History />}
+        {showHistory && <History extra={Object.values(reqs)} />}
       </div>
     );
   }
@@ -232,10 +303,21 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
           </Field>
         </Group>
 
-        <Group title="Contact details" hint="Enquiries from “Contact this company” go to the enquiry email only; it is never shown on the page. Without it the contact button is hidden.">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }} className="g2f">
+        <Group title="Contact details" hint="Enquiries from “Contact this company” go to the enquiry email only; it is never shown on the page. The enquiry email must be verified and at your own domain; without it the contact button is hidden.">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
             <Field id="co-web" label="WEBSITE"><input id="co-web" type="url" className="inp" value={f.website} placeholder="https://" onChange={(e) => set("website", e.target.value)} /></Field>
-            <Field id="co-mail" label="ENQUIRY EMAIL"><input id="co-mail" type="email" className="inp" value={f.email} placeholder={`sales@${co.slug.split("-")[0]}.com`} onChange={(e) => set("email", e.target.value)} /></Field>
+            <div style={{ gridColumn: "1 / -1" }}><Field id="co-mail" label="ENQUIRY EMAIL" aside={f.email ? (mailVerified ? <Tag kind="ver">VERIFIED</Tag> : <Tag kind="review">NOT VERIFIED</Tag>) : undefined}>
+              <div style={{ display: "flex", gap: "6px" }}>
+                <input id="co-mail" type="email" className="inp" value={f.email} placeholder={siteDomain ? `sales@${siteDomain}` : "sales@yourcompany.com"} onChange={(e) => { set("email", e.target.value.trim()); setVerifying(false); }} style={{ minWidth: 0 }} />
+                {!mailVerified && mailValid && !mailFree && !verifying && <button type="button" className="btn dark" style={{ flexShrink: 0 }} onClick={() => setVerifying(true)}>Send code</button>}
+              </div>
+            </Field>
+            {mailFree && <span className="meta" style={{ color: "var(--red-text)", display: "block", marginTop: "5px" }}>Free mailboxes ({mailDomain}) are not accepted for a company. Use an address at your company&apos;s own domain{siteDomain ? ` (${siteDomain})` : ""}.</span>}
+            {mailOffDomain && <span className="meta" style={{ display: "block", marginTop: "5px" }}>This is not at {siteDomain}, the domain of your website. The editor will ask how the two are related before it goes live.</span>}
+            {verifying && !mailVerified && <div className="compose" style={{ marginTop: "8px" }}><CodeVerify compact email={f.email} purpose="that this inbox belongs to the company" onVerified={() => { setVerifiedEmail(f.email); setVerifying(false); toast("Enquiry email verified."); }} /></div>}
+            {f.email && !mailVerified && !verifying && !mailFree && <span className="meta" style={{ display: "block", marginTop: "5px" }}>Until this address is verified, the “Contact this company” button stays hidden on your profile.</span>}
+            {!f.email && <span className="meta" style={{ display: "block", marginTop: "5px" }}>No enquiry email: the “Contact this company” button is hidden.</span>}
+            </div>
             <div style={{ gridColumn: "1 / -1" }}><Field id="co-tel" label="PHONE">
               <div style={{ display: "flex", gap: "6px" }}>
                 <select aria-label="Country calling code" className="inp" value={f.dial} onChange={(e) => set("dial", e.target.value)} style={{ flex: "0 0 112px", padding: "0 8px" }}>
@@ -321,6 +403,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
             {c.verified ? <Tag kind="ver">VERIFIED</Tag> : <Tag kind="review">AWAITING CERTIFICATE COPY</Tag>}
           </div>
         ))}
+        <div style={{ marginTop: "-4px" }}><Locked kind="cert" current={[]} pending={reqs.cert} onRequest={request("cert")} onWithdraw={withdraw("cert")} label="SUBMITTED CERTIFICATES" value="Renewed, re-numbered or withdrawn?" note="Submitted certificates are locked; ask the editor to update one." /></div>
         <div style={{ borderTop: "1px solid var(--line)", paddingTop: "12px", display: "grid", gridTemplateColumns: "1.3fr 1fr 1fr .8fr", gap: "10px" }} className="g4f">
           <Field id="ce-t" label="ADD · TYPE">
             <select id="ce-t" className="inp" value={newCert.type} onChange={(e) => setNewCert({ ...newCert, type: e.target.value })}>
@@ -340,20 +423,20 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
         {newCert.type && <span className="meta">A copy of the certificate (PDF) is required before it is shown; upload arrives with the account release. {CERTIFICATION_TYPE_BY_CODE[newCert.type]?.kind === "test_report" ? "Note: a test report is listed as a test report, not as a certification." : ""}</span>}
       </Group>
 
-      <Group title="Kept by the editors" tag={<Tag kind="lock">NOT EDITABLE</Tag>} hint="Decided by the directory editor from public sources and our own reporting. To dispute one, write to the directory editor.">
+      <Group title="Kept by the editors" tag={<Tag kind="lock">CHANGE BY REQUEST</Tag>} hint="Set when the profile was listed and confirmed when you claimed it. After that they are not edited directly: use “Request a change”, add your reason and evidence, and the directory editor decides.">
         <div>
-          <Locked label="COMPANY TYPE" value={ORGANISATION_TYPE_BY_CODE[co.orgType]?.labelEn ?? co.orgType} note="Set when the company is listed." />
-          <Locked label="CATEGORIES" value={co.categories.map((c) => CATEGORY_BY_CODE[c]?.labelEn ?? c).join(" · ")} note="Directory sections the profile is filed under." />
-          <Locked label="APPLICATION AREAS" value={co.applications.map((a) => APPLICATION_AREA_BY_CODE[a]?.labelEn ?? a).join(" · ") || "—"} note="Judged from projects we have covered, up to two." />
-          <Locked label="RELATED COVERAGE" value={related.length ? related.map((r, i) => <span key={r.href}>{i > 0 && " · "}<Link href={r.href} style={{ color: "var(--red-text)" }}>{r.title}</Link></span>) : "None yet"} note="Linked automatically from our articles." />
-          <Locked label="EDITORIAL NOTES" value="None" note="Relationship labels and editor's notes are written by the newsroom." />
+          <Locked kind="orgType" current={[co.orgType]} pending={reqs.orgType} onRequest={request("orgType")} onWithdraw={withdraw("orgType")} label="COMPANY TYPE" value={ORGANISATION_TYPE_BY_CODE[co.orgType]?.labelEn ?? co.orgType} note="Set when the profile was listed and confirmed at claim. Changes by request." />
+          <Locked kind="categories" current={co.categories} pending={reqs.categories} onRequest={request("categories")} onWithdraw={withdraw("categories")} label="CATEGORIES" value={co.categories.map((c) => CATEGORY_BY_CODE[c]?.labelEn ?? c).join(" · ")} note="Directory sections the profile is filed under. Changes by request." />
+          <Locked kind="applications" current={co.applications} pending={reqs.applications} onRequest={request("applications")} onWithdraw={withdraw("applications")} label="APPLICATION AREAS" value={co.applications.map((a) => APPLICATION_AREA_BY_CODE[a]?.labelEn ?? a).join(" · ") || "—"} note="Judged from projects we have covered, up to two." />
+          <Locked kind="coverage" current={[]} pending={reqs.coverage} onRequest={request("coverage")} onWithdraw={withdraw("coverage")} label="RELATED COVERAGE" value={related.length ? related.map((r, i) => <span key={r.href}>{i > 0 && " · "}<Link href={r.href} style={{ color: "var(--red-text)" }}>{r.title}</Link></span>) : "None yet"} note="Linked automatically from our articles." />
+          <Locked kind="notes" current={[]} pending={reqs.notes} onRequest={request("notes")} onWithdraw={withdraw("notes")} label="EDITORIAL NOTES" value="None" note="Relationship labels and editor's notes are written by the newsroom." />
         </div>
       </Group>
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderTop: "2px solid var(--ink)", paddingTop: "14px" }}>
-        <button type="button" className="btn dark" disabled={changed.length === 0} onClick={() => setMode("sent")} style={changed.length === 0 ? { opacity: .45, cursor: "not-allowed" } : undefined}>Submit for review</button>
-        <button type="button" className="btn" onClick={() => { setF(initial); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Cancel</button>
-        <span className="meta">{changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
+        <button type="button" className="btn dark" disabled={changed.length === 0 || (!!f.email && !mailVerified)} onClick={() => setMode("sent")}>Submit for review</button>
+        <button type="button" className="btn" onClick={() => { setF(initial); setVerifiedEmail(initial.email); setVerifying(false); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Cancel</button>
+        <span className="meta">{f.email && !mailVerified ? <b style={{ color: "var(--red-text)" }}>Verify the enquiry email (or clear it) before submitting.</b> : changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
       </div>
     </div>
   );
@@ -450,11 +533,11 @@ function ProductCards({ ranged, cards, setCards }: { ranged: string[]; cards: Ca
   );
 }
 
-function History() {
+function History({ extra = [] }: { extra?: Req[] }) {
   const m = { review: ["IN REVIEW", "var(--st-review-bg)", "var(--st-review-fg)"], approved: ["APPROVED", "var(--st-current-bg)", "var(--up)"], declined: ["NOT ACCEPTED", "var(--line)", "var(--slate)"] } as const;
   return (
     <ol id="co-history" style={{ listStyle: "none", margin: 0, padding: 0, borderTop: "1px solid var(--line)" }}>
-      {HISTORY.map((h, i) => (
+      {[...extra.map((r) => ({ date: r.date, field: r.field, change: `Change requested: ${r.from} → ${r.to}`, status: "review" as const, note: `Reason: ${r.reason}${r.file ? ` · evidence: ${r.file}` : ""}` })), ...HISTORY].map((h, i) => (
         <li key={i} style={{ display: "grid", gridTemplateColumns: "104px minmax(0,1fr)", gap: "4px 14px", padding: "12px 0", borderBottom: "1px solid var(--line)" }} className="lockrow">
           <span className="meta" style={{ fontWeight: 700 }}>{h.date}</span>
           <span style={{ display: "flex", flexDirection: "column", gap: "4px", minWidth: 0 }}>

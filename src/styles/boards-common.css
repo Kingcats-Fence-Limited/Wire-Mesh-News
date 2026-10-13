@@ -1,7 +1,8 @@
 /* Shared design-system classes, ported from canvas Home-A (unscoped = site base) and Nav-J (.megapanel). */
 .site{margin:0}
 .site a{color:var(--ink);text-decoration:none}
-.site a:hover{color:var(--red-text)}
+/* Text links turn red on hover; button-like links keep their own colours and darken instead (rule below), so text never vanishes on a red or dark button. */
+.site a:where(:not(.btn,.mastbtn,.hdbtn,.icobtn,.socl,.chip,.fchip,.pgn,.tickchip,.navi,[style*="background"])):hover{color:var(--red-text)}
 .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
 .h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.045em;line-height:1.08}
 .mono{font-family:'Manrope',sans-serif;font-feature-settings:'tnum' 1,'ss01' 1;font-variant-numeric:tabular-nums}
@@ -180,7 +181,7 @@ a.figlink:focus-visible{outline:2px solid var(--red);outline-offset:4px}
 .site footer .g5 > div:first-child{grid-column:1 / -1}
 .site footer .h[aria-hidden]{display:none}
 }
-.site a:hover{color:var(--red-text)}
+.site a:where(:not(.btn,.mastbtn,.hdbtn,.icobtn,.socl,.chip,.fchip,.pgn,.tickchip,.navi,[style*="background"])):hover{color:var(--red-text)}
 
 /* ---- Tablet tier (601–980px): two columns instead of one; phones keep the Mobile-M single column ---- */
 @media (min-width:601px) and (max-width:980px){
