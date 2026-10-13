@@ -19,8 +19,7 @@ const TYPE_LABEL: Record<string, string> = Object.fromEntries(EVENT_TYPE.map((t)
 /* Region filter uses the site's fixed region table (the same one as the Directory and export
    markets), not a coarse "Asia" bucket; online events have their own chip. */
 const regionOf = (e: EventItem) => (e.online ? "online" : COUNTRY_BY_CODE[e.country ?? ""]?.region ?? "");
-/* "Upcoming" is relative to the build date; the site rebuilds daily. */
-const TODAY = new Date().toISOString().slice(0, 10);
+
 
 const range = (e: EventItem) => {
   const s = new Date(e.start), en = e.end ? new Date(e.end) : null;
@@ -33,6 +32,8 @@ const where = (e: EventItem) => e.online ? `Online${e.organiser ? ` · ${e.organ
 const reportHref = (slug: string) => { const a = getArticle(slug); return a ? articleHref(a) : "/news/events-exhibitions/"; };
 
 export function EventsBoard({ sp }: { sp: EvParams }) {
+  /* The page renders per request, so "today" — and with it Upcoming / Past and the Month list — is always the current date. */
+  const TODAY = new Date().toISOString().slice(0, 10);
   const past = sp.when === "past";
   const pool = past ? EVENTS.filter((e) => (e.end ?? e.start) < TODAY).sort((a, b) => (a.start < b.start ? 1 : -1)) : upcomingEvents(TODAY);
   const monthOf = (e: EventItem) => e.start.slice(0, 7);
@@ -138,7 +139,7 @@ Subscribe to calendar
 <a href={e.website ?? `#${e.slug}`} rel={e.website ? "nofollow noopener noreferrer" : undefined} target={e.website ? "_blank" : undefined} style={{ fontSize: "19px" }} className="h">{e.name}</a>
 <span style={{ fontSize: "13.5px" }} className="meta">{range(e).replace(/ \d{4}$/, "")} · {where(e)}</span>
 <p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>{e.summary}</p>
-<div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}><span className="tag">{TYPE_LABEL[e.type]}</span><span className="tag">{e.focus}</span>{e.weAttend && <span className="tag">{past ? "We attended" : "We\u2019ll be there"}</span>}</div>
+<div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>{!past && e.start <= TODAY && <span className="tag" style={{ background: "var(--red)", color: "#FFFFFF", borderColor: "var(--red)" }}>On now</span>}<span className="tag">{TYPE_LABEL[e.type]}</span><span className="tag">{e.focus}</span>{e.weAttend && <span className="tag">{past ? "We attended" : "We\u2019ll be there"}</span>}</div>
 {past && (e.report ? <Link href={reportHref(e.report)} style={{ fontSize: "13px", fontWeight: 800, color: "var(--red-text)" }}>Read our show report →</Link> : <span className="meta" style={{ fontSize: "12.5px" }}>No report: we did not attend.</span>)}
 </div>
 {e.website && <a href={e.website} rel="nofollow noopener noreferrer" target="_blank" style={{ fontSize: "12.5px", fontWeight: "800", color: "var(--red-text)", flexShrink: "0", paddingTop: "4px" }}>DETAILS →</a>}
