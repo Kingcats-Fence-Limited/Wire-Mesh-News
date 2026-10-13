@@ -8,7 +8,11 @@ export const SITE = {
   url: "https://www.wiremeshnews.com",
   email: "hello@wiremeshnews.com",
   /** Operator details appear only on About / Privacy / Terms (HANDOFF §5.1). */
-  operator: { legalName: "KINGCATS FENCE LIMITED", region: "United States" },
+  /** The publisher's own details. `region` is shown next to a map pin on About, Contact,
+   *  Advertise and in the footer, so it has to be where the company actually is — the
+   *  entity is incorporated in Hong Kong. `jurisdiction` is named in the Terms.
+   *  The phone number is a contact line, not a location claim. */
+  operator: { legalName: "KINGCATS FENCE LIMITED", region: "Hong Kong SAR", jurisdiction: "Hong Kong SAR" },
   launched: 2026,
   /** Operator phone / WhatsApp (shown in footer, About, Contact, Advertise). */
   phone: "+1 415 430 7914",
