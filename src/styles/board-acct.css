@@ -108,3 +108,11 @@
 .b-acct .compose{border:2px solid var(--ink);border-radius:14px;padding:16px 18px;background:var(--card);display:flex;flex-direction:column;gap:12px}
 .b-acct .row .compose{margin-top:6px}
 @media (max-width:760px){ .b-acct .lockrow > button{justify-self:start} }
+.b-acct .oncard{display:flex;align-items:center;gap:12px;padding:8px 10px 8px 8px;border:1px solid var(--line);border-radius:12px;background:var(--paper-2);min-width:0}
+.b-acct .oncard:hover{border-color:var(--ink);color:var(--ink)}
+.b-acct .oncard-th{width:64px;height:48px;border-radius:8px;flex-shrink:0;background:var(--line)}
+.b-acct .oncard-k{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--slate);margin-bottom:2px}
+.b-acct .oncard-t{display:block;font-size:14px;font-weight:800;line-height:1.3;color:var(--ink)}
+.b-acct .oncard-go{flex-shrink:0;font-size:12px;font-weight:800;color:var(--red-text);white-space:nowrap}
+.b-acct .cq{margin:2px 0 0;padding:2px 0 2px 12px;border-left:3px solid var(--line-2);font-size:14.5px;font-weight:500;line-height:1.6;color:var(--fg-2)}
+@media (max-width:600px){ .b-acct .oncard{flex-wrap:wrap} .b-acct .oncard-go{width:100%;padding-left:76px} }

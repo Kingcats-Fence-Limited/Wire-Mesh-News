@@ -254,7 +254,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 )}
 {/* ⑥ 评论 */}
-<div style={{ marginTop: "48px" }} className="wrap">
+<div id="comments" style={{ marginTop: "48px", scrollMarginTop: "24px" }} className="wrap">
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px", paddingBottom: "14px", borderBottom: "3px solid var(--ink)" }}>
 <div>
 <h2 style={{ margin: "0", fontSize: "28px" }} className="h">Comments <span style={{ color: "var(--red-text)", fontSize: "19px" }} className="mono">0</span></h2>

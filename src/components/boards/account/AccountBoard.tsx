@@ -3,14 +3,35 @@
    be edited and every action works against browser-local demo state. noindex, not in the
    sitemap; no advertising. */
 import { Shell } from "@/components/shell/Shell";
-import { ARTICLES, latest } from "@/lib/content/articles";
+import { ARTICLES, latest, getArticle } from "@/lib/content/articles";
 import { COMPANIES } from "@/lib/content/directory";
 import { STANDARDS, EVENTS } from "@/lib/content/source";
 import { articleHref, sectionByCode, fmtDate } from "@/lib/site";
 import { subdivisionsOf } from "@/lib/vocab-geo";
 import { AccountApp } from "./AccountApp";
 import { DEMO_VERSION, type Demo } from "./store";
+import { emptyDraft } from "@/components/editor/draft";
 import "@/styles/board-acct.css";
+
+const BYLINE = "Jordan Dale · Specification consultant · Hengtai Mesh";
+const S1_BODY = `A mill certificate tells you what the coating weighed on the day it was tested, on the sample the mill chose. It does not tell you what arrives on site after cutting, welding and transport.
+
+## The three numbers to ask for
+
+- **Coating mass per unit area**, with the class it claims to meet
+- **Where it was measured**: on the wire before welding, or on the finished panel
+- **How it was measured**: gravimetric strip test or magnetic gauge
+
+| Measured on | Typical result |
+| --- | --- |
+| Wire before welding | 275 g/m² |
+| Panel after welding | 190–240 g/m² |
+
+## What usually goes missing
+
+The measurement location. Two certificates can quote the same figure and describe two very different products, because one was measured on wire coil and the other on the panel a buyer will actually install. Ask for both, in writing, before the order is placed.`;
+
+const onArticle = (slug: string) => { const x = getArticle(slug)!; return { title: x.title, href: articleHref(x), slug: x.slug, section: sectionByCode(x.section)?.label ?? "", date: fmtDate(x.date) }; };
 
 function buildSeed(): Demo {
   const arts = latest(14).filter((a) => a.type !== "sponsored");
@@ -24,19 +45,19 @@ function buildSeed(): Demo {
     profile: { name: "Jordan Dale", initials: "JD", avatar: null, jobTitle: "Specification consultant", company: co.name, country: "GB", city: "Leeds", since: "Mar 2026", email: "jordan.dale@example.com", pendingEmail: null },
     author: { bio: "Fencing contractor for twelve years, now a specification consultant for perimeter projects.", publicEmail: "", linkedin: "https://linkedin.com/in/jordan-dale-example", x: "", website: "", expertise: ["Perimeter security", "Site acceptance", "Hot-dip galvanizing"], visible: true },
     submissions: [
-      { id: "s1", title: "Hot-dip galvanizing thickness: what the mill certificate leaves out", status: "changes_requested", section: "Technical Guides", updated: "11 Oct 2026", submitted: "9 Oct 2026", reviewed: "11 Oct 2026", words: 1840, note: "The coating-weight figures in section 2 need a source: name the test method and the standard the values are measured against. Resubmit when the table carries both.", excerpt: "A mill certificate tells you what the coating weighed on the day it was tested, on the sample the mill chose. It does not tell you what arrives on site after cutting, welding and transport.\n\nThis article walks through the three numbers a buyer should ask for, and the one that is usually missing: the measurement location." },
+      { id: "s1", title: "Hot-dip galvanizing thickness: what the mill certificate leaves out", status: "changes_requested", section: "Technical Guides", updated: "11 Oct 2026", submitted: "9 Oct 2026", reviewed: "11 Oct 2026", words: 1840, note: "The coating-weight figures in section 2 need a source: name the test method and the standard the values are measured against. Resubmit when the table carries both.", excerpt: "A mill certificate tells you what the coating weighed on the day it was tested, on the sample the mill chose. It does not tell you what arrives on site after cutting, welding and transport.\n\nThis article walks through the three numbers a buyer should ask for, and the one that is usually missing: the measurement location.", draft: { ...emptyDraft(BYLINE), title: "Hot-dip galvanizing thickness: what the mill certificate leaves out", dek: "A mill certificate tells you what the coating weighed on the day it was tested. Here is what to ask for so it tells you what arrives on site.", body: S1_BODY, section: "technical_guides", subsection: "surface_treatments", type: "guide", tags: ["surface:hdg", "product:welded_mesh_panel", "process:galvanizing"], sources: ["EN 10244-2:2023, Table 2 (coating classes)", ""], disclosure: "yes", disclosureText: "I work as a consultant for Hengtai Mesh, a panel producer; no product is named in the article.", checks: [true, true, true] } },
       { id: "s2", title: "Field notes: installing 358 mesh on uneven ground", status: "pending", section: "Applications", updated: "11 Oct 2026", submitted: "11 Oct 2026", words: 1260, excerpt: "Uneven ground is where a 358 fence either keeps its rating or loses it. Notes from three sites on stepping versus raking panels, and what each does to the anti-climb gap at the bottom rail." },
-      { id: "s3", title: "Comparing weld shear results across three suppliers", status: "draft", section: "Technical Guides", updated: "12 Oct 2026", words: 420, excerpt: "Three suppliers, one test rig, forty welds each. Early numbers below; the method section still needs the jig drawing." },
+      { id: "s3", title: "Comparing weld shear results across three suppliers", status: "draft", section: "Technical Guides", updated: "12 Oct 2026", words: 420, excerpt: "Three suppliers, one test rig, forty welds each. Early numbers below; the method section still needs the jig drawing.", draft: { ...emptyDraft(BYLINE), title: "Comparing weld shear results across three suppliers", dek: "Three suppliers, one test rig, forty welds each.", body: "Three suppliers, one test rig, forty welds each. Early numbers below; the method section still needs the jig drawing.\n\n## Method\n\nTo be written.", section: "technical_guides", subsection: "", type: "analysis", tags: ["process:welding"] } },
       { id: "s4", title: published.title, status: "published", section: sec(published.section), updated: "21 Sep 2026", submitted: "12 Sep 2026", reviewed: "19 Sep 2026", words: 2210, href: articleHref(published), excerpt: published.dek },
       { id: "s5", title: "What a site acceptance checklist should contain", status: "published", section: "Buying Guides", updated: "2 Aug 2026", submitted: "20 Jul 2026", reviewed: "29 Jul 2026", words: 1540, href: articleHref(a(5)), excerpt: "Twelve checks that take an afternoon and save an argument later." },
       { id: "s6", title: "Five reasons our panels beat the competition", status: "rejected", section: "Buying Guides", updated: "2 Sep 2026", submitted: "28 Aug 2026", reviewed: "2 Sep 2026", words: 690, note: "Product promotion without verifiable test data. A new submission on the same topic is treated as new.", excerpt: "Our panels are stronger, cheaper and faster to install than anything else on the market." },
       { id: "s7", title: "Letter: on measurement location in coating audits", status: "draft", section: "Letters", updated: "5 Oct 2026", words: 180, excerpt: "Your article on coating audits misses where the gauge goes. Two millimetres from a weld is not the same panel." },
     ],
     comments: [
-      { id: "c1", text: "We measured 275 g/m² on the same panels; the site figure matched the certificate for once.", status: "approved", date: "10 Oct 2026", on: { title: a(1).title, href: articleHref(a(1)) } },
-      { id: "c2", text: "Which edition of EN 10244-2 is the table based on? The 2009 and 2023 class names differ.", status: "pending", date: "12 Oct 2026", on: { title: a(2).title, href: articleHref(a(2)) } },
-      { id: "c3", text: "Good piece. One correction: the stepped-panel detail in figure 3 is mirrored.", status: "approved", date: "28 Sep 2026", on: { title: a(3).title, href: articleHref(a(3)) } },
-      { id: "c4", text: "Anyone who buys from the supplier in this article is an idiot.", status: "rejected", date: "14 Sep 2026", on: { title: a(4).title, href: articleHref(a(4)) }, reason: "Personal attack; see the Comment Policy." },
+      { id: "c1", text: "We measured 275 g/m² on the same panels; the site figure matched the certificate for once.", status: "approved", date: "10 Oct 2026", on: onArticle("reading-a-mill-certificate-line-by-line") },
+      { id: "c2", text: "Which edition of EN 10244-2 is the table based on? The 2009 and 2023 class names differ.", status: "pending", date: "12 Oct 2026", on: onArticle("coating-weight-chain-link-test-report") },
+      { id: "c3", text: "Good piece. One correction: the stepped-panel detail in figure 3 is mirrored.", status: "approved", date: "28 Sep 2026", on: onArticle("post-spacing-wind-load-footing") },
+      { id: "c4", text: "Anyone who buys from the supplier in this article is an idiot.", status: "rejected", date: "14 Sep 2026", on: onArticle("chain-link-vs-welded-mesh-cost"), reason: "Personal attack; see the Comment Policy." },
     ],
     bookmarks: [
       ...arts.slice(0, 7).map((x, i) => ({ id: `b-a${i}`, kind: "article" as const, title: x.title, href: articleHref(x), meta: sec(x.section), saved: ["12 Oct", "11 Oct", "9 Oct", "7 Oct", "5 Oct", "1 Oct", "28 Sep"][i] })),
