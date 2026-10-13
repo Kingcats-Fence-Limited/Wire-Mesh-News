@@ -87,7 +87,7 @@ export function RegisterForm({ claim }: { claim?: string }) {
   return (
     <form onSubmit={(e) => { e.preventDefault(); setTried(true); if (valid && !disposable && name.trim() && strength >= 2 && terms) { setPending(email.trim().toLowerCase()); setSent(true); } }} noValidate>
       <h2 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">{claim ? "Create an account to claim your profile" : "Create an account"}</h2>
-      <p style={{ margin: "0 0 20px" }} className="hint">Use Google, Apple or Microsoft, or an email and password. Your email is never shown publicly.</p>
+      <p style={{ margin: "0 0 20px" }} className="hint">Use Google or Microsoft, or an email and password. Your email is never shown publicly.</p>
       <SocialSignIn mode="register" next={claim ? `/directory/${claim}/` : undefined} />
       <div style={{ marginBottom: "10px" }} className="fld"><label htmlFor="r1">EMAIL *</label><input id="r1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" style={valid && !disposable ? { borderColor: "var(--up)" } : undefined} className="inp" autoComplete="email" />
         {valid && !disposable && <div style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: "700", color: "var(--up)" }}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>This domain can receive mail; a 6-digit verification code goes here</div>}
