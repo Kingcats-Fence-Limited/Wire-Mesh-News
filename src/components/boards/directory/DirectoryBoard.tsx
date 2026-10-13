@@ -21,7 +21,6 @@ const APP_ICON: Record<string, string> = {
 };
 const APP_PAT: Record<string, string> = { architecture: "pWoven", industrial_security: "pChain", agriculture: "pWeld", energy_environment: "pPerf", sports_lifestyle: "pExp" };
 const APP_SUB: Record<string, string> = { architecture: "Façade mesh, bridge screens, gabion walls", industrial_security: "Site perimeters, anti-climb, machine guarding", agriculture: "Livestock fencing, poultry netting, crop support", energy_environment: "Solar sites, screening and filtration, dust", sports_lifestyle: "Ball courts, pools, gardens" };
-const CAT_PAT: Record<string, string> = { fencing: "pWeld", reinforcement: "pChainL", filtration: "pWoven", access: "pGrate", materials_services: "pPerf" };
 const MATERIALS: [string, string][] = MATERIAL_GROUP.map((m) => [m.code, m.labelEn]);
 const regionOf = (alpha2: string) => COUNTRY_BY_CODE[alpha2]?.region;
 const PER = 12;
@@ -159,10 +158,10 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px" }} className="g3">
 {SPONSORED.map((sx) => (
 <a key={sx.name} href={sx.url} rel={sx.open ? undefined : "sponsored noopener"} target={sx.open ? undefined : "_blank"} style={{ borderColor: "var(--line-2)" }} className="card">
-<span style={{ background: "var(--slate)" }} className="band"><svg width="100%" height="8" style={{ display: "block", color: "#FFFFFF", opacity: ".35" }} aria-hidden="true"><rect width="100%" height="8" fill="url(#pGrate)" /></svg></span>
+<span className="band spon" aria-hidden="true" />
 <div className="cbody">
 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-<span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><svg width="52" height="52" style={{ position: "absolute", inset: "0", color: "var(--on-dark-2)" }} aria-hidden="true"><rect width="52" height="52" fill="url(#pGrate)" /></svg><span style={{ position: "relative", fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }} className="mono">LOGO</span></span>
+<span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "var(--paper)", border: "1px dashed var(--line-2)" }} className="logo"><span style={{ fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "var(--grey)" }} className="mono">LOGO</span></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{sx.role.toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{sx.name}</span></span>
 <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{sx.country}</span><span style={{ background: "var(--st-withdrawn-bg)", color: "var(--slate)" }} className="cert">SPONSOR</span></span>
 </div>
@@ -213,13 +212,12 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 {slice.length === 0 && <p className="meta" style={{ margin: "20px 0", fontSize: "14px" }}>No companies match these filters. <Link href="/directory/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Clear all</Link></p>}
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px", alignItems: "stretch" }} className="g3">
 {slice.map((c) => {
-  const p = CAT_PAT[c.categories[0]] ?? "pWeld";
   const photos = c.productCards.reduce((n, x) => n + x.photos, 0);
   const cert = c.certifications.find((x) => x.verified);
   const n = art(c);
   return (
 <Link key={c.slug} href={`/directory/${c.slug}/`} className="card">
-<span className="band"><svg width="100%" height="8" style={{ display: "block", color: "#FFFFFF", opacity: ".45" }} aria-hidden="true"><rect width="100%" height="8" fill={`url(#${p})`} /></svg></span>
+<span className="band" aria-hidden="true" />
 <div className="cbody">
 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
 <span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><img src={logoSrc(c.slug)} alt="" width="52" height="52" style={{ display: "block", width: "52px", height: "52px" }} /></span>

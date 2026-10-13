@@ -2,7 +2,7 @@
 export function SiteDefs() {
   return (
     <>
-<svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+<svg width="0" height="0" style={{ position: "absolute", color: "#8A8F9E" }} aria-hidden="true">
 <defs>
 <pattern id="mp" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0H26M0 0V26" stroke="currentColor" strokeWidth="1.1" fill="none" /></pattern>
 {/* 勾花网：菱形网孔 */}
@@ -15,8 +15,8 @@ export function SiteDefs() {
 {/* 焊接网：正交 + 焊点（红点即 logo 的点） */}
 <pattern id="pWeld" width="36" height="36" patternUnits="userSpaceOnUse">
 <path d="M0 0H36M0 0V36" stroke="currentColor" strokeWidth="1.4" fill="none" />
-<circle cx="0" cy="0" r="2.8" fill="var(--red)" /><circle cx="36" cy="0" r="2.8" fill="var(--red)" />
-<circle cx="0" cy="36" r="2.8" fill="var(--red)" /><circle cx="36" cy="36" r="2.8" fill="var(--red)" />
+<circle cx="0" cy="0" r="2.8" fill="rgba(229,36,47,.55)" /><circle cx="36" cy="0" r="2.8" fill="rgba(229,36,47,.55)" />
+<circle cx="0" cy="36" r="2.8" fill="rgba(229,36,47,.55)" /><circle cx="36" cy="36" r="2.8" fill="rgba(229,36,47,.55)" />
 </pattern>
 <pattern id="pWeldQ" width="30" height="30" patternUnits="userSpaceOnUse">
 <path d="M0 0H30M0 0V30" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -55,7 +55,7 @@ export function SiteDefs() {
 </defs>
 <symbol id="w1" viewBox="0 0 120 120">
 <path d="M12 26L33 90Q39 106 46 90L55 66Q60 54 65 66L74 90Q81 106 87 90L100 50" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-<circle cx="107" cy="26" r="9" fill="var(--red)" />
+<circle cx="107" cy="26" r="9" fill="rgba(229,36,47,.55)" />
 </symbol>
 <symbol id="w2" viewBox="0 0 120 120">
 <path d="M12 26L33 90Q39 106 46 90L55 66Q60 54 65 66L74 90Q81 106 87 90L100 50" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />

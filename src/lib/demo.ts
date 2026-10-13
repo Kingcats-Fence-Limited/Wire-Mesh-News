@@ -12,12 +12,13 @@ const KEY: [RegExp, number][] = [
   [/stainless|304|316|woven|cloth|screen|sieve|wedge/, 16],
   [/perforat/, 6],
   [/expanded|fa[cç]ade|cladding|architectur/, 7],
-  [/zinc|galvan|coat|powder|wire-rod|rod|drawn|coil|smelter|premium/, 8],
+  /* products before topics: a welded-mesh product must not fall through to the factory photo */
+  [/mesh|panel|welded|opening|diameter|gauge|tolerance/, 1],
+  [/zinc|galvan|coat|powder|wire-rod|wire rod|drawn|coil|smelter|premium/, 8],
   [/container|freight|shipping|export|import|duty|dumping|tariff|232|trade|customs|packing|lead-time/, 11],
   [/price|market|cost|q[1-4]|index|chart|steady|demand|outlook|survey/, 12],
-  [/machine|plant|line|commission|factory|weld|flatness|shear|production|manufactur|show|expo|inspection|certificate|audit|tender/, 10],
-  [/fence|fencing|post|footing|gate|livestock|farm|solar|site|ball-court|sport|pool|garden/, 9],
-  [/mesh|panel|welded|opening|diameter|gauge|tolerance/, 1],
+  [/fence|fencing|post|footing|gate|livestock|farm|solar|ball-court|sport|pool|garden/, 9],
+  [/machine|plant|commission|factory|flatness|shear|production|manufactur|expo|inspection|certificate|audit|tender/, 10],
 ];
 export function demoIndex(seed: string, offset = 0) {
   const s = seed.toLowerCase();

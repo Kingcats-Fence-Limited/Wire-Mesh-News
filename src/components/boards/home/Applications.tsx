@@ -27,7 +27,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
   return (
     <>
 <section style={{ position: "relative", overflow: "hidden", background: "#0E0F14", color: "#FFFFFF", padding: "54px 0" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "#1C1E27" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pChainL)" /></svg>
+<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", opacity: ".3" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pChainL)" /></svg>
 <span style={{ position: "absolute", left: "0", right: "0", top: "0", height: "1px", background: "linear-gradient(90deg, rgba(229,36,47,.6) 0%, rgba(229,36,47,0) 46%)" }}></span>
 <div className="wrap" style={{ position: "relative" }}>
 <div className="sec" style={{ marginBottom: "10px" }}><span className="node"></span><h2 style={{ color: "#FFFFFF" }}>Applications</h2><span className="rule" style={{ background: "var(--line-dark)" }}></span><Link href="/applications/">ALL APPLICATIONS &#8594;</Link></div>
@@ -35,7 +35,7 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 <div className="g5 apps" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px" }}>
 {APPLICATION_AREA.map((area, i) => (
 <Link key={area.code} href={`/applications/${subsectionSlug(area.code)}/`} className="apptile" style={{ background: "#17181F", borderColor: i === 0 ? "var(--red)" : "var(--line-dark)", minHeight: "268px", borderRadius: "18px", padding: "18px", justifyContent: "space-between" }}>
-<svg className="pat" aria-hidden="true" style={{ color: "#5A5F78", opacity: ".62" }}><g transform="scale(1.45)"><rect width="200%" height="200%" fill={`url(#${PATTERN[area.pattern]})`} /></g></svg>
+<svg className="pat" aria-hidden="true" style={{ opacity: ".3" }}><g transform="scale(1.45)"><rect width="200%" height="200%" fill={`url(#${PATTERN[area.pattern]})`} /></g></svg>
 <span style={{ position: "absolute", inset: "0", background: "radial-gradient(135% 85% at 86% -12%, rgba(229,36,47,.26) 0%, rgba(229,36,47,.05) 46%, rgba(229,36,47,0) 64%)" }}></span>
 <span style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg, rgba(23,24,31,0) 0%, rgba(23,24,31,.42) 34%, rgba(23,24,31,.93) 62%, #191A22 100%)" }}></span>
 <span style={{ position: "absolute", left: "0", right: "0", bottom: "0", height: "3px", background: "linear-gradient(90deg, var(--red) 0%, rgba(229,36,47,0) 72%)", opacity: ".55" }}></span>

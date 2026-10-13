@@ -9,7 +9,7 @@ export function Subscribe() {
 <div className="wrap">
 <div className="split" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "26px" }}>
 <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "18px", padding: "36px", position: "relative", overflow: "hidden" }}>
-<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", color: "var(--mesh-dark)" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pWoven)" /></svg>
+<svg style={{ position: "absolute", inset: "0", width: "100%", height: "100%", opacity: ".28" }} aria-hidden="true"><rect width="100%" height="100%" fill="url(#pWoven)" /></svg>
 <div style={{ position: "relative" }}>
 <div className="h" style={{ fontSize: "32px", marginBottom: "10px", color: "#FFFFFF" }}>The weekly brief</div>
 <p style={{ margin: "0 0 22px", fontSize: "15.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--on-dark-2)", maxWidth: "480px" }}>One email a week: the news, the price moves and the standards changes, on a single page. Subscribing is a separate confirmation; creating an account does not subscribe you.</p>

@@ -71,18 +71,18 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
 </div>
 </div>
 {/* 筛选 */}
-<div style={{ border: "2px solid var(--ink)", borderRadius: "16px", overflow: "hidden", marginBottom: "22px" }}>
-<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+<div style={{ border: "2px solid var(--ink)", borderRadius: "16px", marginBottom: "22px", position: "relative" }}>
+<div style={{ background: "var(--surface-dark)", color: "#FFFFFF", padding: "13px 16px", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderRadius: "14px 14px 0 0", position: "relative", zIndex: 2 }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey-2)", marginRight: "2px" }} className="mono">FILTER</span>
 <DropMenu label="Body" items={bodies.map((b) => ({ label: bodyOf(b)?.prefix ?? b.toUpperCase(), href: toggle("body", b), on: sp.body === b, count: STANDARDS.filter((x) => x.body === b).length }))} />
 <DropMenu label="Subject" items={subjects.map((x) => ({ label: subjectLabel(x), href: toggle("subject", x), on: sp.subject === x, count: STANDARDS.filter((y) => y.subject === x).length }))} />
-<Link href={toggle("status", "current")} scroll={false} className="fchip ghost">{sp.status ? `Status: ${STATUS[sp.status as StandardStatus]?.[0] ?? sp.status} ✕` : "Status: Any"}</Link>
+<DropMenu label={sp.status ? `Status: ${STATUS[sp.status as StandardStatus]?.[0] ?? sp.status}` : "Status"} minWidth={220} items={[{ label: "Any status", href: href({ status: undefined }), on: !sp.status, count: STANDARDS.length }, ...STANDARD_STATUS.map((st) => ({ label: st.label, href: href({ status: st.code }), on: sp.status === st.code, count: STANDARDS.filter((x) => x.status === st.code).length }))]} />
 <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px" }}>
 <span style={{ fontSize: "12.5px", fontWeight: "800" }} className="mono">{list.length}<span style={{ color: "var(--grey-2)", fontWeight: "700" }}> STANDARDS</span></span>
 <div role="group" aria-label="Sort" className="seg"><Link href={href({ sort: undefined })} scroll={false} className={sort === "number" ? "on" : undefined}>By number</Link><Link href={href({ sort: "subject" })} scroll={false} className={sort === "subject" ? "on" : undefined}>By subject</Link><Link href={href({ sort: "changed" })} scroll={false} className={sort === "changed" ? "on" : undefined}>Recently changed</Link></div>
 </div>
 </div>
-<div id="bodies" style={{ background: "var(--paper-2)", padding: "11px 16px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+<div id="bodies" style={{ background: "var(--paper-2)", padding: "11px 16px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", borderRadius: "0 0 14px 14px" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)", marginRight: "2px" }} className="mono">BODIES</span>
 {bodies.map((b) => <Link key={b} href={toggle("body", b)} scroll={false} className={`badge ${sp.body === b ? "on" : "wd"}`}>{bodyOf(b)?.prefix ?? b.toUpperCase()}</Link>)}
 <span style={{ width: "1px", height: "18px", background: "var(--line)", margin: "0 6px" }}></span>
