@@ -28,8 +28,8 @@ export function CategoryList({ heading, items, sponsored, series, perPage = 12 }
   return (
     <>
 <div className="sec"><h2>{heading}</h2><span className="rule"></span>
-<span style={{ display: "flex", gap: "7px", flexShrink: "0" }}>
-{([["latest", "Latest"], ["read", "Most read"], ["pick", "Editors' pick"]] as const).map(([k, l]) => (
+<span style={{ display: "flex", gap: "7px", flexShrink: "0" }} className="sorts">
+{([["latest", "Latest"], ["read", "Most read"], ["pick", "Editors' pick"]] as const).filter(([k]) => k !== "read" || items.some((i) => i.views > 0)).map(([k, l]) => (
 <button key={k} type="button" aria-pressed={sort === k} onClick={() => { setSort(k); setPage(1); }} style={{ minHeight: "36px", fontSize: "12.5px" }} className={`chip${sort === k ? " on" : ""}`}>{l}</button>
 ))}
 </span>
@@ -50,7 +50,7 @@ export function CategoryList({ heading, items, sponsored, series, perPage = 12 }
 </div>
 {sponsored && (
 <div style={{ display: "flex", alignItems: "flex-start", gap: "13px", padding: "14px 15px 14px 13px", margin: "6px 0 18px", background: "var(--paper-2)", borderLeft: "3px solid var(--red)", borderRadius: "0 10px 10px 0" }}>
-<span style={{ width: "58px", height: "58px", borderRadius: "8px", background: "var(--line-2)", flexShrink: "0" }}></span>
+<span style={{ width: "58px", height: "58px", borderRadius: "8px", flexShrink: "0", ...demoBg(sponsored.slug) }} className="ph"></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0" }}>
 <span className="adtag">SPONSORED &#183; {sponsored.sponsor?.toUpperCase()}</span>
 <Link href={sponsored.href} rel="sponsored" style={{ fontSize: "15.5px" }} className="h">{sponsored.title}</Link>

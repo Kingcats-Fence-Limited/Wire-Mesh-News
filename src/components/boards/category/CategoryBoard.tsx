@@ -47,8 +47,10 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
   const parts = seriesSlug ? seriesParts(seriesSlug) : [];
   const [editorSlug, note] = EDITOR_NOTE[code];
   const editor = getAuthor(editorSlug)!;
-  const top = mostRead(5).filter((a) => a.section === code).concat(all).filter((a, i, arr) => arr.indexOf(a) === i).slice(0, 3);
-  const views = (a: Article) => Math.max(0, 5 - mostRead(5).indexOf(a)) * 1000 + a.readMin;
+  /* Readership ranks come only from mostRead(); never pad the box with the latest articles and still call it "most read". */
+  const ranked = mostRead(5);
+  const top = ranked.filter((a) => all.includes(a)).slice(0, 3);
+  const views = (a: Article) => { const i = ranked.indexOf(a); return i < 0 ? 0 : ranked.length - i; };
   const title = activeSub ? activeSub.label : section.label;
   const [cardTitle, cardText] = EMAIL_CARD[code];
   const noun = NOUN[code];
@@ -77,10 +79,10 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 {/* 二级栏目瓦片 */}
 <section style={{ paddingTop: "26px", paddingBottom: "30px" }} className="wrap">
 <div style={{ display: "grid", gridTemplateColumns: `repeat(${subs.length + 1}, 1fr)`, gap: "12px" }} className="g6">
-<Link href={`/${section.slug}/`} className={`sub${activeSub ? "" : " on"}`}><span className="n">All {noun}</span><span className="c">{sectionAll.length}</span></Link>
-{subs.map((s) => (
-<Link key={s.code} href={`/${section.slug}/${s.slug}/`} className={`sub${activeSub?.code === s.code ? " on" : ""}`}><span className="n">{s.label}</span><span className="c">{bySubsection(code, s.code).filter((a) => a.type !== "sponsored").length}</span></Link>
-))}
+<Link href={`/${section.slug}/`} className={`sub${activeSub ? "" : " on"}`}><span className="n">All {noun}</span><span className="c">{sectionAll.length} {sectionAll.length === 1 ? noun.slice(0, -1).toUpperCase() : noun.toUpperCase()}</span></Link>
+{subs.map((s) => { const n = bySubsection(code, s.code).filter((a) => a.type !== "sponsored").length; return (
+<Link key={s.code} href={`/${section.slug}/${s.slug}/`} className={`sub${activeSub?.code === s.code ? " on" : ""}`}><span className="n">{s.label}</span><span className="c">{n} {n === 1 ? noun.slice(0, -1).toUpperCase() : noun.toUpperCase()}</span></Link>
+); })}
 </div>
 </section>
 {/* 编辑精选：大图左右 */}
@@ -126,12 +128,14 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <SectionNewsletter id={`nl-${section.slug}`} />
 </div>
 </div>
+{top.length > 0 && (
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "17px", marginBottom: "14px" }} className="h">MOST READ HERE</div>
 {top.map((a, i) => (
 <Link key={a.slug} href={articleHref(a)} style={{ display: "flex", gap: "12px", paddingBottom: i < top.length - 1 ? "12px" : undefined, borderBottom: i < top.length - 1 ? "1px solid var(--line)" : undefined, marginBottom: i < top.length - 1 ? "12px" : undefined }}><span style={{ fontSize: "13px", color: "var(--red-text)", flexShrink: "0" }} className="h">{String(i + 1).padStart(2, "0")}</span><span style={{ fontSize: "14px", fontWeight: "700", lineHeight: "1.35" }}>{a.title}</span></Link>
 ))}
 </div>
+)}
 {stds.length > 0 && (
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "17px", marginBottom: "12px" }} className="h">STANDARDS IN THIS SECTION</div>
@@ -146,7 +150,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <Link href="/submit/" style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit an article</Link>
 </div>
 <div><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ aspectRatio: "6/5" }} className="ad">[ 300 &#215; 250 ]</div></div>
-<div className="sticky" style={{ marginTop: "18px" }}><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ height: "600px" }} className="ad">[ 300 &#215; 600 ]</div></div>
+<div className="sticky tall-ad" style={{ marginTop: "18px" }}><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ height: "600px" }} className="ad">[ 300 &#215; 600 ]</div></div>
 </aside>
 </div>
 </section>
