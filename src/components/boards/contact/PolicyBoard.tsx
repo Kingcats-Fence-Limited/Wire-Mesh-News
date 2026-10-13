@@ -16,6 +16,13 @@ export function PolicyBoard({ p }: { p: Policy }) {
 {POLICIES.map((x, i) => <Link key={x.slug} href={`/policies/${x.slug}/`} className={x.slug === p.slug ? "on" : undefined} aria-current={x.slug === p.slug ? "page" : undefined}><span className="mono n">{String(i + 1).padStart(2, "0")}</span><span className="t">{x.title}</span></Link>)}
 <div className="polft">Questions about a policy? <a href={`mailto:${SITE.email}`}>{SITE.email}</a></div>
 </nav>
+{/* phones / tablets: one collapsed row instead of a wall of links */}
+<details className="polsheet">
+<summary><span className="k">Policies</span><span className="cur">{p.title}</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="m5 8 7 7 7-7" /></svg></summary>
+<div className="pollist">
+{POLICIES.map((x, i) => <Link key={x.slug} href={`/policies/${x.slug}/`} className={x.slug === p.slug ? "on" : undefined} aria-current={x.slug === p.slug ? "page" : undefined}><span className="mono n">{String(i + 1).padStart(2, "0")}</span><span className="t">{x.title}</span></Link>)}
+</div>
+</details>
 <div>
 <nav aria-label="Breadcrumb" style={{ marginBottom: "12px" }} className="meta"><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / Policies / <b style={{ color: "var(--ink)" }}>{p.title}</b></nav>
 <h1 style={{ margin: "0 0 10px", fontSize: "34px", letterSpacing: "-.045em" }} className="h">{p.title}</h1>
