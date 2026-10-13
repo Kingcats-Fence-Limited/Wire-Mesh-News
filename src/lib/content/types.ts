@@ -93,7 +93,8 @@ export type Company = {
   website?: string;
   exportMarkets?: string[]; // region codes (self-reported)
   certifications: { type: string; issuer?: string; no?: string; expires?: string; verified: boolean }[];
-  productCards: { name: string; spec: string; photos: number }[];
+  /** product: product vocabulary code the card belongs to (optional for older entries). */
+  productCards: { name: string; spec: string; photos: number; product?: string }[];
   updated: string;
 };
 
