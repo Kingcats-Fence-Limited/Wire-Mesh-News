@@ -28,20 +28,18 @@ export function Applications({ counts, latest }: { counts: Record<string, number
     <>
 <section style={{ position: "relative", overflow: "hidden", background: "#0E0F14", color: "#FFFFFF", padding: "54px 0" }}>
 <span aria-hidden="true" style={{ position: "absolute", inset: "0", background: "radial-gradient(120% 90% at 50% -10%, #1A1C24 0%, #121318 52%, #0E0F14 100%)" }}></span>
-<span style={{ position: "absolute", left: "0", right: "0", top: "0", height: "1px", background: "linear-gradient(90deg, rgba(229,36,47,.6) 0%, rgba(229,36,47,0) 46%)" }}></span>
+<span style={{ position: "absolute", left: "0", right: "0", top: "0", height: "1px", background: "linear-gradient(90deg, rgba(229,36,47,.35) 0%, rgba(229,36,47,0) 30%)" }}></span>
 <div className="wrap" style={{ position: "relative" }}>
 <div className="sec" style={{ marginBottom: "10px" }}><span className="node"></span><h2 style={{ color: "#FFFFFF" }}>Applications</h2><span className="rule" style={{ background: "var(--line-dark)" }}></span><Link href="/applications/">ALL APPLICATIONS &#8594;</Link></div>
-<p className="meta" style={{ margin: "0 0 24px", color: "var(--grey-5)", fontSize: "13.5px" }}>Five application areas, the same five used to filter the Directory. The red lines are typical uses in each area, not product names.</p>
+<p className="meta" style={{ margin: "0 0 24px", color: "var(--grey-5)", fontSize: "13.5px" }}>Five application areas, the same five used to filter the Directory. Under each are typical uses in that area, not product names.</p>
 <div className="g5 apps" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "16px" }}>
 {APPLICATION_AREA.map((area, i) => (
-<Link key={area.code} href={`/applications/${subsectionSlug(area.code)}/`} className="apptile" style={{ background: "#17181F", borderColor: i === 0 ? "var(--red)" : "var(--line-dark)", minHeight: "268px", borderRadius: "18px", padding: "18px", justifyContent: "space-between" }}>
-<svg className="pat" aria-hidden="true" style={{ opacity: ".16" }}><g transform="scale(1.45)"><rect width="200%" height="200%" fill={`url(#${PATTERN[area.pattern]})`} /></g></svg>
-<span style={{ position: "absolute", inset: "0", background: "radial-gradient(135% 85% at 86% -12%, rgba(229,36,47,.26) 0%, rgba(229,36,47,.05) 46%, rgba(229,36,47,0) 64%)" }}></span>
+<Link key={area.code} href={`/applications/${subsectionSlug(area.code)}/`} className="apptile" style={{ background: "#17181F", borderColor: "var(--line-dark)", minHeight: "268px", borderRadius: "18px", padding: "18px", justifyContent: "space-between" }}>
+<svg className="pat" aria-hidden="true" style={{ opacity: ".07" }}><g transform="scale(1.45)"><rect width="200%" height="200%" fill={`url(#${PATTERN[area.pattern]})`} /></g></svg>
 <span style={{ position: "absolute", inset: "0", background: "linear-gradient(180deg, rgba(23,24,31,0) 0%, rgba(23,24,31,.42) 34%, rgba(23,24,31,.93) 62%, #191A22 100%)" }}></span>
-<span style={{ position: "absolute", left: "0", right: "0", bottom: "0", height: "3px", background: "linear-gradient(90deg, var(--red) 0%, rgba(229,36,47,0) 72%)", opacity: ".55" }}></span>
 <span className="lbl aphead" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-<span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "12px", background: "rgba(229,36,47,.14)", border: "1px solid rgba(229,36,47,.34)" }} aria-hidden="true">
-<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{ICON[area.code]}</svg>
+<span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "12px", color: "#B9BCC6", background: "rgba(255,255,255,.04)", border: "1px solid var(--line-dark)" }} className="apic" aria-hidden="true">
+<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{ICON[area.code]}</svg>
 </span>
 <span className="mono" style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", color: "#4E5266" }}>{String(i + 1).padStart(2, "0")}</span>
 </span>
@@ -51,12 +49,12 @@ export function Applications({ counts, latest }: { counts: Record<string, number
 <span className="aptag" style={{ height: "1px", background: "var(--line-dark)", marginBottom: "10px" }}></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", marginBottom: "12px" }}>
 {area.scenariosEn.split(";").slice(0, 3).map((s, k) => (
-<span key={s} className={k === 2 ? "apsc3" : undefined} style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: "700", color: "var(--red-text)" }}><span style={{ width: "4px", height: "4px", borderRadius: "999px", background: "var(--red)", flexShrink: "0" }}></span>{s.trim()}</span>
+<span key={s} className={k === 2 ? "apsc3" : undefined} style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "12px", fontWeight: "500", color: "#A9ADBA" }}><span style={{ width: "6px", height: "1px", background: "#5A5E70", flexShrink: "0" }}></span>{s.trim()}</span>
 ))}
 </span>
 <span className="apfoot" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-<span className="mono" style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }}>{counts[area.code] ?? 0} ARTICLES</span>
-<span style={{ width: "28px", height: "28px", borderRadius: "999px", background: i === 0 ? "var(--red)" : "var(--fg-2)", color: "#FFFFFF", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: "0" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+<span className="mono" style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".08em", color: "#6E7384" }}>{counts[area.code] ?? 0} {(counts[area.code] ?? 0) === 1 ? "ARTICLE" : "ARTICLES"}</span>
+<span className="apgo" style={{ width: "28px", height: "28px", borderRadius: "999px", border: "1px solid var(--line-dark)", color: "#B9BCC6", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: "0" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
 </span>
 </span>
 </Link>
