@@ -106,7 +106,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
       </nav>
 
       {open && (
-        <div className="megapanel" role="region" aria-label={`${cur?.label ?? open} menu`} onMouseEnter={() => leaveT.current && window.clearTimeout(leaveT.current)} style={narrow ? { position: "absolute", left: 0, right: 0, top: "100%", zIndex: 50, pointerEvents: "none" } : { position: "absolute", left: 0, right: 0, top: "100%", background: "var(--card)", borderBottom: "3px solid var(--ink)", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", zIndex: 50 }}>
+        <div className="megapanel" role="region" aria-label={`${cur?.label ?? open} menu`} onMouseEnter={() => leaveT.current && window.clearTimeout(leaveT.current)} style={narrow ? { position: "absolute", left: 0, right: 0, top: "calc(100% + 3px)", zIndex: 50, pointerEvents: "none" } : { position: "absolute", left: 0, right: 0, top: "100%", background: "var(--card)", borderBottom: "3px solid var(--ink)", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", zIndex: 50 }}>
           <div className="wrap" style={{ padding: 0 }}>
             {cur && (
               <div style={{ display: "grid", gridTemplateColumns: "1.08fr 1.05fr 1.12fr 0.86fr", gap: "0", background: "var(--card)" }}>

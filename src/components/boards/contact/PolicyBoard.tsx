@@ -10,10 +10,11 @@ export function PolicyBoard({ p }: { p: Policy }) {
   return (
     <Shell header="compact" board="b-contact">
 <section style={{ paddingTop: "30px", paddingBottom: "50px" }} className="wrap">
-<div style={{ display: "grid", gridTemplateColumns: "190px minmax(0,1fr)", gap: "36px", alignItems: "start", maxWidth: "980px" }} className="cols">
-<nav aria-label="Policies" className="polnav" style={{ display: "flex", flexDirection: "column", gap: "9px", position: "sticky", top: "20px" }}>
-<div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--slate)", marginBottom: "3px" }}>POLICIES</div>
-{POLICIES.map((x) => <Link key={x.slug} href={`/policies/${x.slug}/`} className={x.slug === p.slug ? "on" : undefined}>{x.title}</Link>)}
+<div style={{ display: "grid", gridTemplateColumns: "232px minmax(0,1fr)", gap: "36px", alignItems: "start", maxWidth: "1020px" }} className="cols">
+<nav aria-label="Policies" className="polnav">
+<div className="polhd">Policies<span className="mono c">{POLICIES.length}</span></div>
+{POLICIES.map((x, i) => <Link key={x.slug} href={`/policies/${x.slug}/`} className={x.slug === p.slug ? "on" : undefined} aria-current={x.slug === p.slug ? "page" : undefined}><span className="mono n">{String(i + 1).padStart(2, "0")}</span><span className="t">{x.title}</span></Link>)}
+<div className="polft">Questions about a policy? <a href={`mailto:${SITE.email}`}>{SITE.email}</a></div>
 </nav>
 <div>
 <nav aria-label="Breadcrumb" style={{ marginBottom: "12px" }} className="meta"><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / Policies / <b style={{ color: "var(--ink)" }}>{p.title}</b></nav>

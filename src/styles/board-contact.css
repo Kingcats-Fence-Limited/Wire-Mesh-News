@@ -8,9 +8,26 @@
 .b-contact .ico{width:38px;height:38px;border-radius:10px;background:var(--paper);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .b-contact .polbody p{margin:0 0 18px;font-size:15px;font-weight:500;line-height:1.7}
 .b-contact .polbody h2{margin:0 0 9px;font-size:20px}
-.b-contact .polnav a{font-size:14px;font-weight:500;color:var(--slate)}
-.b-contact .polnav a.on{font-weight:800;color:var(--red-text)}
+/* policy side nav: one panel, numbered rows, active row filled */
+.b-contact .polnav{position:sticky;top:20px;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px -22px rgba(21,22,28,.35)}
+.b-contact .polhd{display:flex;align-items:center;justify-content:space-between;font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;letter-spacing:-.03em;padding:8px 10px 10px;margin-bottom:4px;border-bottom:2px solid var(--ink)}
+.b-contact .polhd .c{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--slate);background:var(--paper);padding:3px 7px;border-radius:999px}
+.b-contact .polnav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;font-size:13.5px;font-weight:600;line-height:1.3;color:var(--fg-3);transition:background .12s,color .12s}
+.b-contact .polnav a .n{font-size:10.5px;font-weight:800;letter-spacing:.04em;color:var(--grey-2);width:18px;flex-shrink:0}
+.b-contact .polnav a .t{flex:1 1 auto;min-width:0}
+.b-contact .polnav a:hover{background:var(--paper);color:var(--ink);text-decoration:none}
+.b-contact .polnav a.on{background:var(--ink);color:var(--on-ink);font-weight:800}
+.b-contact .polnav a.on .n{color:var(--on-ink);opacity:.6}
+.b-contact .polft{margin-top:6px;padding:10px 10px 6px;border-top:1px solid var(--line-soft);font-size:12px;font-weight:500;line-height:1.55;color:var(--slate)}
+.b-contact .polft a{display:inline;padding:0;font-size:12px;font-weight:800;color:var(--red-text);border-radius:0}
+.b-contact .polft a:hover{background:transparent;color:var(--red-text);text-decoration:underline}
 @media (max-width:980px){
 .b-contact .cols, .b-contact .g2{grid-template-columns:1fr !important}
-.b-contact .polnav{position:static !important;flex-direction:row !important;flex-wrap:wrap;gap:6px 16px !important;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.b-contact .polnav{position:static;flex-direction:row;flex-wrap:wrap;gap:6px;padding:10px;margin-bottom:20px;box-shadow:none}
+.b-contact .polhd{width:100%;border-bottom:0;padding:2px 4px 6px;margin-bottom:2px}
+.b-contact .polhd .c{display:none}
+.b-contact .polnav a{padding:7px 11px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;gap:0}
+.b-contact .polnav a .n{display:none}
+.b-contact .polnav a.on{border-color:var(--ink)}
+.b-contact .polft{display:none}
 }
