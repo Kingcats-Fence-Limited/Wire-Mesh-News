@@ -16,7 +16,7 @@ const Chev = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" s
 
 function Opt({ it, onPick, tone }: { it: MenuItem; onPick: () => void; tone?: "pill" | "row" }) {
   return (
-    <Link href={it.href} scroll={false} role="menuitemradio" aria-checked={it.on} className={`${tone === "pill" ? "fpill" : "frow"}${it.on ? " on" : ""}${it.count === 0 ? " zero" : ""}`} onClick={onPick}>
+    <Link href={it.href} scroll={false} role="menuitemcheckbox" aria-checked={it.on} className={`${tone === "pill" ? "fpill" : "frow"}${it.on ? " on" : ""}${it.count === 0 ? " zero" : ""}`} onClick={onPick}>
       <span className="sq" aria-hidden="true" />
       <span className="lab">{it.label}{it.sub && <span className="sub">{it.sub}</span>}</span>
       <span className="mono c">{it.count}</span>
@@ -67,7 +67,8 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children, noun 
               {isOpen && !m.groups && (
                 <div role="menu" className="ddmenu" style={{ minWidth: m.wide ? "340px" : "280px" }}>
                   {m.note && <div className="ddnote">{m.note}</div>}
-                  {m.items.map((it) => <Opt key={it.href} it={it} onPick={close} />)}
+                  {m.items.map((it) => <Opt key={it.label} it={it} onPick={() => {}} />)}
+                  <div className="ddfoot"><span className="meta">Pick several; results show any of them.</span><button type="button" className="fdone" onClick={close}>Done</button></div>
                 </div>
               )}
             </div>
@@ -97,7 +98,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children, noun 
             {panelMenu.groups!.map((g) => (
               <div key={g.title} className="fgroup">
                 <div className="fgrouphd">{g.title}</div>
-                {g.items.map((it) => <Opt key={it.href} it={it} onPick={close} />)}
+                {g.items.map((it) => <Opt key={it.label} it={it} onPick={() => {}} />)}
               </div>
             ))}
           </div>
@@ -122,7 +123,7 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children, noun 
               <div key={r.label} className="frowline">
                 <span className="mono flabel">{r.label}</span>
                 <div className="fpills">
-                  {r.ticks.map((t) => <Link key={t.label} href={t.href} scroll={false} className={`fpill${t.on ? " on" : ""}`} onClick={close}><span className="sq" aria-hidden="true" />{t.label}<span className="c mono">{t.count}</span></Link>)}
+                  {r.ticks.map((t) => <Link key={t.label} href={t.href} scroll={false} className={`fpill${t.on ? " on" : ""}`}><span className="sq" aria-hidden="true" />{t.label}<span className="c mono">{t.count}</span></Link>)}
                 </div>
               </div>
             ))}
@@ -154,17 +155,17 @@ export function FilterBar({ menus, rows, resetHref, count, sort, children, noun 
                   {m.groups ? m.groups.map((g) => (
                     <div key={g.title} style={{ marginBottom: "12px" }}>
                       <div className="fgrouphd">{g.title}</div>
-                      <div className="fpills">{g.items.map((it) => <Opt key={it.href} it={it} onPick={close} tone="pill" />)}</div>
+                      <div className="fpills">{g.items.map((it) => <Opt key={it.label} it={it} onPick={() => {}} tone="pill" />)}</div>
                     </div>
                   )) : (
-                    <div className="fpills">{m.items.map((it) => <Opt key={it.href} it={it} onPick={close} tone="pill" />)}</div>
+                    <div className="fpills">{m.items.map((it) => <Opt key={it.label} it={it} onPick={() => {}} tone="pill" />)}</div>
                   )}
                 </section>
               ))}
               {rows.map((r) => (
                 <section key={r.label} className="fsec">
                   <h3 className="fsechd">{r.label.charAt(0) + r.label.slice(1).toLowerCase()}</h3>
-                  <div className="fpills">{r.ticks.map((t) => <Link key={t.label} href={t.href} scroll={false} className={`fpill${t.on ? " on" : ""}`} onClick={close}><span className="sq" aria-hidden="true" />{t.label}<span className="c mono">{t.count}</span></Link>)}</div>
+                  <div className="fpills">{r.ticks.map((t) => <Link key={t.label} href={t.href} scroll={false} className={`fpill${t.on ? " on" : ""}`}><span className="sq" aria-hidden="true" />{t.label}<span className="c mono">{t.count}</span></Link>)}</div>
                 </section>
               ))}
             </div>
