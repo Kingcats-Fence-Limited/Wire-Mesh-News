@@ -37,7 +37,10 @@ export function EventsBoard({ sp }: { sp: EvParams }) {
   const past = sp.when === "past";
   const pool = past ? EVENTS.filter((e) => (e.end ?? e.start) < TODAY).sort((a, b) => (a.start < b.start ? 1 : -1)) : upcomingEvents(TODAY);
   const monthOf = (e: EventItem) => e.start.slice(0, 7);
-  const match = (e: EventItem, skip?: keyof EvParams) => (skip === "type" || !sp.type || e.type === sp.type) && (skip === "region" || !sp.region || regionOf(e) === sp.region) && (skip === "month" || !sp.month || monthOf(e) === sp.month);
+  /* Multi-select like the Directory: values within a filter are OR'd (region=europe,online), filters are AND'd. */
+  const vals = (v?: string) => (v ? v.split(",").filter(Boolean) : []);
+  const inF = (k: "type" | "region" | "month", v: string, skip?: string) => skip === k || vals(sp[k]).length === 0 || vals(sp[k]).includes(v);
+  const match = (e: EventItem, skip?: keyof EvParams) => inF("type", e.type, skip) && inF("region", regionOf(e), skip) && inF("month", monthOf(e), skip);
   const list = pool.filter((e) => match(e));
   const nPast = EVENTS.filter((e) => (e.end ?? e.start) < TODAY).length, nUp = upcomingEvents(TODAY).length;
   const months = [...new Set(pool.map(monthOf))].sort(past ? (a, b) => (a < b ? 1 : -1) : undefined);
@@ -46,7 +49,8 @@ export function EventsBoard({ sp }: { sp: EvParams }) {
   const reports = bySubsection("news", "events_exhibitions").slice(0, 2);
   const exhibitors = COMPANIES.filter((c) => c.claimed).slice(0, 2);
   const href = (patch: Partial<EvParams>) => { const m: Record<string, string | undefined> = { ...sp, ...patch }; const p = new URLSearchParams(); for (const [k, v] of Object.entries(m)) if (v) p.set(k, v); const s = p.toString(); return `/events/${s ? `?${s}` : ""}`; };
-  const toggle = (k: keyof EvParams, v: string) => href({ [k]: sp[k] === v ? undefined : v });
+  const toggle = (k: keyof EvParams, v: string) => { const cur = (sp[k] ?? "").split(",").filter(Boolean); const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]; return href({ [k]: next.length ? next.join(",") : undefined }); };
+  const has = (k: "type" | "region" | "month", v: string) => (sp[k] ?? "").split(",").includes(v);
   const groups: { label: string; items: EventItem[] }[] = [];
   for (const e of list) { const label = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(e.start)).toUpperCase(); const g = groups.find((x) => x.label === label); if (g) g.items.push(e); else groups.push({ label, items: [e] }); }
 
@@ -73,9 +77,9 @@ Subscribe to calendar
   noun={["event", "events"]}
   resetHref={href({ region: undefined, type: undefined, month: undefined })}
   menus={[
-    { key: "region", label: "Region", note: "The site's fixed regions, the same as the Directory. Online events are listed separately.", items: [...REGION.map((r) => ({ code: r.code, label: r.labelEn })), { code: "online", label: "Online" }].map((r) => ({ label: r.label, href: toggle("region", r.code), on: sp.region === r.code, count: pool.filter((e) => match(e, "region") && regionOf(e) === r.code).length })) },
-    { key: "type", label: "Type", items: EVENT_TYPE.map((t) => ({ label: t.label, href: toggle("type", t.code), on: sp.type === t.code, count: pool.filter((e) => match(e, "type") && e.type === t.code).length })) },
-    { key: "month", label: "Month", items: months.map((m) => ({ label: monthLabel(m), href: toggle("month", m), on: sp.month === m, count: pool.filter((e) => match(e, "month") && monthOf(e) === m).length })) },
+    { key: "region", label: "Region", note: "The site's fixed regions, the same as the Directory. Online events are listed separately.", items: [...REGION.map((r) => ({ code: r.code, label: r.labelEn })), { code: "online", label: "Online" }].map((r) => ({ label: r.label, href: toggle("region", r.code), on: has("region", r.code), count: pool.filter((e) => match(e, "region") && regionOf(e) === r.code).length })) },
+    { key: "type", label: "Type", items: EVENT_TYPE.map((t) => ({ label: t.label, href: toggle("type", t.code), on: has("type", t.code), count: pool.filter((e) => match(e, "type") && e.type === t.code).length })) },
+    { key: "month", label: "Month", items: months.map((m) => ({ label: monthLabel(m), href: toggle("month", m), on: has("month", m), count: pool.filter((e) => match(e, "month") && monthOf(e) === m).length })) },
   ]}
   rows={[]}
   sort={<div role="group" aria-label="When" className="seg">

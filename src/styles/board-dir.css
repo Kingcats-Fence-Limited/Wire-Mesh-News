@@ -144,3 +144,5 @@
 /* the last block inside the filter frame closes its bottom corners */
 .b-dir .fbar > *:last-child{border-bottom-left-radius:14px;border-bottom-right-radius:14px}
 .b-dir .fbar > .sheetwrap{border-radius:0}
+.b-dir .ddfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);margin-top:6px;padding:10px 6px 4px}
+.b-dir .ddfoot .fdone{min-height:34px;padding:0 16px;font-size:12.5px}

@@ -26,13 +26,23 @@ const MATERIALS: [string, string][] = MATERIAL_GROUP.map((m) => [m.code, m.label
 const regionOf = (alpha2: string) => COUNTRY_BY_CODE[alpha2]?.region;
 const PER = 12;
 
-export function filterCompanies(sp: DirParams) {
+/* Multi-select: a facet's values are comma-separated in the URL (product=a,b). Values within one
+   facet are OR'd, facets are AND'd. `skip` leaves one facet out, for that facet's own counts. */
+export const vals = (v?: string) => (v ? v.split(",").filter(Boolean) : []);
+type Facet = "app" | "category" | "product" | "region" | "material";
+const artCount = (c: Company) => ARTICLES.filter((a) => a.companies?.includes(c.slug)).length;
+export function matches(c: Company, sp: DirParams, skip?: Facet) {
   const q = (sp.q ?? "").toLowerCase();
-  const art = (c: Company) => ARTICLES.filter((a) => a.companies?.includes(c.slug)).length;
-  let list = COMPANIES.filter((c) =>
-    (!sp.app || c.applications.includes(sp.app)) && (!sp.category || c.categories.includes(sp.category)) && (!sp.product || c.products.includes(sp.product)) && (!sp.region || regionOf(c.country) === sp.region) &&
-    (!sp.material || c.materials?.includes(sp.material as never)) && (sp.claimed !== "1" || c.claimed) && (sp.photos !== "1" || c.productCards.some((p) => p.photos > 0)) && (sp.covered !== "1" || art(c) > 0) &&
-    (!q || `${c.name} ${c.city} ${COUNTRY_BY_CODE[c.country]?.name ?? ""} ${c.products.map((p) => PRODUCT_BY_CODE[p]?.labelEn ?? p).join(" ")} ${c.summary}`.toLowerCase().includes(q)));
+  const any = (f: Facet, test: (v: string) => boolean) => skip === f || vals(sp[f]).length === 0 || vals(sp[f]).some(test);
+  return any("app", (v) => c.applications.includes(v)) && any("category", (v) => c.categories.includes(v)) && any("product", (v) => c.products.includes(v)) &&
+    any("region", (v) => regionOf(c.country) === v) && any("material", (v) => !!c.materials?.includes(v as never)) &&
+    (sp.claimed !== "1" || c.claimed) && (sp.photos !== "1" || c.productCards.some((p) => p.photos > 0)) && (sp.covered !== "1" || artCount(c) > 0) &&
+    (!q || `${c.name} ${c.city} ${COUNTRY_BY_CODE[c.country]?.name ?? ""} ${c.products.map((p) => PRODUCT_BY_CODE[p]?.labelEn ?? p).join(" ")} ${c.summary}`.toLowerCase().includes(q));
+}
+
+export function filterCompanies(sp: DirParams) {
+  const art = artCount;
+  let list = COMPANIES.filter((c) => matches(c, sp));
   list = [...list].sort((a, b) => (sp.sort === "covered" ? art(b) - art(a) || a.name.localeCompare(b.name) : sp.sort === "recent" ? (a.updated < b.updated ? 1 : -1) : a.name.localeCompare(b.name)));
   return list;
 }
@@ -51,13 +61,17 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
     const s = p.toString();
     return `/directory/${s ? `?${s}` : ""}`;
   };
-  const toggle = (k: keyof DirParams, v: string) => href({ [k]: sp[k] === v ? undefined : v });
+  const toggle = (k: keyof DirParams, v: string) => { const cur = vals(sp[k]); const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]; return href({ [k]: next.length ? next.join(",") : undefined }); };
+  const has = (k: Facet, v: string) => vals(sp[k]).includes(v);
+  /* Faceted count: companies that match every other active filter and have this value. */
+  const fc = (k: Facet, f: (c: Company) => boolean) => COMPANIES.filter((c) => matches(c, sp, k) && f(c)).length;
+  const chips = (k: Facet, label: (v: string) => string) => vals(sp[k]).map((v) => ({ label: label(v), href: toggle(k, v) }));
   const active: { label: string; href: string }[] = [
-    sp.app && { label: APPLICATION_AREA_BY_CODE[sp.app]?.labelEn ?? sp.app, href: href({ app: undefined }) },
-    sp.category && { label: CATEGORY_BY_CODE[sp.category]?.labelEn ?? sp.category, href: href({ category: undefined }) },
-    sp.product && { label: PRODUCT_BY_CODE[sp.product]?.labelEn ?? sp.product, href: href({ product: undefined }) },
-    sp.region && { label: REGION.find((r) => r.code === sp.region)?.labelEn ?? sp.region, href: href({ region: undefined }) },
-    sp.material && { label: MATERIALS.find((m) => m[0] === sp.material)?.[1] ?? sp.material, href: href({ material: undefined }) },
+    ...chips("app", (v) => APPLICATION_AREA_BY_CODE[v]?.labelEn ?? v),
+    ...chips("category", (v) => CATEGORY_BY_CODE[v]?.labelEn ?? v),
+    ...chips("product", (v) => PRODUCT_BY_CODE[v]?.labelEn ?? v),
+    ...chips("region", (v) => REGION.find((r) => r.code === v)?.labelEn ?? v),
+    ...chips("material", (v) => MATERIALS.find((m) => m[0] === v)?.[1] ?? v),
     sp.claimed === "1" && { label: "Claimed", href: href({ claimed: undefined }) },
     sp.photos === "1" && { label: "Has photos", href: href({ photos: undefined }) },
     sp.covered === "1" && { label: "In our coverage", href: href({ covered: undefined }) },
@@ -104,7 +118,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <p style={{ margin: "0 0 16px", fontSize: "11.5px", lineHeight: "1.55" }} className="meta">Each company carries at most <b style={{ color: "var(--ink)" }}>two</b> primary areas, assigned by editors from the projects we have covered, not self-declared. For what a company makes, open the Product filter.</p>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "14px" }} className="g5">
 {APPLICATION_AREA.map((a) => {
-  const on = sp.app === a.code;
+  const on = has("app", a.code);
   return (
 <Link key={a.code} href={toggle("app", a.code)} scroll={false} className={`cat${on ? " on" : ""}`}>
 <svg aria-hidden="true" style={{ color: on ? "#FFFFFF" : "var(--line-2)", opacity: on ? ".22" : undefined }} className="pat"><rect width="120" height="120" fill={`url(#${APP_PAT[a.code]})`} /></svg>
@@ -123,16 +137,16 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   count={list.length}
   resetHref="/directory/"
   menus={[
-    { key: "app", label: "Application", wide: true, note: "Primary axis — each company carries at most two application areas, assigned by editors.", items: APPLICATION_AREA.map((a) => ({ label: a.labelEn, sub: APP_SUB[a.code], href: toggle("app", a.code), on: sp.app === a.code, count: countBy((c) => c.applications.includes(a.code)) })) },
-    { key: "region", label: "Region", items: REGION.map((r) => ({ label: r.labelEn, href: toggle("region", r.code), on: sp.region === r.code, count: countBy((c) => regionOf(c.country) === r.code) })).filter((x) => x.count > 0) },
-    { key: "product", label: "Product", note: "The full product vocabulary, grouped by family — the same list companies use for their product range", items: [], groups: CATEGORY.map((cat) => ({ title: cat.labelEn, items: PRODUCT.filter((pr) => pr.category === cat.code).map((pr) => ({ label: pr.labelEn, href: toggle("product", pr.code), on: sp.product === pr.code, count: countBy((c) => c.products.includes(pr.code)) })) })) },
+    { key: "app", label: "Application", wide: true, note: "Primary axis — each company carries at most two application areas, assigned by editors.", items: APPLICATION_AREA.map((a) => ({ label: a.labelEn, sub: APP_SUB[a.code], href: toggle("app", a.code), on: has("app", a.code), count: fc("app", (c) => c.applications.includes(a.code)) })) },
+    { key: "region", label: "Region", items: REGION.map((r) => ({ label: r.labelEn, href: toggle("region", r.code), on: has("region", r.code), count: fc("region", (c) => regionOf(c.country) === r.code) })).filter((x) => x.count > 0 || x.on) },
+    { key: "product", label: "Product", note: "The full product vocabulary, grouped by family — the same list companies use for their product range", items: [], groups: CATEGORY.map((cat) => ({ title: cat.labelEn, items: PRODUCT.filter((pr) => pr.category === cat.code).map((pr) => ({ label: pr.labelEn, href: toggle("product", pr.code), on: has("product", pr.code), count: fc("product", (c) => c.products.includes(pr.code)) })) })) },
   ]}
   rows={[
-    { label: "MATERIAL", ticks: MATERIALS.map(([k, l]) => ({ label: l, href: toggle("material", k), on: sp.material === k, count: countBy((c) => !!c.materials?.includes(k as never)) })) },
+    { label: "MATERIAL", ticks: MATERIALS.map(([k, l]) => ({ label: l, href: toggle("material", k), on: has("material", k), count: fc("material", (c) => !!c.materials?.includes(k as never)) })) },
     { label: "PROFILE", ticks: [
-      { label: "Claimed", href: href({ claimed: sp.claimed === "1" ? undefined : "1" }), on: sp.claimed === "1", count: countBy((c) => c.claimed) },
-      { label: "Has photos", href: href({ photos: sp.photos === "1" ? undefined : "1" }), on: sp.photos === "1", count: countBy((c) => c.productCards.some((p) => p.photos > 0)) },
-      { label: "In our coverage", href: href({ covered: sp.covered === "1" ? undefined : "1" }), on: sp.covered === "1", count: countBy((c) => art(c) > 0) },
+      { label: "Claimed", href: href({ claimed: sp.claimed === "1" ? undefined : "1" }), on: sp.claimed === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, claimed: undefined }) && c.claimed).length },
+      { label: "Has photos", href: href({ photos: sp.photos === "1" ? undefined : "1" }), on: sp.photos === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, photos: undefined }) && c.productCards.some((p) => p.photos > 0)).length },
+      { label: "In our coverage", href: href({ covered: sp.covered === "1" ? undefined : "1" }), on: sp.covered === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, covered: undefined }) && art(c) > 0).length },
     ] },
   ]}
   sort={<div role="group" aria-label="Sort" className="seg">
