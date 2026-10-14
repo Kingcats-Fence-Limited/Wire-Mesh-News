@@ -4,7 +4,7 @@ import { MastheadDateClocks, ClockLine, MobileDateLine } from "./Clocks";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { SearchButton } from "./SearchButton";
 import { MobileMenu } from "./MobileMenu";
-import { EDITORIAL_SECTIONS, subsectionsOf, subsectionSlug, articleHref, fmtDateShort } from "@/lib/site";
+import { EDITORIAL_SECTIONS, subsectionsOf, subsectionSlug, articleHref, fmtDateShort, todayIso } from "@/lib/site";
 import { bySection, latest, featured } from "@/lib/content/articles";
 import { snapshotSeries, MARKET_LICENSED, TOPICS } from "@/lib/content/market";
 import { upcomingEvents } from "@/lib/content/source";
@@ -54,7 +54,7 @@ export function buildMenu(): MenuData {
   const next = upcomingEvents()[0];
   return {
     sections,
-    date: fmtDateShort("2026-10-12"),
+    date: fmtDateShort(todayIso()),
     snapshot: MARKET_LICENSED ? snapshotSeries().map((s) => ({ name: s.name.split(",")[0], value: s.latest === null ? "—" : s.latest.toLocaleString("en-US"), pct: s.state === "live" ? s.changePct : null, state: s.state })) : [],
     topics: TOPICS.slice(0, 4).map((t) => ({ label: t.name, href: `/topics/${t.slug}/` })),
     nextEvent: next ? { mon: fmtDateShort(next.start).split(" ")[1], day: fmtDateShort(next.start).split(" ")[0], name: next.name, where: next.online ? "Online" : `${next.city}`, href: `/events/#${next.slug}` } : undefined,

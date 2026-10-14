@@ -93,7 +93,9 @@ export const fmtDate = (iso: string, opts: Intl.DateTimeFormatOptions = { day: "
   new Intl.DateTimeFormat("en-GB", opts).format(new Date(iso));
 export const fmtDateShort = (iso: string) => new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(new Date(iso)).toUpperCase();
 export const fmtNum = (n: number, digits = 0) => new Intl.NumberFormat("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(n);
-export const daysAgo = (iso: string, now = new Date("2026-10-12")) => {
+/** Today as YYYY-MM-DD (UTC), taken when the page is rendered. */
+export const todayIso = () => new Date().toISOString().slice(0, 10);
+export const daysAgo = (iso: string, now = new Date()) => {
   const d = Math.round((now.getTime() - new Date(iso).getTime()) / 86400000);
   if (d <= 0) return "TODAY";
   if (d === 1) return "YESTERDAY";

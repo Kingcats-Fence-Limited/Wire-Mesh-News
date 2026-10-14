@@ -21,7 +21,6 @@ const BADGE: Record<SearchType, [string, string]> = { article: ["ARTICLE", "art"
 const TIME: [string, string, number][] = [["any", "Any time", 0], ["month", "Past month", 31], ["quarter", "Past 3 months", 92], ["year", "Past year", 366]];
 const RELATED: Record<string, string[]> = { default: ["coating weight", "zinc g/m²", "EN 10244", "PVC coated", "358 mesh", "anti-dumping"] };
 const PER = 20;
-const TODAY = new Date("2026-10-12");
 
 function Thumb({ d }: { d: SearchDoc }) {
   const base = { width: "150px", aspectRatio: "4/3", borderRadius: "8px", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: "0" } as const;
@@ -42,6 +41,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
   const time = TIME.find((t) => t[0] === sp.time) ?? TIME[0];
   const sort = sp.sort === "date" ? "date" : "relevance";
   const page = Math.max(1, parseInt(sp.page ?? "1") || 1);
+  const TODAY = new Date();
   const within = (d: SearchDoc) => !time[2] || (d.date ? (TODAY.getTime() - new Date(d.date).getTime()) / 86400000 <= time[2] : d.type !== "article");
   const raw = q ? search(q, { type: "all" }) : [];
   const filtered = raw.filter((d) => (type === "all" || d.type === type || (type === "letter" && d.type === "opinion")) && (!section || d.section === section) && within(d));

@@ -23,7 +23,7 @@ Content is pulled **at build time**, not per request. Three reasons:
 - The published HTML is a dated artefact. That matters for a publication: what was on
   the page on a given day is recoverable from the deployment, not only from the CMS.
 
-A daily cron deploy catches anything that missed a hook.
+Pages also regenerate in the background at most once an hour (`revalidate = 3600` in `src/app/layout.tsx`), so date-dependent parts stay current without a scheduled rebuild. CMS edits still go live through the deploy hook.
 
 ## The seam
 
