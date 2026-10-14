@@ -19,11 +19,10 @@ import { COMPANIES, recentlyUpdated } from "@/lib/content/directory";
 import { STANDARDS, recentStandardChanges } from "@/lib/content/source";
 import { snapshotSeries, MARKET_LICENSED, TOPICS } from "@/lib/content/market";
 import { industryFigures } from "@/lib/content/figures";
-import { fmtDateShort } from "@/lib/site";
-
-const TODAY = "2026-10-12";
+import { fmtDateShort, todayIso } from "@/lib/site";
 
 export default function HomePage() {
+  const TODAY = todayIso();
   const [top, s1, s2] = heroSet();
   const heroSlugs = [top, s1, s2].map((a) => a.slug);
   const brief = latest(8, heroSlugs).slice(0, 4);

@@ -8,6 +8,11 @@ import { CookieBanner } from "@/components/shell/CookieBanner";
 import { BackToTop } from "@/components/shell/BackToTop";
 import { SITE } from "@/lib/site";
 
+/* Pages are static, but anything that depends on today's date (masthead date, "x days ago",
+   upcoming events, the brief) is regenerated in the background at most once an hour on
+   the next visit (incremental static regeneration), so no daily rebuild is needed. */
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
   description: SITE.tagline + ".",
