@@ -4,7 +4,7 @@
    place (the URL hash follows, so links, reloads and the back button work) instead of
    scrolling a long page. */
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { DemoProvider, useDemo, type Demo } from "./store";
 import { Overview, Profile, Notifications, Settings } from "./PanelsAccount";
 import { Submissions, Comments, AuthorProfile, Bookmarks, Messages, Avatar } from "./PanelsContent";
@@ -27,7 +27,12 @@ export function AccountApp(props: Props) {
   const top = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const sync = () => setPanel(toPanel(location.hash.slice(1)));
+    const sync = () => {
+      const h = location.hash.slice(1), id = toPanel(h);
+      /* An unknown or empty hash shows Overview; tidy the address bar to match. */
+      if (h && h !== id) history.replaceState(null, "", `#${id}`);
+      setPanel(id);
+    };
     sync();
     window.addEventListener("hashchange", sync);
     window.addEventListener("popstate", sync);
@@ -43,20 +48,38 @@ export function AccountApp(props: Props) {
   }, []);
 
   return (
-    <DemoProvider seed={props.seed} go={go}>
-      <Shell {...props} panel={panel} go={go} topRef={top} />
-    </DemoProvider>
+    <Recover>
+      <DemoProvider seed={props.seed} go={go}>
+        <Shell {...props} panel={panel} go={go} topRef={top} />
+      </DemoProvider>
+    </Recover>
   );
 }
 
+/* If saved demo data ever breaks a panel, offer a clean start instead of a dead page. */
+class Recover extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <div className="panel" role="alert" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-start" }}>
+        <b className="h" style={{ fontSize: "20px" }}>This preview could not load your saved demo data.</b>
+        <span className="meta">It was probably saved by an older version of the page. Starting again clears only the demo data in this browser.</span>
+        <button type="button" className="btn dark" onClick={() => { try { localStorage.removeItem("wmn-demo-account"); } catch { /* ignore */ } location.reload(); }}>Start again with the sample data</button>
+      </div>
+    );
+  }
+}
+
 function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel: PanelId; go: (p: string) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
-  const { d, reset } = useDemo();
+  const { d, reset, epoch } = useDemo();
   const unread = d.notices.filter((n) => !n.read && !n.archived).length;
   const needs = d.submissions.filter((s) => s.status === "changes_requested").length;
   const NAV: { group: string; items: { id: PanelId; label: string; count?: number | string; alert?: boolean }[] }[] = [
     { group: "", items: [{ id: "overview", label: "Overview" }] },
     { group: "YOU", items: [{ id: "profile", label: "Profile" }, { id: "author", label: "Author profile" }, { id: "settings", label: "Account settings" }] },
-    { group: "CONTENT", items: [{ id: "submissions", label: "My submissions", count: needs || d.submissions.length, alert: needs > 0 }, { id: "comments", label: "My comments", count: d.comments.length }, { id: "bookmarks", label: "Bookmarks", count: d.bookmarks.length }, { id: "messages", label: "My messages", count: d.messages.length }] },
+    { group: "CONTENT", items: [{ id: "submissions", label: "My submissions", count: needs ? `${needs} to fix` : d.submissions.length, alert: needs > 0 }, { id: "comments", label: "My comments", count: d.comments.length }, { id: "bookmarks", label: "Bookmarks", count: d.bookmarks.length }, { id: "messages", label: "My messages", count: d.messages.length }] },
     { group: "COMPANY & BILLING", items: [{ id: "company", label: "My company", count: "Claimed" }, { id: "billing", label: "Subscription & billing" }] },
     { group: "", items: [{ id: "notifications", label: "Notifications", count: unread || undefined, alert: unread > 0 }] },
   ];
@@ -78,6 +101,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
       </div>
       <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: 500, color: "var(--slate)", marginBottom: "12px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <span style={{ color: "var(--ink)", fontWeight: 800 }}>My account</span></nav>
 
+      <h1 className="sr-only">My account</h1>
       <div className="acct" ref={topRef} style={{ scrollMarginTop: "16px" }}>
         <aside className="side">
           <div className="panel" style={{ padding: "18px" }}>
@@ -103,7 +127,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
 
         <div className="mobnav" role="navigation" aria-label="Account sections">{flat.map((it) => link(it, true))}</div>
 
-        <main className="main" aria-live="polite">
+        <main className="main" key={epoch}>
           {panel === "overview" && <Overview companyName={co.name} />}
           {panel === "profile" && <Profile />}
           {panel === "submissions" && <Submissions refs={refs} />}
@@ -111,7 +135,8 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
           {panel === "author" && <AuthorProfile />}
           {panel === "bookmarks" && <Bookmarks />}
           {panel === "messages" && <Messages />}
-          {panel === "company" && <><Head title="My company" sub="The directory profile you manage. Edits are reviewed before they go live; the public page keeps its current content until then." actions={<Link href={`/directory/${co.slug}/`} className="btn">View public profile</Link>} /><CompanyPanel co={co} related={related} subs0={subs0} /></>}
+          {/* Kept mounted (just hidden) so unsent company edits survive a visit to another panel. */}
+          <div hidden={panel !== "company"} style={{ display: panel === "company" ? "contents" : undefined }}><Head title="My company" sub="The directory profile you manage. Edits are reviewed before they go live; the public page keeps its current content until then." actions={<Link href={`/directory/${co.slug}/`} className="btn">View public profile</Link>} /><CompanyPanel co={co} related={related} subs0={subs0} /></div>
           {panel === "billing" && <><Head title="Subscription & billing" sub="Your plan, payment method and invoices. Prices are announced before paid plans open." /><BillingPanel /></>}
           {panel === "notifications" && <Notifications />}
           {panel === "settings" && <Settings />}

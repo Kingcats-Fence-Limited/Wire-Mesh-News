@@ -75,7 +75,7 @@ export function RegisterForm({ claim }: { claim?: string }) {
     return (
       <div style={{ display: "flex", flexDirection: "column", minHeight: "330px" }}>
         <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--grey)", marginBottom: "10px" }}>STEP 2 OF 2 · VERIFY YOUR EMAIL</div>
-        <h2 style={{ margin: "0 0 8px", fontSize: "25px" }} className="h">Check your email</h2>
+        <h1 style={{ margin: "0 0 8px", fontSize: "25px" }} className="h">Check your email</h1>
         <CodeVerify email={email} onVerified={() => { setPending(null); router.push(claim ? `/directory/${claim}/` : "/account/"); }} />
         <div style={{ marginTop: "16px" }}><Err><b>Until verified:</b> you cannot sign in, submit, comment, save items, contact companies or claim a profile. Reading is unaffected. Unverified accounts are removed after five days.</Err></div>
         <div style={{ marginTop: "auto", display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
@@ -87,7 +87,7 @@ export function RegisterForm({ claim }: { claim?: string }) {
   }
   return (
     <form onSubmit={(e) => { e.preventDefault(); setTried(true); if (valid && !disposable && name.trim() && strength >= 2 && terms) { setPending(email.trim().toLowerCase()); setSent(true); } }} noValidate>
-      <h2 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">{claim ? "Create an account to claim your profile" : "Create an account"}</h2>
+      <h1 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">{claim ? "Create an account to claim your profile" : "Create an account"}</h1>
       <p style={{ margin: "0 0 20px" }} className="hint">Use Google or Microsoft, or an email and password. Your email is never shown publicly.</p>
       <SocialSignIn mode="register" next={claim ? `/directory/${claim}/` : undefined} />
       <div style={{ marginBottom: "10px" }} className="fld"><label htmlFor="r1">EMAIL *</label><input id="r1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" style={valid && !disposable ? { borderColor: "var(--up)" } : undefined} className="inp" autoComplete="email" />
@@ -119,7 +119,7 @@ export function ResetForm() {
   return (
     <div>
       <div style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", color: "var(--grey)", marginBottom: "12px" }}>STEP 1 OF 2</div>
-      <h2 style={{ margin: "0 0 7px", fontSize: "24px" }} className="h">Reset your password</h2>
+      <h1 style={{ margin: "0 0 7px", fontSize: "24px" }} className="h">Reset your password</h1>
       <p style={{ margin: "0 0 16px" }} className="hint">Enter the email you registered with and we will send a reset link. Step 2 opens from that email.</p>
       {sent ? <div className="ok"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--up)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0, marginTop: "2px" }}><path d="m5 12.5 4.5 4.5L19 7.5" /></svg><span>If an account exists for <b>{email}</b>, a reset link is on its way. It is valid for one hour.</span></div> : (
         <form onSubmit={(e) => { e.preventDefault(); if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) setSent(true); }} noValidate>

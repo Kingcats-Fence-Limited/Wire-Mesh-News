@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { COLUMNS, getColumn } from "@/lib/content/people";
 import { ColumnBoard } from "@/components/boards/letters/LettersBoard";
@@ -8,7 +9,7 @@ export function generateStaticParams() {
 }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const c = getColumn((await params).slug);
-  return c ? { title: `${c.title} · Opinion`, description: c.summary } : {};
+  return c ? pageMeta({ title: `${c.title} · Opinion`, description: c.summary, path: `/letters/columns/${c.slug}/` }) : {};
 }
 
 export default async function ColumnPage({ params }: { params: Promise<{ slug: string }> }) {

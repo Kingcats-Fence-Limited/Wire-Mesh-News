@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useDemo, download, today, type Notice } from "./store";
 import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, Toggle } from "./ui";
-import { Avatar } from "./PanelsContent";
+import { Avatar, openSubmissions } from "./PanelsContent";
 import { CodeVerify } from "@/components/ui/CodeVerify";
 import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
 
@@ -21,15 +21,15 @@ export function Overview({ companyName }: { companyName: string }) {
   const published = d.submissions.filter((s) => s.status === "published").length;
   const profileDone = [d.profile.name, d.profile.jobTitle, d.profile.company, d.profile.city, d.profile.avatar, d.author.bio, d.author.expertise.length > 0].filter(Boolean).length;
   const pct = Math.round((profileDone / 7) * 100);
-  const Stat = ({ n, label, to }: { n: number | string; label: string; to: string }) => (
-    <button type="button" onClick={() => go(to)} className="stat"><span className="h" style={{ fontSize: "30px" }}>{n}</span><span className="meta" style={{ fontWeight: 700 }}>{label}</span></button>
+  const Stat = ({ n, label, to, f }: { n: number | string; label: string; to: string; f?: "pending" | "published" }) => (
+    <button type="button" onClick={() => (f ? openSubmissions(go, { f }) : go(to))} className="stat"><span className="h" style={{ fontSize: "30px" }}>{n}</span><span className="meta" style={{ fontWeight: 700 }}>{label}</span></button>
   );
   return (
     <>
       <Head title={`Welcome back, ${d.profile.name.split(" ")[0]}`} sub={`Member since ${d.profile.since}. Here is what needs you, and what changed since your last visit.`} />
       <div className="stats">
-        <Stat n={pending} label="In review" to="submissions" />
-        <Stat n={published} label="Published" to="submissions" />
+        <Stat n={pending} label="In review" to="submissions" f="pending" />
+        <Stat n={published} label="Published" to="submissions" f="published" />
         <Stat n={unread.length} label="Unread notifications" to="notifications" />
         <Stat n={d.bookmarks.length} label="Bookmarks" to="bookmarks" />
       </div>
@@ -38,7 +38,7 @@ export function Overview({ companyName }: { companyName: string }) {
           <span style={{ fontSize: "17px" }} className="h">Needs your attention</span>
           {action.length === 0 && unread.length === 0 && <Empty>Nothing waiting on you.</Empty>}
           {action.map((s) => (
-            <button key={s.id} type="button" onClick={() => go("submissions")} className="todo"><Pill tone="red">CHANGES REQUESTED</Pill><span style={{ fontWeight: 800 }}>{s.title}</span><span className="meta">{s.note}</span></button>
+            <button key={s.id} type="button" onClick={() => openSubmissions(go, { f: "changes_requested" })} className="todo"><Pill tone="red">CHANGES REQUESTED</Pill><span style={{ fontWeight: 800 }}>{s.title}</span><span className="meta">{s.note}</span></button>
           ))}
           {unread.slice(0, 3).map((n) => (
             <button key={n.id} type="button" onClick={() => go("notifications")} className="todo"><span style={{ display: "flex", gap: "8px", alignItems: "center" }}><span className="dot" />{n.date}</span><span style={{ fontWeight: 700 }}>{n.text}</span></button>
@@ -54,7 +54,7 @@ export function Overview({ companyName }: { companyName: string }) {
           <Card>
             <span style={{ fontSize: "17px" }} className="h">Quick actions</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <Link href="/submit/" className="btn dark" style={{ justifyContent: "flex-start" }}>Write a new submission</Link>
+              <button type="button" className="btn dark" style={{ justifyContent: "flex-start" }} onClick={() => openSubmissions(go, { fresh: true })}>Write a new submission</button>
               <button type="button" className="btn" style={{ justifyContent: "flex-start" }} onClick={() => go("company")}>Update {companyName}</button>
               <button type="button" className="btn" style={{ justifyContent: "flex-start" }} onClick={() => go("billing")}>Subscription &amp; invoices</button>
             </div>
@@ -99,7 +99,7 @@ export function Profile() {
           </div>
         </div>
         <div className="g2f" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          <Field id="pf-n" label="DISPLAY NAME" hint="Use your real name; the by-line policy requires it for published work."><input id="pf-n" className="inp" value={p.name} maxLength={60} onChange={(e) => setP({ ...p, name: e.target.value, initials: initials(e.target.value) })} /></Field>
+          <Field id="pf-n" label="DISPLAY NAME" hint="Use your real name; the by-line policy requires it. It is used on new submissions; published by-lines stay as printed."><input id="pf-n" className="inp" value={p.name} maxLength={60} onChange={(e) => setP({ ...p, name: e.target.value, initials: initials(e.target.value) })} /></Field>
           <Field id="pf-j" label="JOB TITLE"><input id="pf-j" className="inp" value={p.jobTitle} maxLength={80} onChange={(e) => setP({ ...p, jobTitle: e.target.value })} /></Field>
           <Field id="pf-c" label="COMPANY"><input id="pf-c" className="inp" value={p.company} maxLength={80} onChange={(e) => setP({ ...p, company: e.target.value })} /></Field>
           <Field id="pf-k" label="COUNTRY / TERRITORY"><select id="pf-k" className="inp" value={p.country} onChange={(e) => setP({ ...p, country: e.target.value })}>{COUNTRIES.map((c) => <option key={c.alpha2} value={c.alpha2}>{c.name}</option>)}</select></Field>
@@ -136,13 +136,13 @@ export function Notifications() {
   const mark = (id: string, read: boolean) => set((x) => ({ ...x, notices: x.notices.map((n) => (n.id === id ? { ...n, read } : n)) }));
   return (
     <>
-      <Head title="Notifications" sub="Only about your own content, company and account. Whether they are also emailed is set under Account settings." actions={<><button type="button" className="btn" disabled={!unread} onClick={() => { const before = d.notices; set((x) => ({ ...x, notices: x.notices.map((n) => ({ ...n, read: true })) })); toast(`${unread} marked as read.`, () => set((x) => ({ ...x, notices: before }))); }}>Mark all read</button><button type="button" className="btn" onClick={() => go("settings")}>Email settings</button></>} />
+      <Head title="Notifications" sub="Only about your own content, company and account. Whether they are also emailed is set under Account settings." actions={<><button type="button" className="btn" disabled={!unread} onClick={() => { const ids = d.notices.filter((n) => !n.read && !n.archived).map((n) => n.id); set((x) => ({ ...x, notices: x.notices.map((n) => ({ ...n, read: true })) })); toast(`${ids.length} marked as read.`, () => set((x) => ({ ...x, notices: x.notices.map((n) => (ids.includes(n.id) ? { ...n, read: false } : n)) }))); }}>Mark all read</button><button type="button" className="btn" onClick={() => go("settings")}>Email settings</button></>} />
       <Chips label="Filter notifications" value={f} onChange={setF} items={[{ k: "all", label: "All", n: live.length }, { k: "unread", label: "Unread", n: unread }, ...(Object.keys(KIND) as Notice["kind"][]).filter((k) => live.some((n) => n.kind === k)).map((k) => ({ k, label: KIND[k] })), { k: "archived", label: "Archived", n: archived.length }]} />
       <div className="panel">
         {list.length === 0 && <div style={{ padding: "20px" }}><Empty>{f === "archived" ? "Nothing archived. Archived notifications are kept here and can be restored." : "You are all caught up."}</Empty></div>}
         {list.map((n) => (
           <div key={n.id} className="row" style={{ alignItems: "center", opacity: n.read ? .72 : 1 }}>
-            <span className={n.read ? "dot off" : "dot"} aria-label={n.read ? "Read" : "Unread"} />
+            <span className={n.read ? "dot off" : "dot"} aria-hidden="true" /><span className="sr-only">{n.read ? "Read:" : "Unread:"}</span>
             <div style={{ flex: "1 1 auto", minWidth: 0 }}>
               {n.href ? <Link href={n.href} onClick={() => mark(n.id, true)} style={{ fontSize: "14px", fontWeight: n.read ? 600 : 800, lineHeight: 1.45 }}>{n.text}</Link> : <button type="button" onClick={() => { mark(n.id, true); if (n.kind === "submission") go("submissions"); else if (n.kind === "comment") go("comments"); else if (n.kind === "company") go("company"); else if (n.kind === "billing") go("billing"); }} className="tbtn" style={{ fontSize: "14px", fontWeight: n.read ? 600 : 800, lineHeight: 1.45 }}>{n.text}</button>}
               <div className="meta">{KIND[n.kind]} · {n.date}</div>
@@ -187,7 +187,7 @@ export function Settings() {
         ) : (
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
             <div style={{ flex: "1 1 240px" }}><Field id="se-new" label="NEW EMAIL"><input id="se-new" type="email" className="inp" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" /></Field></div>
-            <button type="button" className="btn dark" disabled={!emailOk || email === d.profile.email} onClick={() => { set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: email } })); setEmail(""); toast("Verification code sent to the new address."); }}>Change email</button>
+            <button type="button" className="btn dark" disabled={!emailOk || email.trim().toLowerCase() === d.profile.email.toLowerCase()} onClick={() => { set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: email.trim().toLowerCase() } })); setEmail(""); toast("Code sent to the new address. Your current address gets a notice too, so a change you didn’t make can be stopped."); }}>Change email</button>
           </div>
         )}
       </Card>
@@ -203,7 +203,7 @@ export function Settings() {
             </div>
             <div style={{ display: "flex", gap: "4px" }}>{[0, 1, 2, 3].map((i) => <span key={i} style={{ flex: 1, height: "5px", borderRadius: "999px", background: i < s ? (s >= 3 ? "var(--up)" : "var(--st-review-fg)") : "var(--line)" }} />)}</div>
             <div style={{ display: "flex", gap: "8px" }}>
-              <button type="button" className="btn dark" disabled={!pw.cur || s < 3 || pw.next !== pw.again} onClick={() => { setPw({ cur: "", next: "", again: "" }); setPwOpen(false); toast("Password changed. Other devices were signed out."); set((x) => ({ ...x, sessions: x.sessions.filter((y) => y.current) })); }}>Update password</button>
+              <button type="button" className="btn dark" disabled={!pw.cur || s < 3 || pw.next !== pw.again || pw.next === pw.cur} onClick={() => { setPw({ cur: "", next: "", again: "" }); setPwOpen(false); toast("Password changed. Other devices were signed out."); set((x) => ({ ...x, sessions: x.sessions.filter((y) => y.current) })); }}>Update password</button>
               <button type="button" className="btn" onClick={() => { setPw({ cur: "", next: "", again: "" }); setPwOpen(false); }}>Cancel</button>
             </div>
           </>
@@ -252,7 +252,7 @@ export function Settings() {
             <span className="meta">Closes the account, ends any subscription at the end of its period and removes your private data after 30 days. Published work keeps its by-line.</span>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
               <div style={{ flex: "1 1 220px" }}><Field id="del" label='TYPE "DELETE" TO CONFIRM'><input id="del" className="inp" value={del} onChange={(e) => setDel(e.target.value)} autoComplete="off" /></Field></div>
-              <button type="button" className="btn danger-solid" disabled={del !== "DELETE"} onClick={() => { set((x) => ({ ...x, deactivated: true })); setDel(""); toast("Account deletion scheduled (demo)."); }}>Delete my account</button>
+              <button type="button" className="btn danger-solid" disabled={del !== "DELETE"} onClick={() => { set((x) => ({ ...x, deactivated: true, billing: { ...x.billing, cancelled: true, nextCycle: null } })); setDel(""); toast("Account deletion scheduled (demo). The subscription will not renew."); }}>Delete my account</button>
             </div>
           </>
         )}

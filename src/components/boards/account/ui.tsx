@@ -1,7 +1,7 @@
 "use client";
 
 /* Small shared pieces for the account panels. Styling comes from board-acct.css. */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Head = ({ title, sub, actions }: { title: string; sub?: React.ReactNode; actions?: React.ReactNode }) => (
   <div className="phd">
@@ -40,10 +40,14 @@ export const Chips = <K extends string>({ value, onChange, items, label }: { val
 /** Inline two-step confirm: first click arms, second click acts. No browser dialogs. */
 export function ConfirmBtn({ label, confirm = "Confirm", onConfirm, danger, small }: { label: string; confirm?: string; onConfirm: () => void; danger?: boolean; small?: boolean }) {
   const [armed, setArmed] = useState(false);
-  if (!armed) return <button type="button" className={`btn${small ? " sm" : ""}${danger ? " danger" : ""}`} onClick={() => setArmed(true)}>{label}</button>;
+  /* Keep keyboard focus on the control: the confirm button when armed, the original
+     button again after Cancel. */
+  const first = useRef<HTMLButtonElement>(null), yes = useRef<HTMLButtonElement>(null), was = useRef(false);
+  useEffect(() => { if (armed) yes.current?.focus(); else if (was.current) first.current?.focus(); was.current = armed; }, [armed]);
+  if (!armed) return <button ref={first} type="button" className={`btn${small ? " sm" : ""}${danger ? " danger" : ""}`} onClick={() => setArmed(true)}>{label}</button>;
   return (
     <span style={{ display: "inline-flex", gap: "6px" }}>
-      <button type="button" className={`btn${small ? " sm" : ""} ${danger ? "danger-solid" : "dark"}`} onClick={() => { setArmed(false); onConfirm(); }}>{confirm}</button>
+      <button ref={yes} type="button" className={`btn${small ? " sm" : ""} ${danger ? "danger-solid" : "dark"}`} onClick={() => { was.current = false; setArmed(false); onConfirm(); }}>{confirm}</button>
       <button type="button" className={`btn${small ? " sm" : ""}`} onClick={() => setArmed(false)}>Cancel</button>
     </span>
   );

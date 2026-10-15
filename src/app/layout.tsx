@@ -18,7 +18,10 @@ export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
   description: SITE.tagline + ".",
   metadataBase: new URL(SITE.url),
-  openGraph: { siteName: SITE.name, type: "website", locale: "en" },
+  openGraph: { siteName: SITE.name, type: "website", locale: "en_GB", images: [{ url: "/og/", width: 1200, height: 630, alt: SITE.name }] },
+  twitter: { card: "summary_large_image", images: ["/og/"] },
+  applicationName: SITE.name,
+  formatDetection: { telephone: false, email: false, address: false },
   alternates: { types: { "application/rss+xml": "/feed.xml" } },
   /* Not indexable until the site runs on wiremeshnews.com (see src/lib/indexing.ts). */
   ...(INDEXABLE ? {} : { robots: { index: false, follow: false } }),
@@ -26,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en-GB" suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>

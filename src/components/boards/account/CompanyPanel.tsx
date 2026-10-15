@@ -160,7 +160,8 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
   /* The enquiry email receives "Contact this company" messages, so it must be proven: a code goes to it, and it must be at the company's own domain. */
   const [verifiedEmail, setVerifiedEmail] = useState(initial.email);
   const [verifying, setVerifying] = useState(false);
-  const siteDomain = (co.website ?? "").replace(/^https?:\/\/(www\.)?/, "").split("/")[0].toLowerCase();
+  /* Compare against the website being entered, not only the one on file. */
+  const siteDomain = (f.website || co.website || "").replace(/^https?:\/\/(www\.)?/, "").split(/[/?#]/)[0].toLowerCase();
   const mailDomain = f.email.split("@")[1]?.toLowerCase() ?? "";
   const mailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email);
   const mailFree = FREE_MAIL.includes(mailDomain);
@@ -203,6 +204,19 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
     (cards.length !== initialCards.length || cards.some((c, i) => { const o = initialCards[i]; return !o || c.added.length > 0 || c.live !== o.live || c.name !== o.name || c.spec !== o.spec || c.product !== o.product; })) && "Products & photos",
     newCert.type && "New certificate",
   ].filter(Boolean) as string[];
+  /* A new certificate needs every field, and an expiry date in the future. */
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const certProblem = newCert.type ? (!newCert.issuer || !newCert.no.trim() || !newCert.expires ? "Complete the issuer, number and expiry date of the new certificate (or clear its type)." : newCert.expires <= todayStr ? "The new certificate has already expired." : null) : null;
+  const webBad = !!f.website && !/^https?:\/\/[^\s/]+\.[^\s]{2,}/.test(f.website);
+  const phoneBad = !!f.phone && !/^[\d\s()+-]{5,20}$/.test(f.phone);
+  /* Closing or reloading the tab with unsent edits asks first. */
+  const editingNow = mode === "edit" && changed.length > 0;
+  useEffect(() => {
+    if (!editingNow) return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [editingNow]);
 
   const country = COUNTRY_BY_CODE[co.country]?.name ?? co.country;
 
@@ -418,7 +432,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
             </select>
           </Field>
           <Field id="ce-n" label="CERTIFICATE NO."><input id="ce-n" className="inp" value={newCert.no} disabled={!newCert.type} onChange={(e) => setNewCert({ ...newCert, no: e.target.value })} /></Field>
-          <Field id="ce-e" label="EXPIRES"><input id="ce-e" type="date" className="inp" value={newCert.expires} disabled={!newCert.type} onChange={(e) => setNewCert({ ...newCert, expires: e.target.value })} /></Field>
+          <Field id="ce-e" label="EXPIRES"><input id="ce-e" type="date" className="inp" min={new Date().toISOString().slice(0, 10)} value={newCert.expires} disabled={!newCert.type} onChange={(e) => setNewCert({ ...newCert, expires: e.target.value })} /></Field>
         </div>
         {newCert.type && <span className="meta">A copy of the certificate (PDF) is required before it is shown; upload arrives with the account release. {CERTIFICATION_TYPE_BY_CODE[newCert.type]?.kind === "test_report" ? "Note: a test report is listed as a test report, not as a certification." : ""}</span>}
       </Group>
@@ -434,9 +448,9 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
       </Group>
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderTop: "2px solid var(--ink)", paddingTop: "14px" }}>
-        <button type="button" className="btn dark" disabled={changed.length === 0 || (!!f.email && !mailVerified)} onClick={() => setMode("sent")}>Submit for review</button>
+        <button type="button" className="btn dark" disabled={changed.length === 0 || (!!f.email && !mailVerified) || !!certProblem || webBad || phoneBad} onClick={() => setMode("sent")}>Submit for review</button>
         <button type="button" className="btn" onClick={() => { setF(initial); setVerifiedEmail(initial.email); setVerifying(false); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Cancel</button>
-        <span className="meta">{f.email && !mailVerified ? <b style={{ color: "var(--red-text)" }}>Verify the enquiry email (or clear it) before submitting.</b> : changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
+        <span className="meta">{f.email && !mailVerified ? <b style={{ color: "var(--red-text)" }}>Verify the enquiry email (or clear it) before submitting.</b> : certProblem ? <b style={{ color: "var(--red-text)" }}>{certProblem}</b> : webBad ? <b style={{ color: "var(--red-text)" }}>The website must be a full address starting with https://</b> : phoneBad ? <b style={{ color: "var(--red-text)" }}>Check the phone number: digits, spaces and brackets only.</b> : changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
       </div>
     </div>
   );

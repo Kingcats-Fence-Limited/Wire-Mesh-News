@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbs, companyLd } from "@/lib/schema";
 import { notFound } from "next/navigation";
 import { COMPANIES, getCompany } from "@/lib/content/directory";
 import { CompanyBoard } from "@/components/boards/directory/CompanyBoard";
@@ -8,11 +11,11 @@ export function generateStaticParams() {
 }
 export async function generateMetadata({ params }: { params: Promise<{ company: string }> }): Promise<Metadata> {
   const c = getCompany((await params).company);
-  return c ? { title: `${c.name} · Company Directory`, description: c.summary } : {};
+  return c ? pageMeta({ title: `${c.name} · Company Directory`, description: c.summary, path: `/directory/${c.slug}/` }) : {};
 }
 
 export default async function CompanyPage({ params }: { params: Promise<{ company: string }> }) {
   const c = getCompany((await params).company);
   if (!c) notFound();
-  return <CompanyBoard c={c} />;
+  return <><JsonLd data={[companyLd(c), breadcrumbs([{ name: "Home", path: "/" }, { name: "Company Directory", path: "/directory/" }, { name: c.name, path: `/directory/${c.slug}/` }])]} /><CompanyBoard c={c} /></>;
 }

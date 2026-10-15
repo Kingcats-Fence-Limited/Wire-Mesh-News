@@ -15,6 +15,8 @@ const ISSUE: [string, string][] = [
 ];
 
 export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClose?: () => void; pill?: string }) {
+  /* On /subscribe/ this is the page heading; inside the modal it sits under the page's own h1. */
+  const H = modal ? "h2" : "h1";
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   return (
@@ -31,7 +33,7 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
             <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)" }}>{pill}</span>
           </div>
         )}
-        <h2 className="h" id="sub-title" style={{ margin: "0 0 12px", fontSize: "34px", letterSpacing: "-.05em", lineHeight: 1.04, maxWidth: "390px" }}>Mondays, one email,<br />the whole week’s <span style={{ color: "var(--red-text)" }}>mesh</span>.</h2>
+        <H className="h" id="sub-title" style={{ margin: "0 0 12px", fontSize: "34px", letterSpacing: "-.05em", lineHeight: 1.04, maxWidth: "390px" }}>Mondays, one email,<br />the whole week’s <span style={{ color: "var(--red-text)" }}>mesh</span>.</H>
         <p style={{ margin: "0 0 20px", fontSize: "15px", fontWeight: 500, lineHeight: 1.6, color: "var(--slate)", maxWidth: "400px" }}>News, price moves and standards updates on one page. Written for people who make decisions, not for the algorithm.</p>
         {sent ? (
           <div style={{ border: "1.5px solid var(--ink)", borderRadius: "14px", padding: "16px 18px", marginBottom: "16px", fontSize: "14px", fontWeight: 700, lineHeight: 1.5 }}>

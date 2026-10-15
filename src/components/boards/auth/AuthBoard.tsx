@@ -20,7 +20,7 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "20px", letterSpacing: "-.05em", padding: "2px 7px 4px", borderRadius: "6px" }} className="h">news</span>
 </div>
 {mode === "signin" && (<>
-<h2 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">Welcome back</h2>
+<h1 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">Welcome back</h1>
 <p style={{ margin: "0 0 20px" }} className="hint">Sign in to submit, comment and save.</p>
 <SignInForm next={next} />
 </>)}

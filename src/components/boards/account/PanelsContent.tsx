@@ -3,7 +3,7 @@
 /* Account panels that hold the user's own content: submissions, comments, author profile,
    bookmarks and messages. All actions change the demo store. */
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDemo, download, today, uid, type SubStatus, type Submission, type CommentStatus, type Bookmark, type MsgStatus, type Message } from "./store";
 import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, type Tone } from "./ui";
 import { ENQUIRY_SUBJECT } from "@/data/vocab/enquiry_subject";
@@ -12,10 +12,13 @@ import { demoBg } from "@/lib/demo";
 import { ArticleEditor, emptyDraft, normalizeDraft, type ArticleDraft, type EditorRefs } from "@/components/editor/ArticleEditor";
 
 /* A submission saved before the full editor existed: build its draft from what we have. */
-const toDraft = (s: Submission, byline: string): ArticleDraft => s.draft ? normalizeDraft(s.draft, byline) : {
+const toDraft = (s: Submission, byline: string): ArticleDraft => s.pendingDraft ? normalizeDraft(s.pendingDraft, byline) : s.draft ? normalizeDraft(s.draft, byline) : {
   ...emptyDraft(byline), title: s.title === "Untitled draft" ? "" : s.title,
   dek: s.excerpt.split("\n")[0] ?? "", body: s.excerpt, section: SECTION.find((x) => x.label === s.section)?.code ?? "",
 };
+
+/* A cell starting with = + - @ (or a tab/CR) would run as a formula in a spreadsheet. */
+const csvSafe = (v: string) => (/^[=+\-@\t\r]/.test(v) ? `'${v}` : v);
 
 /* ------------------------------- Submissions ------------------------------- */
 const SUB: Record<SubStatus, [string, Tone]> = {
@@ -24,33 +27,47 @@ const SUB: Record<SubStatus, [string, Tone]> = {
 };
 type SubFilter = "all" | SubStatus;
 
+/* Lets other panels open My submissions on a filter, or straight into a new draft. */
+let intent: { f?: SubFilter; fresh?: boolean; open?: string } = {};
+export const openSubmissions = (go: (p: string) => void, next: typeof intent) => { intent = next; go("submissions"); };
+
 export function Submissions({ refs }: { refs: EditorRefs }) {
   const { d, set, toast } = useDemo();
-  const [f, setF] = useState<SubFilter>("all");
-  const [open, setOpen] = useState<string | null>(null);
+  const [f, setF] = useState<SubFilter>(() => intent.f ?? "all");
+  const [open, setOpen] = useState<string | null>(() => intent.open ?? null);
   const [editing, setEditing] = useState<string | null>(null);
+  /* A new submission is only added to the list once something is saved, so backing out of
+     an empty editor leaves nothing behind. */
+  const [fresh, setFresh] = useState<Submission | null>(null);
   const n = (s: SubStatus) => d.submissions.filter((x) => x.status === s).length;
   const list = d.submissions.filter((x) => f === "all" || x.status === f);
-  const upd = (id: string, patch: Partial<Submission>) => set((x) => ({ ...x, submissions: x.submissions.map((s) => (s.id === id ? { ...s, ...patch } : s)) }));
+  const upd = (id: string, patch: Partial<Submission>) => set((x) => {
+    if (fresh && fresh.id === id && !x.submissions.some((s) => s.id === id)) return { ...x, submissions: [{ ...fresh, ...patch }, ...x.submissions] };
+    return { ...x, submissions: x.submissions.map((s) => (s.id === id ? { ...s, ...patch } : s)) };
+  });
   const remove = (s: Submission) => {
-    const before = d.submissions;
+    const at = d.submissions.findIndex((y) => y.id === s.id);
     set((x) => ({ ...x, submissions: x.submissions.filter((y) => y.id !== s.id) }));
-    toast(`Draft “${s.title}” deleted.`, () => set((x) => ({ ...x, submissions: before })));
+    /* Undo puts back just this item, so anything changed in the meantime is kept. */
+    toast(`Draft “${s.title}” deleted.`, () => set((x) => x.submissions.some((y) => y.id === s.id) ? x : ({ ...x, submissions: [...x.submissions.slice(0, at), s, ...x.submissions.slice(at)] })));
   };
   const startEdit = (s: Submission) => { setEditing(s.id); window.scrollTo({ top: 0 }); };
   const newDraft = () => {
     const s: Submission = { id: uid(), title: "Untitled draft", status: "draft", section: "—", updated: today(), excerpt: "", words: 0, draft: emptyDraft(`${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`) };
-    set((x) => ({ ...x, submissions: [s, ...x.submissions] }));
-    setF("all"); startEdit(s);
+    setFresh(s); setF("all"); startEdit(s);
   };
+  useEffect(() => { const i = intent; intent = {}; if (i.fresh) newDraft(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
   const fromDraft = (dr: ArticleDraft): Partial<Submission> => ({ title: dr.title.trim() || "Untitled draft", excerpt: dr.dek || dr.body.slice(0, 280), words: dr.body.trim() ? dr.body.trim().split(/\s+/).length : 0, section: SECTION.find((x) => x.code === dr.section)?.label ?? "—", draft: dr, updated: today() });
 
-  const cur = editing ? d.submissions.find((x) => x.id === editing) : undefined;
+  const cur = editing ? d.submissions.find((x) => x.id === editing) ?? (fresh?.id === editing ? fresh : undefined) : undefined;
+  const leave = () => { setEditing(null); setFresh(null); };
+  if (cur && cur.section === "Letters") return <LetterEditor s={cur} onLeave={leave} onSave={(p) => upd(cur.id, p)} />;
   if (cur) {
+    const isEdit = cur.status === "published";
     const byline = `${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`;
     return (
       <>
-        <Head title={cur.status === "changes_requested" ? "Edit & resubmit" : cur.status === "published" ? "Submit an edit" : "Edit draft"} sub={<><button type="button" className="tbtn" style={{ color: "var(--red-text)", fontSize: "13px" }} onClick={() => setEditing(null)}>← Back to My submissions</button></>} actions={<Pill tone={SUB[cur.status][1]}>{SUB[cur.status][0]}</Pill>} />
+        <Head title={cur.status === "changes_requested" ? "Edit & resubmit" : cur.status === "published" ? "Submit an edit" : "Edit draft"} sub={<><button type="button" className="tbtn" style={{ color: "var(--red-text)", fontSize: "13px" }} onClick={leave}>← Back to My submissions</button></>} actions={<Pill tone={SUB[cur.status][1]}>{SUB[cur.status][0]}</Pill>} />
         {cur.note && (
           <div style={{ background: "var(--st-red-bg)", borderLeft: "4px solid var(--red)", borderRadius: "0 8px 8px 0", padding: "11px 15px" }}>
             <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--red-deep)", marginBottom: "4px" }}>EDITOR&apos;S NOTE</div>
@@ -60,14 +77,18 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
         <ArticleEditor key={cur.id} refs={refs} initial={toDraft(cur, byline)}
           submitLabel={cur.status === "changes_requested" ? "Resubmit for review" : cur.status === "published" ? "Send edit for review" : "Submit for review"}
           note={cur.status === "published" ? "the live article stays as it is until the edit is approved" : undefined}
-          onSave={(dr) => { upd(cur.id, fromDraft(dr)); toast("Draft saved."); }}
+          onSave={(dr) => {
+            /* An edit to a published piece is kept apart from the live record. */
+            if (isEdit) { upd(cur.id, { pendingDraft: dr }); toast("Edit saved. It is not sent until you submit it."); }
+            else { upd(cur.id, fromDraft(dr)); toast("Draft saved."); }
+          }}
           onSubmit={(dr) => {
-            if (cur.status === "published") upd(cur.id, { ...fromDraft(dr), status: "published", editPending: true });
+            if (isEdit) upd(cur.id, { pendingDraft: dr, editPending: true });
             else upd(cur.id, { ...fromDraft(dr), status: "pending", submitted: today(), note: undefined, reviewed: undefined });
             set((x) => ({ ...x, notices: [{ id: uid(), kind: "submission", text: `“${dr.title}” was sent to the editors. A reply usually takes five working days.`, date: today(), read: false }, ...x.notices] }));
-            setEditing(null); setF("all"); toast("Submitted. The text is locked while the editors review it.");
+            leave(); setF("all"); toast(isEdit ? "Edit sent. The live article stays as it is until the editors approve it." : "Submitted. The text is locked while the editors review it.");
           }}
-          onClose={() => setEditing(null)} />
+          onClose={leave} />
       </>
     );
   }
@@ -90,6 +111,7 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
                 <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
                   <Pill tone={SUB[s.status][1]}>{SUB[s.status][0]}</Pill>
                   {s.editPending && <Pill tone="amber">EDIT IN REVIEW</Pill>}
+                  {s.status === "published" && s.pendingDraft && !s.editPending && <Pill tone="grey">EDIT NOT SENT</Pill>}
                   <span className="meta">{s.section} · {s.submitted ? `Submitted ${s.submitted}` : `Saved ${s.updated}`}{s.reviewed ? ` · Reviewed ${s.reviewed}` : ""} · {s.words.toLocaleString("en-US")} words</span>
                 </div>
                   <>
@@ -109,7 +131,13 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
                   <button type="button" className="btn" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : s.id)}>{isOpen ? "Close preview ▴" : "Preview text ▾"}</button>
                   {(s.status === "draft" || s.status === "changes_requested" || s.status === "withdrawn") && <button type="button" className="btn dark" onClick={() => startEdit(s)}>{s.status === "changes_requested" ? "Edit & resubmit" : "Continue editing"}</button>}
                   {s.status === "pending" && <ConfirmBtn label="Withdraw to draft" confirm="Withdraw" onConfirm={() => { upd(s.id, { status: "draft", submitted: undefined, updated: today() }); toast("Withdrawn to draft. You can edit and resubmit."); }} />}
-                  {s.status === "published" && <>{s.href && <a href={s.href} target="_blank" rel="noopener" className="btn">View live ↗</a>}<button type="button" className="btn" disabled={s.editPending} onClick={() => startEdit(s)}>{s.editPending ? "Edit in review" : "Submit an edit"}</button></>}
+                  {s.status === "published" && <>
+                    {s.href && <a href={s.href} target="_blank" rel="noopener" className="btn">View live ↗</a>}
+                    {s.editPending
+                      ? <ConfirmBtn label="Withdraw edit" confirm="Withdraw edit" onConfirm={() => { upd(s.id, { editPending: false }); toast("Edit withdrawn. It is kept here unsent; the live article is unchanged."); }} />
+                      : <button type="button" className="btn" onClick={() => startEdit(s)}>{s.pendingDraft ? "Continue edit" : "Submit an edit"}</button>}
+                    {s.pendingDraft && !s.editPending && <ConfirmBtn label="Discard edit" confirm="Discard" danger onConfirm={() => { upd(s.id, { pendingDraft: undefined }); toast("Unsent edit discarded."); }} />}
+                  </>}
                   {s.status === "draft" && <ConfirmBtn label="Delete" confirm="Delete draft" danger onConfirm={() => remove(s)} />}
                   {s.status === "rejected" && <Link href="/policies/submission-guidelines/" className="btn">Guidelines</Link>}
                 </div>
@@ -117,6 +145,41 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
           );
         })}
       </div>
+    </>
+  );
+}
+
+/* Letters are short and signed; they do not use the article editor. */
+const LETTER_MAX = 300;
+function LetterEditor({ s, onLeave, onSave }: { s: Submission; onLeave: () => void; onSave: (p: Partial<Submission>) => void }) {
+  const { set, toast } = useDemo();
+  const [title, setTitle] = useState(s.title.replace(/^Letter:\s*/, ""));
+  const [body, setBody] = useState(s.excerpt);
+  const locked = s.status === "pending" || s.status === "published" || s.status === "rejected";
+  const words = body.trim() ? body.trim().split(/\s+/).length : 0;
+  const changed = title !== s.title.replace(/^Letter:\s*/, "") || body !== s.excerpt;
+  const patch = (): Partial<Submission> => ({ title: `Letter: ${title.trim() || "untitled"}`, excerpt: body, words, updated: today() });
+  const problems = [title.trim().length < 5 && "a headline", words < 30 && "at least 30 words", words > LETTER_MAX && `no more than ${LETTER_MAX} words`].filter(Boolean) as string[];
+  return (
+    <>
+      <Head title={locked ? "Letter" : "Edit letter"} sub={<button type="button" className="tbtn" style={{ color: "var(--red-text)", fontSize: "13px" }} onClick={() => { if (changed && !locked) { onSave(patch()); toast("Letter saved."); } onLeave(); }}>← Back to My submissions</button>} actions={<Pill tone={SUB[s.status][1]}>{SUB[s.status][0]}</Pill>} />
+      <Card>
+        <p className="meta" style={{ margin: 0, lineHeight: 1.55 }}>Letters are printed under your real name, role and organisation, and may be shortened. Up to {LETTER_MAX} words. See the <Link href="/policies/comment-policy/" style={{ color: "var(--red-text)" }}>Letters policy</Link>.</p>
+        <Field id="lt-title" label="HEADLINE"><input id="lt-title" className="inp" value={title} disabled={locked} onChange={(e) => setTitle(e.target.value)} maxLength={120} /></Field>
+        <Field id="lt-body" label="YOUR LETTER" aside={<span className="meta" style={{ color: words > LETTER_MAX ? "var(--red-text)" : undefined }}>{words} / {LETTER_MAX} words</span>}><textarea id="lt-body" className="inp" rows={9} value={body} disabled={locked} onChange={(e) => setBody(e.target.value)} /></Field>
+        {!locked && (
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+            <button type="button" className="btn dark" aria-disabled={problems.length > 0} onClick={() => {
+              if (problems.length) { toast(`Before sending, add ${problems.join(", ")}.`); return; }
+              onSave({ ...patch(), status: "pending", submitted: today(), note: undefined, reviewed: undefined });
+              set((x) => ({ ...x, notices: [{ id: uid(), kind: "submission", text: `Your letter “${title.trim()}” was sent to the letters editor.`, date: today(), read: false }, ...x.notices] }));
+              toast("Letter sent to the letters editor."); onLeave();
+            }}>Send letter</button>
+            <button type="button" className="btn" disabled={!changed} onClick={() => { onSave(patch()); toast("Letter saved."); }}>Save draft</button>
+            {problems.length > 0 && <span className="meta">Needs {problems.join(", ")}.</span>}
+          </div>
+        )}
+      </Card>
     </>
   );
 }
@@ -153,7 +216,7 @@ export function Comments() {
                 <>
                   <textarea className="inp" rows={3} value={edit.text} maxLength={1500} onChange={(e) => setEdit({ id: c.id, text: e.target.value })} aria-label="Edit comment" />
                   <div style={{ display: "flex", gap: "8px" }}>
-                    <button type="button" className="btn dark" disabled={!edit.text.trim()} onClick={() => { set((x) => ({ ...x, comments: x.comments.map((y) => (y.id === c.id ? { ...y, text: edit.text, status: "pending", date: today() } : y)) })); setEdit(null); toast(c.status === "approved" ? "Saved. The comment is back in review and hidden until approved." : "Saved."); }}>Save</button>
+                    <button type="button" className="btn dark" disabled={!edit.text.trim() || edit.text.trim() === c.text.trim()} onClick={() => { set((x) => ({ ...x, comments: x.comments.map((y) => (y.id === c.id ? { ...y, text: edit.text.trim(), status: "pending", reason: undefined } : y)) })); setEdit(null); toast(c.status === "approved" ? "Saved. The edited comment is back in review and hidden until approved." : c.status === "rejected" ? "Saved and sent for review again." : "Saved."); }}>{c.status === "rejected" ? "Save and resubmit" : "Save"}</button>
                     <button type="button" className="btn" onClick={() => setEdit(null)}>Cancel</button>
                   </div>
                 </>
@@ -163,7 +226,7 @@ export function Comments() {
             {edit?.id !== c.id && (
               <div className="acts">
                 {c.status !== "removed" && <button type="button" className="btn" onClick={() => setEdit({ id: c.id, text: c.text })}>Edit</button>}
-                <ConfirmBtn label="Delete" confirm="Delete" danger onConfirm={() => { const before = d.comments; set((x) => ({ ...x, comments: x.comments.filter((y) => y.id !== c.id) })); toast("Comment deleted.", () => set((x) => ({ ...x, comments: before }))); }} />
+                <ConfirmBtn label="Delete" confirm="Delete" danger onConfirm={() => { const at = d.comments.findIndex((y) => y.id === c.id); set((x) => ({ ...x, comments: x.comments.filter((y) => y.id !== c.id) })); toast("Comment deleted.", () => set((x) => x.comments.some((y) => y.id === c.id) ? x : ({ ...x, comments: [...x.comments.slice(0, at), c, ...x.comments.slice(at)] }))); }} />
               </div>
             )}
           </div>
@@ -187,7 +250,7 @@ export function AuthorProfile() {
       <Card>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
           <span style={{ fontSize: "16px" }} className="h">By-line: {d.profile.name}</span>
-          <label style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "13.5px", fontWeight: 700, cursor: "pointer" }}><input type="checkbox" className="sw" checked={a.visible} onChange={(e) => setA({ ...a, visible: e.target.checked })} /> Public author page</label>
+          <label style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "13.5px", fontWeight: 700, cursor: "pointer" }}><input type="checkbox" role="switch" className="sw" checked={a.visible} onChange={(e) => setA({ ...a, visible: e.target.checked })} /> Public author page</label>
         </div>
         <Field id="ab" label="BIO" aside={<span className="meta">{a.bio.length} / 300</span>}><textarea id="ab" rows={3} className="inp" maxLength={300} value={a.bio} onChange={(e) => setA({ ...a, bio: e.target.value })} /></Field>
         <div className="g2f" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
@@ -202,7 +265,7 @@ export function AuthorProfile() {
             {a.expertise.length < 5 && <input id="af" className="inp" style={{ flex: "1 1 180px", width: "auto" }} value={tag} placeholder="Type and press Enter" onChange={(e) => setTag(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addTag(); } }} onBlur={addTag} />}
           </div>
         </Field>
-        <div className="note">Your registration email is never shown. Changing the by-line name needs an editor&apos;s confirmation, and by-lines on published articles do not change with the account name.</div>
+        <div className="note">Your registration email is never shown. The by-line uses your display name on new submissions. By-lines on published articles stay as printed; ask the editors if one needs correcting.</div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
           <button type="button" className="btn dark" disabled={!dirty || urlBad(a.linkedin) || urlBad(a.website)} onClick={() => { set((x) => ({ ...x, author: a })); toast("Author profile saved."); }}>Save</button>
           <button type="button" className="btn" disabled={!dirty} onClick={() => setA(d.author)}>Discard changes</button>
@@ -262,7 +325,7 @@ export function Bookmarks() {
           <div key={b.id} className="row" style={{ alignItems: "center" }}>
             <span className="bkic">{b.kind === "article" ? "ART" : b.kind === "company" ? "CO" : b.kind === "standard" ? "STD" : "EVT"}</span>
             <Link href={b.href} style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column", gap: "3px" }}><span style={{ fontSize: "15px", fontWeight: 800, lineHeight: 1.3 }}>{b.title}</span><span className="meta">{b.meta} · saved {b.saved}</span></Link>
-            <button type="button" className="btn sm" onClick={() => { const before = d.bookmarks; set((x) => ({ ...x, bookmarks: x.bookmarks.filter((y) => y.id !== b.id) })); toast("Bookmark removed.", () => set((x) => ({ ...x, bookmarks: before }))); }}>Remove</button>
+            <button type="button" className="btn sm" onClick={() => { const at = d.bookmarks.findIndex((y) => y.id === b.id); set((x) => ({ ...x, bookmarks: x.bookmarks.filter((y) => y.id !== b.id) })); toast("Bookmark removed.", () => set((x) => x.bookmarks.some((y) => y.id === b.id) ? x : ({ ...x, bookmarks: [...x.bookmarks.slice(0, at), b, ...x.bookmarks.slice(at)] }))); }}>Remove</button>
           </div>
         ))}
       </div>
@@ -280,7 +343,7 @@ export function Messages() {
   const n = (s: MsgStatus) => d.messages.filter((m) => m.status === s).length;
   const exportCsv = () => {
     const rows = [["Sent", "To", "Subject", "Status", "Replied", "Message"], ...d.messages.map((m) => [m.sent, m.to.name, m.subject, MS[m.status][0], m.replied ?? "", m.body.replace(/\s+/g, " ")])];
-    download("wire-mesh-news-messages.csv", rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n"), "text/csv");
+    download("wire-mesh-news-messages.csv", rows.map((r) => r.map((c) => `"${csvSafe(c).replace(/"/g, '""')}"`).join(",")).join("\n"), "text/csv");
     toast("Your message record was downloaded as CSV.");
   };
   const blank = (to?: { name: string; href: string }, subject = "product_enquiry") => ({ to: to?.href ?? "", subject, product: "", quantity: "", body: "", agree: false });

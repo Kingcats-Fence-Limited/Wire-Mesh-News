@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { POLICIES, getPolicy } from "@/lib/content/policies";
 import { PolicyBoard } from "@/components/boards/contact/PolicyBoard";
 
@@ -8,7 +9,7 @@ export function generateStaticParams() {
 }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const p = getPolicy((await params).slug);
-  return p ? { title: p.title, description: p.inShort } : {};
+  return p ? pageMeta({ title: p.title, description: p.inShort, path: `/policies/${p.slug}/` }) : {};
 }
 
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
