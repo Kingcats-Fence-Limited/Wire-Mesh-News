@@ -31,7 +31,7 @@
   --fg-3: #2c2e39;
   --slate: #555a6b;
   /* --grey is used for small labels on white and paper: #6e7384 keeps them at 4.5:1 or better */
-  --grey: #6e7384;
+  --grey: #666b7c;          /* 4.9:1 on --paper, 5.3:1 on white */
   --grey-2: #9a9fb0;
   --grey-3: #a7abb8;
   --grey-4: #b4b8c2;
@@ -111,8 +111,10 @@
 
 @theme inline {
   /* fonts */
-  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Manrope Variable", "Manrope", ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* --font-bricolage / --font-manrope come from next/font (src/app/layout.tsx): self-hosted,
+     preloaded, with metric-matched fallbacks so the page does not jump when they load. */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
 
   /* colors → tailwind utilities (bg-ink, text-slate, border-line …) */
   --color-ink: var(--ink);
@@ -288,8 +290,8 @@
 .site, [class^="b-"] { font-size: 16px; line-height: normal; font-weight: 400; }
 .site .grid > *, .site .flex > *, [class^="b-"] .grid > *, [class^="b-"] .flex > * { min-width: auto; }
 /* Board ports reference the Google Fonts family names; alias them to the self-hosted variable fonts. */
-.site .h, .site .num, .site .sec h2, [class^="b-"] .h, [class^="b-"] .num { font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', sans-serif; font-variation-settings: "opsz" 96; }
-.site .mono, [class^="b-"] .mono { font-family: 'Manrope Variable', 'Manrope', sans-serif; }
+.site .h, .site .num, .site .sec h2, [class^="b-"] .h, [class^="b-"] .num { font-family: var(--font-display); font-variation-settings: "opsz" 96; }
+.site .mono, [class^="b-"] .mono { font-family: var(--font-sans); }
 /* Demo imagery: Dark-T asks for a light dark overlay on photos in dark mode */
 :root[data-theme="dark"] .demo, :root[data-theme="dark"] .ph, :root[data-theme="dark"] .thumb, :root[data-theme="dark"] .ph2 { filter: brightness(.9); }
 
@@ -306,7 +308,7 @@
   html,body,.site{background:#FFFFFF !important;color:#111 !important}
   .print-only{display:block !important}
   .print-mast{display:flex !important;justify-content:space-between;align-items:baseline;border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:14px;font-size:9.5pt;color:#444}
-  .print-mast b{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-size:15pt;letter-spacing:-.04em;color:#111}
+  .print-mast b{font-family:var(--font-display);font-size:15pt;letter-spacing:-.04em;color:#111}
   .print-mast b span{color:#C41822}
   .utilbar,.site > header,.site header,#site-footer,.site footer,.ad,.adtag,.adlbl,.b-cook,.btt,.cookroot,.prefwrap,
   #share,#comments,.toc,.b-art .side,.icobtn,.sharemenu,.site button,nav[aria-label="Breadcrumb"],.b-art .util,

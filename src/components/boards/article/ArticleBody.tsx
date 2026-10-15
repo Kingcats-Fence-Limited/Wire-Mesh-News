@@ -26,7 +26,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
               <div key={i}>
                 {ad && (
                   <div style={{ margin: "34px 0 32px" }} className="noprint">
-                    <div style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".18em", color: "var(--grey-2)", marginBottom: "7px" }}>ADVERTISEMENT</div>
+                    <div style={{ fontSize: "10px", fontWeight: "800", letterSpacing: ".18em", color: "var(--grey)", marginBottom: "7px" }}>ADVERTISEMENT</div>
                     <div style={{ height: "180px", border: "1px solid var(--line)", borderRadius: "12px", background: "var(--paper-2)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "5px", color: "var(--grey)" }}><span style={{ fontSize: "13px", fontWeight: "700" }}>580 × 180 IN-ARTICLE</span></div>
                   </div>
                 )}
@@ -41,7 +41,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
               <div key={i} style={{ display: "flex", gap: "20px", margin: "34px 0 36px", padding: "2px 0" }}>
                 <span style={{ fontSize: "72px", lineHeight: ".62", color: "var(--red-text)", flexShrink: "0" }} className="h">&#8220;</span>
                 <div>
-                  <p style={{ margin: "0 0 12px", fontFamily: "'Bricolage Grotesque Variable', 'Bricolage Grotesque', sans-serif", fontWeight: "800", fontSize: "24px", letterSpacing: "-.03em", lineHeight: "1.38", color: "var(--ink)" }}>{b.text}</p>
+                  <p style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontWeight: "800", fontSize: "24px", letterSpacing: "-.03em", lineHeight: "1.38", color: "var(--ink)" }}>{b.text}</p>
                   {b.cite && <div style={{ fontSize: "12.5px", fontWeight: "700", letterSpacing: ".04em", color: "var(--slate)" }}>{b.cite}</div>}
                 </div>
               </div>

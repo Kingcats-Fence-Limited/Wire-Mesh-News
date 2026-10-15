@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { search, highlight, SEARCH_INDEX, type SearchDoc, type SearchType } from "@/lib/search";
+import { searchIn, highlight, type SearchDoc, type SearchType } from "@/lib/search-core";
+
+/* Fetched once per visit, the first time search opens. */
+let indexPromise: Promise<SearchDoc[]> | null = null;
+export const loadSearchIndex = () => (indexPromise ??= fetch("/search-index.json").then((r) => (r.ok ? r.json() : [])).catch(() => { indexPromise = null; return []; }));
 import "@/styles/board-sov.css";
 import { demoBg } from "@/lib/demo";
 
@@ -32,7 +36,8 @@ function useRecent() {
   const [recent, setRecent] = useState<string[]>([]);
   useEffect(() => {
     try {
-      setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]"));
+      const v: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]");
+      setRecent(Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 8) : []);
     } catch {
       /* ignore */
     }
@@ -102,6 +107,8 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { recent, push, remove, clear } = useRecent();
+  const [index, setIndex] = useState<SearchDoc[] | null>(null);
+  useEffect(() => { let live = true; loadSearchIndex().then((x) => { if (live) setIndex(x); }); return () => { live = false; }; }, []);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -115,7 +122,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
     return () => clearTimeout(t);
   }, [q]);
 
-  const results = useMemo(() => (debounced.length >= 2 ? search(debounced) : []), [debounced]);
+  const results = useMemo(() => (debounced.length >= 2 && index ? searchIn(index, debounced) : []), [debounced, index]);
   const flat = useMemo(() => {
     const order: SearchType[] = ["article", "company", "standard", "topic", "letter", "opinion", "event"];
     const out: SearchDoc[] = [];
@@ -132,7 +139,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
     const stem = debounced.toLowerCase();
     const seen = new Set<string>();
     const out: string[] = [];
-    for (const d of SEARCH_INDEX) {
+    for (const d of index ?? []) {
       for (const w of `${d.title} ${d.kicker}`.toLowerCase().split(/[^a-z0-9\-]+/)) {
         if (w.startsWith(stem) && w !== stem && !seen.has(w) && w.length > stem.length + 1) {
           seen.add(w);
@@ -142,7 +149,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
       if (out.length >= 3) break;
     }
     return out;
-  }, [debounced]);
+  }, [debounced, index]);
 
   function go(href: string) {
     if (debounced) push(debounced);
@@ -169,7 +176,7 @@ export function SearchOverlay({ onClose, top = 0 }: { onClose: () => void; top?:
   }
 
   const empty = debounced.length < 2;
-  const none = !empty && results.length === 0;
+  const none = !empty && index !== null && results.length === 0;
   const kbd = (s: string) => <span className="kbd">{s}</span>;
 
   return (

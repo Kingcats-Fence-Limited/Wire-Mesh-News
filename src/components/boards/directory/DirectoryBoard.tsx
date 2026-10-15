@@ -4,7 +4,13 @@ import { Shell } from "@/components/shell/Shell";
 import { FilterBar } from "./FilterBar";
 import { COMPANIES, SPONSORED } from "@/lib/content/directory";
 import { ARTICLES } from "@/lib/content/articles";
-import { MATERIAL_GROUP, APPLICATION_AREA, CATEGORY, REGION, COUNTRY_BY_CODE, PRODUCT, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, CATEGORY_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
+import { MATERIAL_GROUP } from "@/data/vocab/material_group";
+import { APPLICATION_AREA, APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
+import { CATEGORY, CATEGORY_BY_CODE } from "@/data/vocab/category";
+import { REGION } from "@/data/vocab/region";
+import { COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { PRODUCT, PRODUCT_BY_CODE } from "@/data/vocab/product";
+import { ORGANISATION_TYPE_BY_CODE } from "@/data/vocab/organisation_type";
 import { fmtDateShort } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-dir.css";
@@ -125,7 +131,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke={on ? "#FFFFFF" : "var(--red)"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ position: "relative" }}><path d={APP_ICON[a.code]} /></svg>
 <span style={{ fontSize: "16px", position: "relative" }} className="h">{a.labelEn}</span>
 <span style={{ fontSize: "12px", fontWeight: "500", lineHeight: "1.45", color: on ? "rgba(255,255,255,.72)" : "var(--slate)", position: "relative" }}>{APP_SUB[a.code]}</span>
-<span style={{ marginTop: "auto", paddingTop: "10px", borderTop: on ? "1px solid rgba(255,255,255,.2)" : "1px solid var(--line-soft)", position: "relative" }}><span style={{ fontSize: "11px", fontWeight: "800", color: on ? "#FFFFFF" : "var(--grey)" }} className="mono">{countBy((c) => c.applications.includes(a.code))} companies</span></span>
+<span style={{ marginTop: "auto", paddingTop: "10px", borderTop: on ? "1px solid rgba(255,255,255,.2)" : "1px solid var(--line-soft)", position: "relative" }}><span style={{ fontSize: "11px", fontWeight: "800", color: on ? "#FFFFFF" : "var(--grey)" }} className="mono">{((n) => `${n} ${n === 1 ? "company" : "companies"}`)(countBy((c) => c.applications.includes(a.code)))}</span></span>
 </Link>
   );
 })}

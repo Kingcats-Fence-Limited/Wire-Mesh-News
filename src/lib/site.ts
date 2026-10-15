@@ -1,4 +1,5 @@
-import { SECTION, SUBSECTION } from "@/data/vocab";
+import { SECTION } from "@/data/vocab/section";
+import { SUBSECTION } from "@/data/vocab/subsection";
 import type { SectionCode } from "./content/types";
 
 export const SITE = {

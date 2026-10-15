@@ -100,7 +100,7 @@ export function Header({ variant = "compact", active }: { variant?: "full" | "co
               <MobileMenu data={data} />
               <Link href="/" className="mastmid" aria-label="Wire Mesh News home" style={{ display: "flex", alignItems: "center", gap: "13px", justifyContent: "center" }}>
                 <svg width="54" height="54" viewBox="0 0 120 120" aria-hidden="true"><use href="#w1" width="120" height="120" /></svg>
-                <span className="h" style={{ fontSize: "54px", letterSpacing: "-.055em" }}>wire mesh</span>
+                <span className="h" style={{ fontSize: "54px", letterSpacing: "-.055em" }}>wire mesh</span>{" "}
                 <span className="h" style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "54px", letterSpacing: "-.055em", padding: "4px 14px 10px", borderRadius: "12px" }}>news</span>
               </Link>
               <div className="mastright" style={{ display: "flex", alignItems: "center", gap: "9px", justifyContent: "flex-end" }}>
@@ -126,7 +126,7 @@ export function Header({ variant = "compact", active }: { variant?: "full" | "co
               <MobileMenu data={data} />
               <Link href="/" aria-label="Wire Mesh News home" style={{ display: "flex", alignItems: "center", gap: "9px", flexShrink: "0" }}>
                 <svg width="38" height="38" viewBox="0 0 120 120" aria-hidden="true"><use href="#w1" width="120" height="120" /></svg>
-                <span style={{ fontSize: "25px", letterSpacing: "-.05em" }} className="h">wire mesh</span>
+                <span style={{ fontSize: "25px", letterSpacing: "-.05em" }} className="h">wire mesh</span>{" "}
                 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "25px", letterSpacing: "-.05em", padding: "3px 8px 5px", borderRadius: "7px" }} className="h">news</span>
               </Link>
               <span className="util" style={{ marginLeft: "10px" }}><ClockLine /></span>

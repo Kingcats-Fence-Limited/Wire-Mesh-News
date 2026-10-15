@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/bricolage-grotesque/opsz.css";
-import "@fontsource-variable/manrope";
+import localFont from "next/font/local";
 import "./globals.css";
 import "@/styles/boards-common.css";
 import { ThemeScript } from "@/components/theme/ThemeScript";
@@ -13,6 +12,11 @@ import { INDEXABLE } from "@/lib/indexing";
    upcoming events, the brief) is regenerated in the background at most once an hour on
    the next visit (incremental static regeneration), so no daily rebuild is needed. */
 export const revalidate = 3600;
+
+/* Self-hosted variable fonts (Latin subset). next/font preloads them and generates
+   size-adjusted fallbacks, so text does not shift when the real font arrives. */
+const bricolage = localFont({ src: "../fonts/bricolage-grotesque-latin-opsz-normal.woff2", weight: "200 800", style: "normal", display: "swap", variable: "--font-bricolage", fallback: ["Arial", "sans-serif"], adjustFontFallback: "Arial" });
+const manrope = localFont({ src: "../fonts/manrope-latin-wght-normal.woff2", weight: "200 800", style: "normal", display: "swap", variable: "--font-manrope", fallback: ["Arial", "sans-serif"], adjustFontFallback: "Arial" });
 
 export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
@@ -29,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-GB" suppressHydrationWarning>
+    <html lang="en-GB" className={`${bricolage.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>

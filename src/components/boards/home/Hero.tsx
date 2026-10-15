@@ -3,7 +3,8 @@ import Link from "next/link";
 import type { Article } from "@/lib/content/types";
 import { articleHref, fmtDateShort, subsectionLabel, sectionByCode } from "@/lib/site";
 import { getAuthor } from "@/lib/content/people";
-import { demoBg } from "@/lib/demo";
+import { demoBg, demoSrc } from "@/lib/demo";
+import { preload } from "react-dom";
 import { initials } from "@/lib/initials";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp", g1: "pG1", g2: "pG2", g3: "pG3", g4: "pG4", g5: "pG5" };
@@ -24,6 +25,7 @@ function Title({ a }: { a: Article }) {
 }
 
 export function Hero({ top, side, brief, date }: { top: Article; side: [Article, Article]; brief: Article[]; date: string }) {
+  preload(demoSrc(top.slug, 0, "lg"), { as: "image", fetchPriority: "high" });
   const author = getAuthor(top.author);
   return (
     <>
@@ -31,7 +33,7 @@ export function Hero({ top, side, brief, date }: { top: Article; side: [Article,
 <div className="wrap" style={{ paddingTop: "26px", paddingBottom: "26px" }}>
 <div className="split herosplit" style={{ display: "grid", gridTemplateColumns: "1.7fr 1fr", gridTemplateRows: "1fr 1fr", gap: "14px", minHeight: "560px" }}>
 <Link href={articleHref(top)} className="herotop" style={{ gridRow: "1 / span 2", position: "relative", overflow: "hidden", borderRadius: "18px", background: "#1C1E27", display: "block", minHeight: "560px" }}>
-<span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(top.slug) }} /><span aria-hidden="true" className="scrim" />
+<span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(top.slug, 0, "lg") }} /><span aria-hidden="true" className="scrim" />
 <span className="herotags" style={{ position: "absolute", left: "24px", top: "22px", display: "flex", alignItems: "center", gap: "10px" }}>
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".16em", padding: "7px 13px", borderRadius: "999px" }}>TOP STORY</span>
 <span style={{ background: "rgba(14,15,20,.78)", border: "1px solid rgba(255,255,255,.14)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".12em", padding: "6px 11px", borderRadius: "999px", backdropFilter: "blur(6px)" }}>{sectionByCode(top.section)!.label.toUpperCase()}</span>
@@ -49,7 +51,7 @@ export function Hero({ top, side, brief, date }: { top: Article; side: [Article,
 </Link>
 {side.map((a) => (
 <Link key={a.slug} href={articleHref(a)} className="heroside" style={{ position: "relative", overflow: "hidden", borderRadius: "16px", background: "#1C1E27", display: "block", minHeight: "272px" }}>
-<span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(a.slug) }} /><span aria-hidden="true" className="scrim" />
+<span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(a.slug, 0, "md") }} /><span aria-hidden="true" className="scrim" />
 <span style={{ position: "absolute", left: "18px", top: "16px", background: "rgba(14,15,20,.78)", border: "1px solid rgba(255,255,255,.14)", backdropFilter: "blur(6px)", color: "#FFFFFF", fontSize: "10px", fontWeight: "800", letterSpacing: ".12em", padding: "6px 10px", borderRadius: "999px" }}>{sectionByCode(a.section)!.label.toUpperCase()}</span>
 <span className="sidebody" style={{ position: "absolute", left: "20px", right: "20px", bottom: "18px", color: "#FFFFFF" }}>
 <span className="h sideh" style={{ display: "block", fontSize: "22px", lineHeight: "1.12", marginBottom: "8px" }}>{a.title}</span>

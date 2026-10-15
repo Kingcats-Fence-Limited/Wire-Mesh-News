@@ -127,7 +127,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
 
         <div className="mobnav" role="navigation" aria-label="Account sections">{flat.map((it) => link(it, true))}</div>
 
-        <main className="main" key={epoch}>
+        <div className="main" key={epoch}>
           {panel === "overview" && <Overview companyName={co.name} />}
           {panel === "profile" && <Profile />}
           {panel === "submissions" && <Submissions refs={refs} />}
@@ -140,7 +140,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
           {panel === "billing" && <><Head title="Subscription & billing" sub="Your plan, payment method and invoices. Prices are announced before paid plans open." /><BillingPanel /></>}
           {panel === "notifications" && <Notifications />}
           {panel === "settings" && <Settings />}
-        </main>
+        </div>
       </div>
     </>
   );

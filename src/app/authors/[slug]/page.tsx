@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { flat } from "@/lib/params";
 import { pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { personLd } from "@/lib/schema";
@@ -17,5 +18,5 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function AuthorPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ section?: string }> }) {
   const a = getAuthor((await params).slug);
   if (!a) notFound();
-  return <><JsonLd data={personLd(a)} /><AuthorBoard a={a} section={(await searchParams).section} /></>;
+  return <><JsonLd data={personLd(a)} /><AuthorBoard a={a} section={flat<Awaited<typeof searchParams>>(await searchParams as Record<string, string | string[] | undefined>).section} /></>;
 }

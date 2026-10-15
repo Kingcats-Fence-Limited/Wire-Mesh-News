@@ -2,7 +2,7 @@
 .b-meth .h{letter-spacing:-.04em;line-height:1.1}
 .b-meth .pnav a{font-size:14px;font-weight:500;color:var(--slate);display:block}
 .b-meth .pnav a.on{font-weight:800;color:var(--red-text)}
-.b-meth .body h2{margin:26px 0 9px;font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.04em;font-size:20px;line-height:1.15;scroll-margin-top:20px}
+.b-meth .body h2{margin:26px 0 9px;font-family:var(--font-display);font-weight:800;letter-spacing:-.04em;font-size:20px;line-height:1.15;scroll-margin-top:20px}
 .b-meth .body h2:first-of-type{margin-top:0}
 .b-meth .body p{margin:0 0 12px;font-size:15px;font-weight:500;line-height:1.7;color:var(--fg-2)}
 .b-meth .body ul{margin:0 0 12px;padding-left:18px}

@@ -3,6 +3,7 @@ import { AUTHORS } from "@/lib/content/people";
 import { articleHref, SITE } from "@/lib/site";
 
 export const dynamic = "force-static";
+export const dynamicParams = false;
 export function generateStaticParams() {
   return AUTHORS.map((a) => ({ slug: a.slug }));
 }
@@ -19,7 +20,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 <?xml-stylesheet type="text/xsl" href="/feed.xsl"?>
 <rss version="2.0"><channel>
 <title>${esc(author.name)} · ${esc(SITE.name)}</title><link>${SITE.url}/authors/${slug}/</link><description>${esc(author.role)}</description><language>en</language>
-${items.map((a) => `<item><title>${esc(a.title)}</title><link>${SITE.url}${articleHref(a)}</link><guid>${SITE.url}${articleHref(a)}</guid><pubDate>${new Date(a.date).toUTCString()}</pubDate><description>${esc(a.dek)}</description></item>`).join("\n")}
+${items.map((a) => `<item><title>${esc(a.title)}</title><link>${esc(SITE.url + articleHref(a))}</link><guid>${esc(SITE.url + articleHref(a))}</guid><pubDate>${new Date(a.date).toUTCString()}</pubDate><description>${esc(a.dek)}</description></item>`).join("\n")}
 </channel></rss>`;
   return new Response(xml, { headers: { /* application/xml (not application/rss+xml) so a browser parses the feed and applies
        /feed.xsl, which turns it into a readable page; every feed reader accepts it. */

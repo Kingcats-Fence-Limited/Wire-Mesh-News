@@ -6,7 +6,9 @@ import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { STANDARDS, getStandardByNo } from "@/lib/content/source";
 import { byStandard } from "@/lib/content/articles";
 import { COMPANIES } from "@/lib/content/directory";
-import { STANDARDS_BODY, STANDARD_SUBJECT_BY_CODE, STANDARD_STATUS } from "@/data/vocab";
+import { STANDARDS_BODY } from "@/data/vocab/standards_body";
+import { STANDARD_SUBJECT_BY_CODE } from "@/data/vocab/standard_subject";
+import { STANDARD_STATUS } from "@/data/vocab/standard_status";
 import { articleHref, fmtDate, fmtDateShort, sectionByCode } from "@/lib/site";
 import type { Standard, StandardStatus } from "@/lib/content/types";
 import "@/styles/board-std.css";
@@ -102,7 +104,7 @@ export function StandardsBoard({ sp }: { sp: StdParams }) {
   const n = byStandard(s.no).length;
   const wd = s.status === "withdrawn";
   return (
-<Link key={s.slug} href={`/standards/${s.slug}/`} style={{ ...(s.slug === latest.slug ? { borderLeft: "3px solid var(--red)" } : {}), ...(wd ? { opacity: ".72" } : {}) }} className="row">
+<Link key={s.slug} href={`/standards/${s.slug}/`} style={{ ...(s.slug === latest.slug ? { borderLeft: "3px solid var(--red)" } : {}), ...(wd ? { background: "var(--paper-2)" } : {}) }} className="row">
 <span><span style={{ fontSize: "17px", display: "block", ...(wd ? { textDecoration: "line-through", textDecorationColor: "var(--line-2)" } : {}) }} className="mono h">{s.no}</span><span style={{ fontSize: "10.5px", fontWeight: "700", color: "var(--grey)" }} className="mono">{bodyOf(s.body)?.prefix === "EN" ? "CEN" : bodyOf(s.body)?.prefix ?? s.body.toUpperCase()} · {s.edition ?? "—"}</span></span>
 <span><span style={{ display: "block", fontSize: "14.5px", fontWeight: "800", marginBottom: "4px" }}>{s.title}</span><span style={{ fontSize: "12.5px", lineHeight: "1.5" }} className="meta">{wd && s.replacedBy ? <>Replaced by <b style={{ color: "var(--ink)" }}>{s.replacedBy}</b>. Withdrawn standards stay in the index: old drawings still cite them and readers need to know what to replace them with.</> : s.covers.split(". ")[0] + "."}</span></span>
 <span className="badge wd">{subjectLabel(s.subject)}</span>

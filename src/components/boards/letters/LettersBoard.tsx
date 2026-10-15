@@ -181,7 +181,7 @@ export function LetterBoard({ l }: { l: Letter }) {
 )}
 {l.editorReply && (
 <div style={{ background: "var(--paper)", borderLeft: "4px solid var(--red)", borderRadius: "0 12px 12px 0", padding: "16px 20px", marginBottom: "22px" }}>
-<div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "7px", flexWrap: "wrap" }}><span className="rp">EDITOR&#8217;S REPLY</span><span style={{ fontSize: "11.5px" }} className="meta">{editor ? <Link href={`/authors/${editor.slug}/`}>{editor.name}</Link> : l.editorReply.by}, {fmtDate(l.editorReply.date)}</span>{l.ledToCorrection && <span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="rp">LED TO A CORRECTION</span>}</div>
+<div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "7px", flexWrap: "wrap" }}><span className="rp">EDITOR&#8217;S REPLY</span><span style={{ fontSize: "11.5px" }} className="meta">{editor ? <Link href={`/authors/${editor.slug}/`} style={{ textDecoration: "underline", textUnderlineOffset: "3px" }}>{editor.name}</Link> : l.editorReply.by}, {fmtDate(l.editorReply.date)}</span>{l.ledToCorrection && <span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="rp">LED TO A CORRECTION</span>}</div>
 <p style={{ margin: "0", fontSize: "14.5px", fontWeight: "500", lineHeight: "1.65", color: "var(--fg-2)" }}>{l.editorReply.text}</p>
 </div>
 )}

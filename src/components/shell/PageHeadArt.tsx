@@ -1,3 +1,5 @@
+import { preload } from "react-dom";
+
 /**
  * The artwork behind a dark page header.
  *
@@ -11,14 +13,17 @@
  */
 export const HEAD_ART = {
   /** stacked welded panels — the default for most headers */
-  panels: "/demo/hdr-01.jpg",
+  panels: "/demo/hdr-01.webp",
   /** wire coils in a yard */
-  coils: "/demo/hdr-02.jpg",
+  coils: "/demo/hdr-02.webp",
   /** plant hall */
-  hall: "/demo/hdr-03.jpg",
+  hall: "/demo/hdr-03.webp",
 } as const;
 
 export function PageHeadArt({ src = HEAD_ART.panels, opacity = 1 }: { src?: string; opacity?: number }) {
+  /* The header photo is usually the largest thing on screen: fetch it with the HTML instead
+     of waiting for the stylesheet to reveal it. */
+  preload(src, { as: "image", fetchPriority: "high" });
   return (
     <>
       <span

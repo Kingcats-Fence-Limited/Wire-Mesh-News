@@ -27,7 +27,15 @@ export function demoIndex(seed: string, offset = 0) {
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
   return ((h + offset) % DEMO_COUNT) + 1;
 }
-export const demoSrc = (seed: string, offset = 0) => `/demo/wm-${String(demoIndex(seed, offset)).padStart(2, "0")}.jpg`;
+/** "sm" is 640 px wide (thumbnails), "lg" 1400 px (heroes); both WebP. */
+export type DemoSize = "sm" | "md" | "lg";
+export const demoSrc = (seed: string, offset = 0, size: "sm" | "lg" = "lg") => `/demo/wm-${String(demoIndex(seed, offset)).padStart(2, "0")}${size === "sm" ? "-sm" : ""}.webp`;
 export const logoSrc = (slug: string) => `/demo/logo-${slug}.png`;
 /** Inline style for a cover-fitted demo photo on any box. */
-export const demoBg = (seed: string, offset = 0): React.CSSProperties => ({ backgroundImage: `url(${demoSrc(seed, offset)})`, backgroundSize: "cover", backgroundPosition: "center" });
+/** Inline style for a cover-fitted demo photo on any box. Pick the size by the box:
+ *  "sm" for thumbnails (default), "md" for cards (small file on standard screens, large on
+ *  high-density ones), "lg" for full-width heroes. */
+export const demoBg = (seed: string, offset = 0, size: DemoSize = "sm"): React.CSSProperties => ({
+  backgroundImage: size === "md" ? `image-set(url(${demoSrc(seed, offset, "sm")}) 1x, url(${demoSrc(seed, offset, "lg")}) 2x)` : `url(${demoSrc(seed, offset, size === "lg" ? "lg" : "sm")})`,
+  backgroundSize: "cover", backgroundPosition: "center",
+});

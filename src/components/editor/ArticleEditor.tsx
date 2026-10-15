@@ -235,7 +235,7 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
       ) : (
         <>
           <section className="aed-card">
-            <div className="aed-hd"><span className="aed-n">1</span><h3>Article</h3></div>
+            <div className="aed-hd"><span className="aed-n">1</span><h2>Article</h2></div>
             <div className="aed-fld"><label htmlFor="ae-t">TITLE</label><input id="ae-t" className="aed-inp" value={d.title} maxLength={140} onChange={(e) => set("title", e.target.value)} placeholder="Specific and accurate; no marketing language" /><span className="aed-hint">{d.title.length} / 140 · News headlines must reflect the facts.</span></div>
             <div className="aed-fld"><label htmlFor="ae-d">STANDFIRST</label><textarea id="ae-d" rows={2} className="aed-inp" value={d.dek} maxLength={320} onChange={(e) => set("dek", e.target.value)} placeholder="Two or three sentences: what question does the article answer?" /></div>
             <div className="aed-fld">
@@ -284,7 +284,7 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
           </section>
 
           <section className="aed-card">
-            <div className="aed-hd"><span className="aed-n">2</span><h3>Images &amp; files</h3><span className="aed-meta" style={{ marginLeft: "auto" }}>{d.files.length} / {MAX_FILES}</span></div>
+            <div className="aed-hd"><span className="aed-n">2</span><h2>Images &amp; files</h2><span className="aed-meta" style={{ marginLeft: "auto" }}>{d.files.length} / {MAX_FILES}</span></div>
             <label className={`aed-drop${drag ? " on" : ""}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }}>
               <input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }} />
               <b>Drag files here, or <u>choose files</u></b>
@@ -315,7 +315,7 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
           </section>
 
           <section className="aed-card">
-            <div className="aed-hd"><span className="aed-n">3</span><h3>Sources &amp; declarations</h3></div>
+            <div className="aed-hd"><span className="aed-n">3</span><h2>Sources &amp; declarations</h2></div>
             <div className="aed-fld" role="group" aria-labelledby="ae-src">
               <span className="lbl" id="ae-src">SOURCES</span>
               {d.sources.map((s, i) => (
