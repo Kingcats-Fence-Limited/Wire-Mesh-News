@@ -5,7 +5,10 @@
 - **Indexing** (src/lib/indexing.ts): every deployment is `noindex` (robots.txt, meta robots, X-Robots-Tag) until the production domain is wiremeshnews.com. /account is always noindex and `Cache-Control: private, no-store`.
 - **HTML from content** is sanitized on the server (src/lib/sanitize.ts, sanitize-html): inline formatting and http(s)/mailto links only; external links get `rel="noopener noreferrer nofollow"`.
 - **Search highlighting** escapes text before adding `<mark>`, and escapes query tokens before building RegExps.
-- **Redirect after sign-in** accepts same-site paths only (src/lib/safe-redirect.ts): `//host`, `/\host` and absolute URLs fall back to /account/.
+- **Redirect after sign-in** accepts same-site paths only (src/lib/safe-redirect.ts), checked again after URL normalisation so dot segments (`/.//evil.com`) cannot collapse into `//evil.com`. Regression check: `node --experimental-strip-types scripts/check-safe-redirect.mjs`.
+- **Query strings** go through src/lib/params.ts (first value only, 200 characters max), so repeated parameters cannot crash a page.
+- **CMS content** (scripts/pull-content.mjs) is validated at the pull: slugs `[a-z0-9-]`, links http(s) only, `DIRECTUS_URL` must be https. RSS links and ICS lines are escaped.
+- **CSP**: the Vercel toolbar hosts (vercel.live, pusher) are allowed on preview deployments only; production has `frame-src 'none'`.
 - **ICS feed** escapes commas, semicolons, backslashes and newlines (RFC 5545).
 - **Vocabulary API** (/api/vocab/subdivisions/{CC}/) is prebuilt per country; unknown codes are 404, not new cached pages.
 - **No secrets in the repo**; `.env*` is ignored. `DIRECTUS_TOKEN` must be a read-only role token, set in Vercel env only.
@@ -33,3 +36,16 @@ The /account preview runs entirely in the browser. When real accounts are wired,
 - Every public page sets a canonical URL (query strings never canonical), Open Graph and X card tags through src/lib/seo.ts; share images are rendered at build time (/og/ and /og/<article>/).
 - JSON-LD: NewsMediaOrganization + WebSite (home), NewsArticle/AnalysisNewsArticle/Article + BreadcrumbList (articles), Organization + BreadcrumbList (companies), ProfilePage/Person (authors), Event (upcoming events).
 - robots.txt blocks only /api/ and /search/ on the live domain; private pages (account, sign-in, register, submit, company contact forms) are crawlable but carry noindex, so search engines can see the noindex. Empty sub-sections are noindex and left out of the sitemap.
+
+## Performance (in place)
+- The search index is no longer bundled into every page: it loads from /search-index.json the first time search opens. Shared JavaScript per page dropped from about 219 KB to about 120 KB.
+- Vocabulary imports are per file, so the 450 KB subdivision list never reaches the browser.
+- Demo photos are WebP in two sizes (640 px thumbnails, 1400 px heroes), about 75% smaller than the JPEGs; header and hero photos are preloaded.
+- Fonts are self-hosted through next/font with metric-matched fallbacks (no layout shift when they load); CSS is inlined; title/description/canonical always render in <head>.
+
+## Still to decide or do
+- CSP still allows inline scripts (Next.js bootstrap). Removing it needs nonces from middleware, which makes every page dynamic; revisit when real accounts arrive.
+- /directory, /events, /standards, /letters, /market-data and /search render on the server per request (they read the query string). Add a Vercel WAF rate limit, or move filtering to the browser so these pages can be cached.
+- HSTS `preload` commits every subdomain of wiremeshnews.com to HTTPS; confirm before submitting to the preload list.
+- COOP `same-origin` blocks popup-based OAuth; switch to `same-origin-allow-popups` when Google/Microsoft sign-in is wired.
+- `pnpm audit`: one dev-only advisory (braces via eslint-config-next), no patched release yet.

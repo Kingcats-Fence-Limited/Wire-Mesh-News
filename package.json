@@ -10,8 +10,6 @@
     "pull:content": "node scripts/pull-content.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
-    "@fontsource-variable/manrope": "^5.3.0",
     "clsx": "^2.1.1",
     "next": "15.5.27",
     "react": "19.3.0",

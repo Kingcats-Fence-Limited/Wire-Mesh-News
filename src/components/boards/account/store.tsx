@@ -137,6 +137,11 @@ function restore(v: unknown, seed: Demo): Demo | null {
   }
   const arraysOfObjects = ["submissions", "comments", "bookmarks", "messages", "notices", "sessions", "contacts"] as const;
   if (arraysOfObjects.some((k) => !(out[k] as unknown[]).every((x) => x && typeof x === "object" && typeof (x as { id?: unknown; name?: unknown }).id !== "number"))) return null;
+  /* Links come back from storage too: only same-site paths are accepted. */
+  const hrefsOk = (x: unknown): boolean => Array.isArray(x) ? x.every(hrefsOk) : x && typeof x === "object"
+    ? Object.entries(x).every(([k, v]) => (k === "href" ? v === undefined || (typeof v === "string" && v.startsWith("/") && !v.startsWith("//") && !v.includes("\\")) : hrefsOk(v)))
+    : true;
+  if (!hrefsOk(out)) return null;
   return out as Demo;
 }
 

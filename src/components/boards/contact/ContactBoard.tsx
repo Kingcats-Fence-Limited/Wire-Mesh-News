@@ -1,7 +1,7 @@
 /* Ported 1:1 from canvas board Contact-O ①. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
-import { CONTACT_SUBJECT } from "@/data/vocab";
+import { CONTACT_SUBJECT } from "@/data/vocab/contact_subject";
 import { SimpleForm } from "@/components/boards/shared/SimpleForm";
 import { SITE } from "@/lib/site";
 import "@/styles/board-contact.css";

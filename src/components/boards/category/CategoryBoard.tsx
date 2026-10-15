@@ -90,7 +90,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 <section style={{ paddingBottom: "34px" }} className="wrap">
 <div style={{ display: "grid", gridTemplateColumns: "1.45fr 1fr", gap: "36px", alignItems: "center" }} className="cols lead">
 <div style={{ position: "relative" }}>
-<div style={{ aspectRatio: "16/9", ...demoBg(pick.slug) }} className="ph"></div>
+<div style={{ aspectRatio: "16/9", ...demoBg(pick.slug, 0, "md") }} className="ph"></div>
 <span style={{ position: "absolute", left: "18px", top: "18px", background: "var(--red)", color: "#FFFFFF", fontSize: "10px", fontWeight: "800", letterSpacing: ".16em", padding: "6px 13px", borderRadius: "999px" }}>EDITORS&#8217; PICK</span>
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "13px" }}>

@@ -7,9 +7,9 @@
 .b-art .body ul{margin:0 0 22px;padding-left:22px;font-size:17px;line-height:1.7;font-weight:500;color:var(--fg-2)}
 .b-art .body li{margin-bottom:6px}
 .b-art .body li::marker{color:var(--red-text)}
-.b-art .body h2{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.035em;font-size:30px;margin:44px 0 16px;line-height:1.14;scroll-margin-top:24px}
-.b-art .body h2 .no{font-family:'Manrope Variable','Manrope',sans-serif;font-feature-settings:'tnum' 1,'ss01' 1;font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;color:var(--red-text);letter-spacing:0;vertical-align:5px;margin-right:10px}
-.b-art .body .dropcap{float:left;font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;font-size:76px;line-height:.82;margin:6px 12px 0 0;color:var(--red-text);letter-spacing:-.05em}
+.b-art .body h2{font-family:var(--font-display);font-weight:800;letter-spacing:-.035em;font-size:30px;margin:44px 0 16px;line-height:1.14;scroll-margin-top:24px}
+.b-art .body h2 .no{font-family:var(--font-sans);font-feature-settings:'tnum' 1,'ss01' 1;font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;color:var(--red-text);letter-spacing:0;vertical-align:5px;margin-right:10px}
+.b-art .body .dropcap{float:left;font-family:var(--font-display);font-weight:800;font-size:76px;line-height:.82;margin:6px 12px 0 0;color:var(--red-text);letter-spacing:-.05em}
 .b-art .icobtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--line);background:var(--card);border-radius:999px;min-height:42px;padding:0 16px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;color:var(--ink)}
 .b-art .icobtn.gh{border-color:rgba(255,255,255,.26);background:transparent;color:#FFFFFF}
 .b-art .icobtn.gh:hover{background:rgba(255,255,255,.1);color:#FFFFFF}

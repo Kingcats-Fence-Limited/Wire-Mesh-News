@@ -1,12 +1,13 @@
 /* Ported 1:1 from canvas board Events-F. */
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
-import { EVENT_TYPE } from "@/data/vocab";
+import { EVENT_TYPE } from "@/data/vocab/event_type";
 import { SectionNewsletter } from "@/components/boards/category/SectionNewsletter";
 import { COMPANIES } from "@/lib/content/directory";
 import { EVENTS, upcomingEvents } from "@/lib/content/source";
 import { bySubsection, getArticle } from "@/lib/content/articles";
-import { COUNTRY_BY_CODE, REGION } from "@/data/vocab";
+import { COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { REGION } from "@/data/vocab/region";
 import { fmtDate, articleHref } from "@/lib/site";
 import type { EventItem } from "@/lib/content/types";
 import "@/styles/board-ev.css";
@@ -156,7 +157,7 @@ Subscribe to calendar
 <h2 style={{ margin: "36px 0 2px", fontSize: "23px", borderBottom: "3px solid var(--ink)", paddingBottom: "10px" }} className="h">Show reports</h2>
 <div className="g2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "22px", paddingTop: "20px" }}>
 {reports.map((a) => (
-<article key={a.slug} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><Link href={articleHref(a)} className="thumb" style={demoBg(a.slug)}></Link><span className="kicker"><i></i>NEWS · EVENTS &amp; EXHIBITIONS</span><Link href={articleHref(a)} style={{ fontSize: "18px" }} className="h">{a.title}</Link><span className="meta">{fmtDate(a.date)} · {a.readMin} min</span></article>
+<article key={a.slug} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><Link href={articleHref(a)} className="thumb" style={demoBg(a.slug, 0, "md")} aria-hidden="true" tabIndex={-1}></Link><span className="kicker"><i></i>NEWS · EVENTS &amp; EXHIBITIONS</span><Link href={articleHref(a)} style={{ fontSize: "18px" }} className="h">{a.title}</Link><span className="meta">{fmtDate(a.date)} · {a.readMin} min</span></article>
 ))}
 </div>
 </div>

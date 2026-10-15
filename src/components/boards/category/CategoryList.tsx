@@ -36,7 +36,7 @@ export function CategoryList({ heading, items, sponsored, series, perPage = 12 }
 </div>
 {first && (
 <Link href={first.href} className="lead" style={{ display: "grid", gridTemplateColumns: "250px minmax(0,1fr)", gap: "22px", paddingBottom: "24px", borderBottom: "1px solid var(--line)" }}>
-<span style={{ aspectRatio: "4/3", ...demoBg(first.slug) }} className="ph"></span>
+<span style={{ aspectRatio: "4/3", ...demoBg(first.slug, 0, "md") }} className="ph"></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
 <span className="kick"><i></i>{first.kicker}</span>
 <span style={{ fontSize: "24px" }} className="h">{first.title}</span>

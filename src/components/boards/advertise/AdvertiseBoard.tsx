@@ -6,8 +6,8 @@ import { SITE } from "@/lib/site";
 import "@/styles/board-adv.css";
 
 const SERVICES: { lbl: string; bg: string; fg: string; title: string; text: string; dim?: boolean }[] = [
-  { lbl: "SPONSORED CONTENT", bg: "var(--ink)", fg: "#FFFFFF", title: "Content production and sponsored publication", text: "Company interviews, product introductions, technical and project case studies, produced with editorial help. Labelled Sponsored Content on list pages and on the article itself." },
-  { lbl: "TOPIC SPONSORSHIP", bg: "var(--ink)", fg: "#FFFFFF", title: "Topic sponsorship", text: "Sponsor presence on an existing content topic. The sponsorship label is shown separately; the topic's editorial content is never counted as sponsored." },
+  { lbl: "SPONSORED CONTENT", bg: "var(--ink)", fg: "var(--on-ink)", title: "Content production and sponsored publication", text: "Company interviews, product introductions, technical and project case studies, produced with editorial help. Labelled Sponsored Content on list pages and on the article itself." },
+  { lbl: "TOPIC SPONSORSHIP", bg: "var(--ink)", fg: "var(--on-ink)", title: "Topic sponsorship", text: "Sponsor presence on an existing content topic. The sponsorship label is shown separately; the topic's editorial content is never counted as sponsored." },
   { lbl: "ADVERTISEMENT", bg: "var(--line)", fg: "var(--fg-3)", title: "Display advertising", text: "A small number of slots on the front page, section pages and article pages, each labelled Advertisement. Unsold, unscheduled or expired slots hide themselves and never cover the text." },
   { lbl: "EVENT PARTNERSHIP", bg: "var(--line)", fg: "var(--fg-3)", title: "Event media partnership", text: "Event features, on-site coverage and company interviews. What is delivered, and what counts as partner content, is written down before the quote." },
   { lbl: "LATER PHASE", bg: "var(--st-review-bg)", fg: "var(--st-review-fg)", title: "Paid reports", text: "Enquiries only for now. Reports go on sale once there is original research to sell; nothing unfinished is pre-sold.", dim: true },
@@ -40,7 +40,7 @@ This is a newly launched publication and we do not yet publish traffic or reach 
 <p style={{ margin: "0 0 24px", fontSize: "14.5px" }} className="meta">Four partnership types are available in this first phase; pricing is by conversation and individual quote.</p>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }} className="cols">
 {SERVICES.map((s) => (
-<div key={s.title} className="svc" style={s.dim ? { opacity: ".72" } : undefined}>
+<div key={s.title} className="svc" style={s.dim ? { background: "var(--paper-2)" } : undefined}>
 <span style={{ background: s.bg, color: s.fg }} className="lbl">{s.lbl}</span>
 <div style={{ fontSize: "20px" }} className="h">{s.title}</div>
 <p style={{ margin: "0", fontSize: "14px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>{s.text}</p>

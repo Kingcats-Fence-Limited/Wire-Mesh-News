@@ -1,8 +1,8 @@
 /* Ads-S §subscribe modal — the only pop-up allowed on the site (board CSS, scoped) */
 .b-ads{margin:0}
 .b-ads a{color:var(--ink);text-decoration:none}
-.b-ads .h{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.04em;line-height:1.12}
-.b-ads .mono{font-family:'Manrope Variable','Manrope',sans-serif;font-feature-settings:'tnum' 1,'ss01' 1;font-variant-numeric:tabular-nums}
+.b-ads .h{font-family:var(--font-display);font-weight:800;letter-spacing:-.04em;line-height:1.12}
+.b-ads .mono{font-family:var(--font-sans);font-feature-settings:'tnum' 1,'ss01' 1;font-variant-numeric:tabular-nums}
 .b-ads .meta{font-size:12.5px;font-weight:500;color:var(--slate)}
 .b-ads .subcard{width:680px;max-width:calc(100% - 40px);background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 34px 70px -22px rgba(21,22,28,.5);display:grid;grid-template-columns:1fr 236px}
 .b-ads .subcard input[type=email]{flex:1 1 200px;min-width:0;min-height:54px;border:1.5px solid var(--ink);border-radius:999px;padding:0 20px;font-size:15.5px;font-family:inherit;font-weight:500;background:var(--card);color:var(--ink)}

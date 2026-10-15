@@ -2,7 +2,11 @@
 import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { SimpleForm } from "@/components/boards/shared/SimpleForm";
-import { ENQUIRY_SUBJECT, SURFACE_TREATMENT, PRODUCT_BY_CODE, COUNTRY, COUNTRY_BY_CODE, ORGANISATION_TYPE_BY_CODE } from "@/data/vocab";
+import { ENQUIRY_SUBJECT } from "@/data/vocab/enquiry_subject";
+import { SURFACE_TREATMENT } from "@/data/vocab/surface_treatment";
+import { PRODUCT_BY_CODE } from "@/data/vocab/product";
+import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { ORGANISATION_TYPE_BY_CODE } from "@/data/vocab/organisation_type";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-rfq.css";
 import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";

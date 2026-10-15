@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 
 const d = (iso: string) => iso.replace(/-/g, "");
 /* RFC 5545 text escaping; newlines are escaped too so a CMS value cannot inject extra calendar fields. */
-const esc = (s: string) => s.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\r?\n/g, "\\n");
+const esc = (s: string) => s.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\r\n|\r|\n/g, "\\n");
 const plusOne = (iso: string) => { const t = new Date(iso); t.setUTCDate(t.getUTCDate() + 1); return t.toISOString().slice(0, 10); };
 
 /** iCalendar feed of the events calendar (all-day events; the site itself is the detail link). */

@@ -10,7 +10,7 @@ type Change = { no: string; slug: string; text: string; status: string };
 function Thumb({ a, w, h, ratio }: { a: Article; w?: string; h?: string; ratio?: string }) {
   return (
     <span className={ratio ? "latthumb" : undefined} style={{ position: "relative", overflow: "hidden", background: "var(--line-2)", borderRadius: "10px", display: "block", flexShrink: "0", width: w, height: h, aspectRatio: ratio, marginBottom: ratio ? "13px" : undefined }}>
-      <span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(a.slug) }} />
+      <span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(a.slug, 0, "md") }} />
     </span>
   );
 }

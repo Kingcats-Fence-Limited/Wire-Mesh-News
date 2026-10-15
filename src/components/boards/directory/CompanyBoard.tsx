@@ -4,7 +4,18 @@ import { Shell } from "@/components/shell/Shell";
 import { COMPANIES } from "@/lib/content/directory";
 import { upcomingEvents } from "@/lib/content/source";
 import { byCompany } from "@/lib/content/articles";
-import { EMPLOYEE_RANGE_BY_CODE, VERIFICATION_LABEL_BY_CODE, CERTIFICATION_ISSUER, CATEGORY_BY_CODE, PRODUCT_BY_CODE, ORGANISATION_TYPE_BY_CODE, COUNTRY_BY_CODE, SUBDIVISION_BY_CODE, PROCESS_BY_CODE, REGION_BY_CODE, CERTIFICATION_TYPE_BY_CODE, APPLICATION_AREA_BY_CODE } from "@/data/vocab";
+import { EMPLOYEE_RANGE_BY_CODE } from "@/data/vocab/employee_range";
+import { VERIFICATION_LABEL_BY_CODE } from "@/data/vocab/verification_label";
+import { CERTIFICATION_ISSUER } from "@/data/vocab/certification_issuer";
+import { CATEGORY_BY_CODE } from "@/data/vocab/category";
+import { PRODUCT_BY_CODE } from "@/data/vocab/product";
+import { ORGANISATION_TYPE_BY_CODE } from "@/data/vocab/organisation_type";
+import { COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { SUBDIVISION_BY_CODE } from "@/data/vocab/subdivision";
+import { PROCESS_BY_CODE } from "@/data/vocab/process";
+import { REGION_BY_CODE } from "@/data/vocab/region";
+import { CERTIFICATION_TYPE_BY_CODE } from "@/data/vocab/certification_type";
+import { APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
 import { fmtDate, fmtDateShort, articleHref, subsectionLabel } from "@/lib/site";
 import type { Company } from "@/lib/content/types";
 import "@/styles/board-co.css";
@@ -64,7 +75,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }} className="g4">
 {c.productCards.slice(0, 3).map((p) => (
 <div key={p.name} style={{ border: "1px solid var(--line)", borderRadius: "14px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-<div style={{ borderRadius: "0", aspectRatio: "4/3", ...demoBg(p.name) }} className="ph"></div>
+<div style={{ borderRadius: "0", aspectRatio: "4/3", ...demoBg(p.name, 0, "md") }} className="ph"></div>
 <div style={{ padding: "16px 17px", display: "flex", flexDirection: "column", gap: "7px", flex: "1 1 auto" }}>
 <span style={{ fontSize: "16.5px" }} className="h">{p.name}</span>
 <span style={{ lineHeight: "1.5" }} className="meta">{p.spec}</span>
@@ -96,7 +107,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "3px" }}>{certLabel(x.type)}</div><div style={{ lineHeight: "1.5" }} className="meta">{x.no && <>Certificate {x.no} &#183; </>}{issuerName(x.issuer)}{x.expires && <><br />Valid to {fmtDate(x.expires)}</>}</div><div className="src">Verified against the certifier&#8217;s database{c.verifiedAt && `, ${fmtDate(c.verifiedAt)}`}</div></div>
 </div>
 ) : (
-<div key={x.type} style={{ opacity: ".72" }} className="certcard">
+<div key={x.type} style={{ background: "var(--paper-2)" }} className="certcard">
 <span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)" }} className="certmark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5.3l3.3 2" /></svg></span>
 <div style={{ minWidth: "0" }}><div style={{ fontSize: "15px", fontWeight: "800", marginBottom: "3px" }}>{certLabel(x.type)}</div><div style={{ lineHeight: "1.5" }} className="meta">Submitted by the company; verification pending</div><div className="src">Not displayed as verified until confirmed</div></div>
 </div>

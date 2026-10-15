@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { flat } from "@/lib/params";
 import { pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { eventLd } from "@/lib/schema";
@@ -11,5 +12,5 @@ export const metadata: Metadata = pageMeta({ title: "Events Calendar", descripti
 export default async function EventsPage({ searchParams }: { searchParams: Promise<EvParams> }) {
   const today = todayIso();
   const upcoming = EVENTS.filter((e) => (e.end ?? e.start) >= today);
-  return <>{upcoming.length > 0 && <JsonLd data={{ "@context": "https://schema.org", "@graph": upcoming.map(eventLd) }} />}<EventsBoard sp={await searchParams} /></>;
+  return <>{upcoming.length > 0 && <JsonLd data={{ "@context": "https://schema.org", "@graph": upcoming.map(eventLd) }} />}<EventsBoard sp={flat<Awaited<typeof searchParams>>(await searchParams as Record<string, string | string[] | undefined>)} /></>;
 }

@@ -22,6 +22,16 @@
 import { writeFileSync } from "node:fs";
 
 const URL_BASE = process.env.DIRECTUS_URL?.replace(/\/$/, "");
+/* CMS content is the trust boundary: slugs end up in URLs, the sitemap, RSS and ICS, and links
+   are printed on the site, so both are checked here once instead of in every component. */
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const slugOk = (s, what) => { if (!SLUG.test(s ?? "")) throw new Error(`${what}: slug "${s}" must be lowercase letters, digits and hyphens`); return s; };
+const urlOk = (u, what) => {
+  if (u == null || u === "") return undefined;
+  let p; try { p = new URL(u); } catch { throw new Error(`${what}: "${u}" is not a valid URL`); }
+  if (p.protocol !== "https:" && p.protocol !== "http:") throw new Error(`${what}: only http(s) links are allowed`);
+  return p.href;
+};
 const TOKEN = process.env.DIRECTUS_TOKEN;
 const OUT = new URL("../src/data/content/index.ts", import.meta.url);
 
@@ -55,6 +65,10 @@ if (!TOKEN) {
   console.error("pull:content — DIRECTUS_URL is set but DIRECTUS_TOKEN is missing");
   process.exit(1);
 }
+if (!/^https:\/\//.test(URL_BASE)) {
+  console.error("pull:content — DIRECTUS_URL must start with https:// (the token is sent with every request)");
+  process.exit(1);
+}
 
 async function collection(name, params) {
   const qs = new URLSearchParams({ limit: "-1", ...params });
@@ -74,14 +88,14 @@ function toStandard(r) {
   if (!r.no || !r.title) throw new Error(`standard ${r.id}: no and title are required`);
   return {
     no: r.no,
-    slug: r.slug || slugify(r.no),
+    slug: slugOk(r.slug || slugify(r.no), `standard ${r.no}`),
     title: r.title,
     body: r.body,
     subject: r.subject,
     status: r.status,
     edition: r.edition ?? undefined,
     checked: (r.checked ?? "").slice(0, 10),
-    sourceUrl: r.source_url,
+    sourceUrl: urlOk(r.source_url, `standard ${r.no} source_url`),
     replaces: r.replaces ?? undefined,
     replacedBy: r.replaced_by ?? undefined,
     adoptedAs: r.adopted_as ?? undefined,
@@ -93,7 +107,7 @@ function toStandard(r) {
       date: (c.date ?? "").slice(0, 10),
       kind: c.kind,
       text: c.text,
-      source: c.source ?? undefined,
+      source: c.source && /^https?:/i.test(c.source) ? urlOk(c.source, `standard ${r.no} changelog source`) : c.source ?? undefined,
     })),
     followers: r.followers ?? 0,
     certifiedCompanies: r.certified_companies ?? undefined,
@@ -103,7 +117,7 @@ function toStandard(r) {
 function toEvent(r) {
   if (!r.slug || !r.name) throw new Error(`event ${r.id}: slug and name are required`);
   return {
-    slug: r.slug,
+    slug: slugOk(r.slug, `event ${r.id}`),
     name: r.name,
     type: r.type,
     start: (r.start ?? "").slice(0, 10),
@@ -116,7 +130,7 @@ function toEvent(r) {
     focus: r.focus ?? "",
     summary: r.summary ?? "",
     weAttend: r.we_attend ?? undefined,
-    website: r.website ?? undefined,
+    website: urlOk(r.website, `event ${r.slug} website`),
   };
 }
 

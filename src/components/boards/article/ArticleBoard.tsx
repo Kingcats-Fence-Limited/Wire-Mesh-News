@@ -13,7 +13,8 @@ import { bySection, readNext } from "@/lib/content/articles";
 import { getAuthor, lettersFor } from "@/lib/content/people";
 import { getStandardByNo } from "@/lib/content/source";
 import { getCompany } from "@/lib/content/directory";
-import { COUNTRY_BY_CODE, ARTICLE_TYPE } from "@/data/vocab";
+import { COUNTRY_BY_CODE } from "@/data/vocab/country";
+import { ARTICLE_TYPE } from "@/data/vocab/article_type";
 import { sectionByCode, subsectionLabel, subsectionSlug, fmtDate, articleHref, SITE, daysAgo } from "@/lib/site";
 import type { Article } from "@/lib/content/types";
 import "@/styles/board-art.css";
@@ -314,7 +315,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div className="g3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "22px" }}>
 {next.map((n) => (
 <article key={n.slug} style={{ display: "flex", flexDirection: "column", gap: "11px" }}>
-<Link href={articleHref(n)} style={{ borderRadius: "12px", overflow: "hidden", aspectRatio: "16/10", display: "block", ...demoBg(n.slug) }}></Link>
+<Link href={articleHref(n)} style={{ borderRadius: "12px", overflow: "hidden", aspectRatio: "16/10", display: "block", ...demoBg(n.slug, 0, "md") }} aria-hidden="true" tabIndex={-1}></Link>
 <span className="kicker"><i></i>{subsectionLabel(n.section, n.subsection).toUpperCase()}</span>
 <Link href={articleHref(n)} style={{ fontSize: "19px" }} className="h">{n.title}</Link>
 <span style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--grey)" }}>{n.readMin} min read</span>

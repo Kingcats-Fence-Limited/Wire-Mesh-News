@@ -9,7 +9,7 @@
 .aed-meta{font-size:12.5px;font-weight:600;color:var(--slate)}
 .aed-card{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:22px 24px;display:flex;flex-direction:column;min-width:0}
 .aed-hd{display:flex;align-items:center;gap:11px;padding-bottom:12px;margin-bottom:18px;border-bottom:2px solid var(--ink)}
-.aed-hd h3{margin:0;font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.04em}
+.aed-hd h2,.aed-hd h3{margin:0;font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.04em}
 .aed-n{width:28px;height:28px;border-radius:999px;background:var(--ink);color:var(--on-ink);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
 .aed-fld{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;min-width:0}
 .aed-fld > label:not(.aed-radio),.aed-fld > .lbl{font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--fg-3)}
@@ -75,14 +75,14 @@ textarea.aed-inp{padding:10px 13px;line-height:1.6;resize:vertical}
 .aed-miss-list{background:var(--st-review-bg);border-left:4px solid var(--st-review-fg);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;font-weight:500;color:var(--fg-3)}
 .aed-miss-list ul{margin:4px 0 0;padding-left:18px;columns:2;column-gap:24px}
 .aed-preview{padding:28px 32px}
-.aed-preview h2{margin:6px 0 10px;font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;font-size:32px;letter-spacing:-.045em;line-height:1.1}
+.aed-preview h2{margin:6px 0 10px;font-family:var(--font-display);font-weight:800;font-size:32px;letter-spacing:-.045em;line-height:1.1}
 .aed-cover{width:100%;max-height:380px;object-fit:cover;border-radius:12px;margin-bottom:16px}
 .aed-kick{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--red-text)}
 .aed-dek{font-size:17px;font-weight:500;line-height:1.6;color:var(--slate);margin:0 0 10px}
 .aed-disc{background:var(--paper);border-radius:8px;padding:10px 13px;font-size:13px;margin-bottom:14px}
 .aed-prose{font-size:16px;line-height:1.75;font-weight:500;color:var(--fg-2)}
 .aed-prose p{margin:0 0 14px}
-.aed-prose h3{font-family:'Bricolage Grotesque Variable','Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.035em;margin:22px 0 8px}
+.aed-prose h3{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.035em;margin:22px 0 8px}
 .aed-prose ul{margin:0 0 14px;padding-left:22px}
 .aed-prose a{color:var(--red-text);text-decoration:underline}
 .aed-prose table{border-collapse:collapse;margin:0 0 16px;font-size:14px;width:100%}

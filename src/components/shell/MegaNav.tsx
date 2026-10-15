@@ -150,7 +150,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
                     <div style={{ borderColor: "var(--red)" }} className="colhd"><span style={{ fontSize: "15px" }} className="h">Editors&apos; pick</span></div>
                     {cur.pick && (
                       <Link href={cur.pick.href} onClick={() => setOpen(null)} style={{ display: "block" }}>
-                        <span style={{ display: "block", width: "100%", aspectRatio: "16/9", marginBottom: "11px", ...demoBg(cur.pick.href) }} className="ph"></span>
+                        <span style={{ display: "block", width: "100%", aspectRatio: "16/9", marginBottom: "11px", ...demoBg(cur.pick.href, 0, "md") }} className="ph"></span>
                         <span style={{ marginBottom: "7px" }} className="kick"><i></i>{cur.pick.kicker}</span>
                         <span style={{ display: "block", fontSize: "18px", marginBottom: "7px" }} className="h">{cur.pick.title}</span>
                         <span style={{ lineHeight: "1.5", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }} className="meta">{cur.pick.dek}</span>

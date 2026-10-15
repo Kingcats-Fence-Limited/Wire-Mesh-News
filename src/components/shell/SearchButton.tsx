@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { SearchOverlay } from "./SearchOverlay";
+import dynamic from "next/dynamic";
+
+/* The overlay (and its search index) loads only when someone opens search; hovering or
+   focusing the button starts the download a moment early. */
+const loadOverlay = () => import("./SearchOverlay").then((m) => { void m.loadSearchIndex(); return m.SearchOverlay; });
+const SearchOverlay = dynamic(loadOverlay, { ssr: false });
 
 /** Canvas magnifier button (42px on the masthead, 44px on inner headers). "/" opens from anywhere; Esc returns focus here. */
 export function SearchButton({ size, border }: { size: number; border: string }) {
@@ -37,7 +42,7 @@ export function SearchButton({ size, border }: { size: number; border: string })
 
   return (
     <>
-      <button ref={btn} type="button" className="searchbtn" aria-label={open ? "Close search" : "Search"} aria-expanded={open} onClick={() => (open ? close() : openAt())} style={{ width: size, height: size, border, background: open ? "var(--ink)" : "var(--card)", color: open ? "var(--on-ink)" : "var(--ink)", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, position: "relative", zIndex: open ? 91 : undefined }}>
+      <button ref={btn} type="button" className="searchbtn" onPointerEnter={() => void loadOverlay()} onFocus={() => void loadOverlay()} aria-label={open ? "Close search" : "Search"} aria-expanded={open} onClick={() => (open ? close() : openAt())} style={{ width: size, height: size, border, background: open ? "var(--ink)" : "var(--card)", color: open ? "var(--on-ink)" : "var(--ink)", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, position: "relative", zIndex: open ? 91 : undefined }}>
         {open ? (
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
         ) : (

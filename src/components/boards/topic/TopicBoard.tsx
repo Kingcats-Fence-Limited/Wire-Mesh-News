@@ -33,7 +33,7 @@ export function TopicBoard({ t }: { t: Topic }) {
 <h1 style={{ margin: "0 0 16px", fontSize: "54px", letterSpacing: "-.05em", lineHeight: "1.02", color: "#FFFFFF" }} className="h heroh">{t.title}</h1>
 <p style={{ margin: "0 0 20px", fontSize: "17.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--on-dark-2)", maxWidth: "620px" }}>{t.intro}</p>
 <div style={{ display: "flex", gap: "22px", flexWrap: "wrap", fontSize: "13.5px", fontWeight: "700", color: "var(--grey-3)" }}>
-<span>{all.length} articles</span><span>·</span><span>Updated {fmtDate(t.updated)}</span><span>·</span><span>Curated by {curator ? <Link href={`/authors/${curator.slug}/`} style={{ color: "#FFFFFF" }}>{curator.name}</Link> : "the editors"}</span>
+<span>{all.length} articles</span><span>·</span><span>Updated {fmtDate(t.updated)}</span><span>·</span><span>Curated by {curator ? <Link href={`/authors/${curator.slug}/`} style={{ color: "#FFFFFF", textDecoration: "underline", textUnderlineOffset: "3px" }}>{curator.name}</Link> : "the editors"}</span>
 </div>
 </div>
 <div style={{ background: "var(--surface-dark-2)", borderRadius: "16px", padding: "24px" }}>
@@ -72,7 +72,7 @@ export function TopicBoard({ t }: { t: Topic }) {
 <span style={{ fontSize: "14px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>{a!.dek}</span>
 <span className="meta">{a!.readMin} min read</span>
 </div>
-<Link href={articleHref(a!)} style={{ width: "160px", flexShrink: "0", aspectRatio: "4/3", ...demoBg(a!.slug) }} className="thumb"></Link>
+<Link href={articleHref(a!)} style={{ width: "160px", flexShrink: "0", aspectRatio: "4/3", ...demoBg(a!.slug) }} className="thumb" aria-hidden="true" tabIndex={-1}></Link>
 </div>
 </div>
 ))}

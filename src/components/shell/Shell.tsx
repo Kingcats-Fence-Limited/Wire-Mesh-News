@@ -5,7 +5,7 @@ import { SiteDefs } from "./SiteDefs";
 /** Page frame: canvas header (full or compact) + main + full canvas footer. */
 export function Shell({ children, header = "compact", active, board }: { children: React.ReactNode; header?: "full" | "compact"; active?: string; board?: string }) {
   return (
-    <div className={`site${board ? ` ${board}` : ""}`} style={{ background: "var(--bg)", color: "var(--ink)", fontFamily: "'Manrope Variable', 'Manrope', 'PingFang SC', sans-serif" }}>
+    <div className={`site${board ? ` ${board}` : ""}`} style={{ background: "var(--bg)", color: "var(--ink)", fontFamily: "var(--font-sans)" }}>
       <SiteDefs />
       <Header variant={header} active={active} />
       {/* Print-only masthead: the screen header is hidden in print. */}
