@@ -1,6 +1,8 @@
+"use client";
+
 /* Ported 1:1 from canvas board Contact-O ①. */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
+import { useFlatParams } from "@/lib/use-flat-params";
 import { CONTACT_SUBJECT } from "@/data/vocab/contact_subject";
 import { SimpleForm } from "@/components/boards/shared/SimpleForm";
 import { SITE } from "@/lib/site";
@@ -8,10 +10,15 @@ import "@/styles/board-contact.css";
 
 const REASONS: [string, string][] = CONTACT_SUBJECT.map((c) => [c.code, c.label]);
 
+/* Static page; ?subject= preselects the reason in the browser. */
+export function ContactFromUrl() {
+  return <ContactBoard subject={useFlatParams<{ subject?: string }>().subject} />;
+}
+
 export function ContactBoard({ subject }: { subject?: string }) {
   const def = REASONS.some(([k]) => k === subject) ? subject : "editorial_tip";
   return (
-    <Shell header="compact" board="b-contact">
+    <>
 <section style={{ paddingTop: "30px", paddingBottom: "50px" }} className="wrap">
 <nav aria-label="Breadcrumb" className="meta" style={{ marginBottom: "18px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <b style={{ color: "var(--ink)" }}>Contact</b></nav>
 <div style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: "44px", alignItems: "start" }} className="cols">
@@ -69,6 +76,6 @@ export function ContactBoard({ subject }: { subject?: string }) {
 </div>
 </div>
 </section>
-    </Shell>
+    </>
   );
 }

@@ -21,7 +21,7 @@ import "@/styles/board-art.css";
 import { demoBg, demoSrc } from "@/lib/demo";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp" };
-const TYPE_LABEL: Record<string, string> = { ...Object.fromEntries(ARTICLE_TYPE.map((t) => [t.code, t.label.toUpperCase()])), column: "OPINION" };
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(ARTICLE_TYPE.map((t) => [t.code, t.label.toUpperCase()]));
 const initials = (n: string) => n.split(/\s+/).map((x) => x[0]).join("").slice(0, 2).toUpperCase();
 
 export function ArticleBoard({ a }: { a: Article }) {

@@ -43,6 +43,6 @@
 .b-cook.btt .ringbox{position:relative;width:48px;height:48px;display:inline-flex;align-items:center;justify-content:center}
 .b-cook.btt:hover .ringbox,.b-cook.btt:focus-visible .ringbox{width:auto}
 .b-cook.btt:hover .ringbox svg.arc,.b-cook.btt:focus-visible .ringbox svg.arc{display:none}
-.b-cook.btt:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:999px}
+.b-cook.btt:focus-visible{outline:2px solid var(--focus-outer);outline-offset:3px;box-shadow:0 0 0 2px var(--focus-inner);border-radius:999px}
 @media (max-width:600px){.b-cook.btt{right:16px}}
 @media (prefers-reduced-motion:reduce){.b-cook.btt{transition:none}}

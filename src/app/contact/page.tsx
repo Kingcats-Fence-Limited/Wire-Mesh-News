@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { flat } from "@/lib/params";
+import { Suspense } from "react";
 import { pageMeta } from "@/lib/seo";
-import { ContactBoard } from "@/components/boards/contact/ContactBoard";
+import { Shell } from "@/components/shell/Shell";
+import { ContactBoard, ContactFromUrl } from "@/components/boards/contact/ContactBoard";
 
 export const metadata: Metadata = pageMeta({ title: "Contact", description: "Editorial tips, corrections, submissions, advertising and account questions — routed to the right person.", path: "/contact/" });
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
-  return <ContactBoard subject={flat<Awaited<typeof searchParams>>(await searchParams as Record<string, string | string[] | undefined>).subject} />;
+export default function ContactPage() {
+  return (
+    <Shell header="compact" board="b-contact">
+      <Suspense fallback={<ContactBoard />}>
+        <ContactFromUrl />
+      </Suspense>
+    </Shell>
+  );
 }

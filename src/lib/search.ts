@@ -32,7 +32,7 @@ export function buildSearchIndex(): SearchDoc[] {
     docs.push({ id: `l:${l.slug}`, type: "letter", title: `“${l.title}”`, href: `/letters/${l.slug}/`, kicker: `${l.writer.role} · ${l.writer.org}`, meta: `${fmtDate(l.date)} · Letters & Opinion`, text: `${l.teaser} ${l.body.join(" ")} ${l.replyTo.title}`, section: l.replyTo.section, date: l.date });
   }
   for (const c of COLUMNS) {
-    docs.push({ id: `o:${c.slug}`, type: "opinion", title: c.title, href: `/letters/columns/${c.slug}/`, kicker: `${c.author.name} · ${c.author.org}`, meta: `${fmtDate(c.date)} · Opinion`, text: `${c.summary} ${c.body.join(" ")}`, date: c.date });
+    docs.push({ id: `o:${c.slug}`, type: "opinion", title: c.title, href: `/letters/columns/${c.slug}/`, kicker: `${c.author.name} · ${c.author.org}`, meta: `${fmtDate(c.date)} · Column`, text: `${c.summary} ${c.body.join(" ")}`, date: c.date });
   }
   for (const c of COMPANIES) {
     docs.push({ id: `c:${c.slug}`, type: "company", title: c.name, href: `/directory/${c.slug}/`, kicker: `${cap(c.orgType.replace(/_/g, " "))} · ${c.city}, ${COUNTRY_BY_CODE[c.country]?.name ?? c.country}${c.claimed ? " · Claimed" : ""}`, meta: `Company Directory`, text: `${c.summary} ${c.products.join(" ")} ${(c.processes ?? []).join(" ")}` });

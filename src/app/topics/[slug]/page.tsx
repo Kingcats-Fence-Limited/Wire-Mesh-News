@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { TOPICS, getTopic } from "@/lib/content/market";
 import { TopicBoard } from "@/components/boards/topic/TopicBoard";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return TOPICS.map((t) => ({ slug: t.slug }));
 }

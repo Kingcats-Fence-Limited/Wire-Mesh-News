@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { searchIn, highlight, type SearchDoc, type SearchType } from "@/lib/search-core";
 
-/* Fetched once per visit, the first time search opens. */
-let indexPromise: Promise<SearchDoc[]> | null = null;
-export const loadSearchIndex = () => (indexPromise ??= fetch("/search-index.json").then((r) => (r.ok ? r.json() : [])).catch(() => { indexPromise = null; return []; }));
+import { loadSearchIndex } from "@/lib/search-index-client";
+export { loadSearchIndex };
 import "@/styles/board-sov.css";
 import { demoBg } from "@/lib/demo";
 
@@ -20,11 +19,11 @@ const JUMP: { label: string; href: string; icon: React.ReactNode }[] = [
   { label: "Company directory", href: "/directory/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M4 20.5V5.5A1.5 1.5 0 0 1 5.5 4H13v16.5M13 20.5h6.5V10H13" /></svg> },
   { label: "Events calendar", href: "/events/", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red-text)" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg> },
 ];
-const TYPE_LABEL: Record<SearchType, string> = { article: "Articles", letter: "Letters", opinion: "Opinion", company: "Directory", standard: "Standards", topic: "Topics", event: "Events" };
+const TYPE_LABEL: Record<SearchType, string> = { article: "Articles", letter: "Letters", opinion: "Columns", company: "Directory", standard: "Standards", topic: "Topics", event: "Events" };
 const TP: Record<SearchType, { cls: string; label: string }> = {
   article: { cls: "art", label: "ARTICLE" },
   letter: { cls: "let", label: "LETTER" },
-  opinion: { cls: "let", label: "OPINION" },
+  opinion: { cls: "let", label: "COLUMN" },
   company: { cls: "co", label: "COMPANY" },
   standard: { cls: "std", label: "STANDARD" },
   topic: { cls: "top", label: "TOPIC" },

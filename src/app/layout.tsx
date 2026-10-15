@@ -34,10 +34,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB" className={`${bricolage.variable} ${manrope.variable}`} suppressHydrationWarning>
-      <head>
-        <ThemeScript />
-      </head>
       <body>
+        {/* First thing in <body> (not <head>): Next leaves custom <head> children out of some
+            streamed responses (e.g. 404s), and here it still runs before anything is painted. */}
+        <ThemeScript />
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
         <div id="top" tabIndex={-1} className="outline-none" />
         {children}
