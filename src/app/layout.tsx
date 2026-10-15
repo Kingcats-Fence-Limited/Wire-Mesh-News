@@ -7,6 +7,7 @@ import { ThemeScript } from "@/components/theme/ThemeScript";
 import { CookieBanner } from "@/components/shell/CookieBanner";
 import { BackToTop } from "@/components/shell/BackToTop";
 import { SITE } from "@/lib/site";
+import { INDEXABLE } from "@/lib/indexing";
 
 /* Pages are static, but anything that depends on today's date (masthead date, "x days ago",
    upcoming events, the brief) is regenerated in the background at most once an hour on
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   openGraph: { siteName: SITE.name, type: "website", locale: "en" },
   alternates: { types: { "application/rss+xml": "/feed.xml" } },
+  /* Not indexable until the site runs on wiremeshnews.com (see src/lib/indexing.ts). */
+  ...(INDEXABLE ? {} : { robots: { index: false, follow: false } }),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

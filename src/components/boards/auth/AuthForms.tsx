@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { safeNext } from "@/lib/safe-redirect";
 import { SocialSignIn } from "./SocialSignIn";
 import { CodeVerify } from "@/components/ui/CodeVerify";
 
@@ -24,7 +25,7 @@ export function SignInForm({ next }: { next?: string }) {
   const [show, setShow] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [verify, setVerify] = useState(false);
-  const dest = next && next.startsWith("/") ? next : "/account/";
+  const dest = safeNext(next);
   if (verify) {
     return (
       <div>

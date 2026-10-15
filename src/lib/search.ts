@@ -28,7 +28,7 @@ export function buildSearchIndex(): SearchDoc[] {
   const docs: SearchDoc[] = [];
   for (const a of ARTICLES) {
     if (!editorial(a)) continue;
-    const plain = a.body.map((b) => ("html" in b ? b.html.replace(/<[^>]+>/g, "") : "text" in b ? String(b.text) : "")).join(" ");
+    const plain = a.body.map((b) => ("html" in b ? b.html.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;/g, "'").replace(/&amp;/g, "&") : "text" in b ? String(b.text) : "")).join(" ");
     docs.push({
       id: `a:${a.slug}`,
       type: "article",
@@ -91,6 +91,11 @@ export function search(q: string, opts: { type?: SearchType | "all"; section?: s
 }
 
 /** Snippet with <mark> around stem matches. */
+/* Results are shown with dangerouslySetInnerHTML to render <mark>: escape the text first so
+   only our own <mark> tags are HTML, and escape tokens before building the RegExp. */
+const escHtml = (x: string) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const escRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export function snippet(doc: SearchDoc, q: string, len = 150) {
   const tokens = tokenize(q).map((t) => t.replace(/(ing|ed|es|s|ised|ized)$/i, "")).filter((t) => t.length >= 3);
   const text = doc.text.replace(/\s+/g, " ");
@@ -101,13 +106,13 @@ export function snippet(doc: SearchDoc, q: string, len = 150) {
     if (at >= 0) break;
   }
   const start = Math.max(0, at - 50);
-  let s = (start > 0 ? "…" : "") + text.slice(start, start + len) + (start + len < text.length ? "…" : "");
-  for (const t of tokens) s = s.replace(new RegExp(`(${t}[a-z]*)`, "gi"), "<mark>$1</mark>");
+  let s = escHtml((start > 0 ? "…" : "") + text.slice(start, start + len) + (start + len < text.length ? "…" : ""));
+  for (const t of tokens) s = s.replace(new RegExp(`(${escRe(t)}[a-z]*)`, "gi"), "<mark>$1</mark>");
   return s;
 }
 export function highlight(str: string, q: string) {
   const tokens = tokenize(q).map((t) => t.replace(/(ing|ed|es|s|ised|ized)$/i, "")).filter((t) => t.length >= 3);
-  let s = str;
-  for (const t of tokens) s = s.replace(new RegExp(`(${t}[a-z]*)`, "gi"), "<mark>$1</mark>");
+  let s = escHtml(str);
+  for (const t of tokens) s = s.replace(new RegExp(`(${escRe(t)}[a-z]*)`, "gi"), "<mark>$1</mark>");
   return s;
 }
