@@ -5,6 +5,8 @@ import { COUNTRY } from "@/data/vocab/country";
 import { subdivisionsOf } from "@/lib/vocab-geo";
 
 export const dynamic = "force-static";
+/* Only the prebuilt country codes exist; anything else is a 404 rather than a new cached page. */
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return COUNTRY.map((c) => ({ country: c.alpha2 }));

@@ -7,6 +7,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { safeNext } from "@/lib/safe-redirect";
 
 type P = "google" | "microsoft";
 const NAME: Record<P, string> = { google: "Google", microsoft: "Microsoft" };
@@ -25,7 +26,7 @@ export function SocialSignIn({ mode, next }: { mode: "signin" | "register"; next
   const [email, setEmail] = useState("");
   const [terms, setTerms] = useState(false);
   const verb = mode === "register" ? "Sign up" : "Continue";
-  const go = () => router.push(next && next.startsWith("/") ? next : "/account/");
+  const go = () => router.push(safeNext(next));
   return (
     <div style={{ marginBottom: "18px" }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }} className="sso">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Block } from "@/lib/content/types";
 import { getStandardByNo } from "@/lib/content/source";
 import { autoLinkStandards } from "@/lib/autolink";
+import { cleanHtml } from "@/lib/sanitize";
 
 const PAT: Record<string, string> = { chain: "pChain", chainL: "pChainL", weld: "pWeld", weldQ: "pWeldQ", woven: "pWoven", grate: "pGrate", perf: "pPerf", exp: "pExp" };
 
@@ -13,7 +14,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
       {blocks.map((b, i) => {
         switch (b.type) {
           case "p": {
-            let html = autoLinkStandards(b.html);
+            let html = autoLinkStandards(cleanHtml(b.html));
             if (firstP) { firstP = false; html = html.replace(/^(<[^>]+>)*([A-Za-z])/, (m, _t, c) => m.slice(0, m.length - 1) + `<span class="dropcap">${c}</span>`); }
             return <p key={i} dangerouslySetInnerHTML={{ __html: html }} />;
           }
@@ -34,7 +35,7 @@ export function ArticleBody({ blocks, showAd }: { blocks: Block[]; showAd: boole
             );
           }
           case "ul":
-            return <ul key={i}>{b.items.map((it, j) => <li key={j} dangerouslySetInnerHTML={{ __html: autoLinkStandards(it) }} />)}</ul>;
+            return <ul key={i}>{b.items.map((it, j) => <li key={j} dangerouslySetInnerHTML={{ __html: autoLinkStandards(cleanHtml(it)) }} />)}</ul>;
           case "quote":
             return (
               <div key={i} style={{ display: "flex", gap: "20px", margin: "34px 0 36px", padding: "2px 0" }}>
