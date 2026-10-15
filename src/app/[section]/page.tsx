@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { EDITORIAL_SECTIONS, sectionBySlug, SECTION_INTRO, subsectionsOf, subsectionSlug } from "@/lib/site";
 import { CategoryBoard as CategoryPage } from "@/components/boards/category/CategoryBoard";
 import type { SectionCode } from "@/lib/content/types";
@@ -12,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ section: 
   const { section } = await params;
   const s = sectionBySlug(section);
   if (!s) return {};
-  return { title: s.label, description: SECTION_INTRO[s.code as SectionCode].intro };
+  return pageMeta({ title: s.label, description: SECTION_INTRO[s.code as SectionCode].intro, path: `/${s.slug}/` });
 }
 
 export default async function SectionPage({ params }: { params: Promise<{ section: string }> }) {

@@ -11,7 +11,8 @@ import { subdivisionsOf } from "@/lib/vocab-geo";
 import { editorRefs } from "@/lib/editor-refs";
 import { AccountApp } from "./AccountApp";
 import { DEMO_VERSION, type Demo } from "./store";
-import { emptyDraft } from "@/components/editor/draft";
+import { emptyDraft, type ArticleDraft } from "@/components/editor/draft";
+import type { Article } from "@/lib/content/types";
 import "@/styles/board-acct.css";
 
 const BYLINE = "Jordan Dale · Specification consultant · Hengtai Mesh";
@@ -32,6 +33,29 @@ const S1_BODY = `A mill certificate tells you what the coating weighed on the da
 
 The measurement location. Two certificates can quote the same figure and describe two very different products, because one was measured on wire coil and the other on the panel a buyer will actually install. Ask for both, in writing, before the order is placed.`;
 
+/* A published article as the editor sees it, so "Submit an edit" starts from the full text. */
+const plain = (html: string) => html.replace(/<(strong|b)>(.*?)<\/\1>/g, "**$2**").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#8217;|&rsquo;/g, "’").replace(/&nbsp;/g, " ");
+function articleToDraft(a: Article, byline: string): ArticleDraft {
+  const body = a.body.map((b) => {
+    switch (b.type) {
+      case "p": return plain(b.html);
+      case "h2": return `## ${b.text}`;
+      case "ul": return b.items.map((i) => `- ${plain(i)}`).join("\n");
+      case "quote": return `> ${b.text}${b.cite ? ` — ${b.cite}` : ""}`;
+      case "checklist": return `## ${b.title}\n\n${b.items.map((i) => `- ${plain(i)}`).join("\n")}`;
+      case "table": return [`| ${b.head.join(" | ")} |`, `| ${b.head.map(() => "---").join(" | ")} |`, ...b.rows.map((r) => `| ${r.join(" | ")} |`)].join("\n");
+      case "spec": return [`## ${b.title}`, "", "| Item | Value |", "| --- | --- |", ...b.rows.map(([k, v]) => `| ${k} | ${v} |`)].join("\n");
+      default: return "";
+    }
+  }).filter(Boolean).join("\n\n");
+  return {
+    ...emptyDraft(byline), title: a.title, dek: a.dek, body, section: a.section, subsection: a.subsection, type: a.type,
+    tags: a.facets ?? [], standards: a.standards ?? [], companies: a.companies ?? [], topics: a.topics ?? [],
+    sources: a.sources?.length ? a.sources.map((s) => `${s.title} — ${s.url}`) : [""], disclosure: "none", checks: [true, true, true],
+  };
+}
+const wordsOf = (dr: ArticleDraft) => dr.body.trim().split(/\s+/).length;
+
 const onArticle = (slug: string) => { const x = getArticle(slug)!; return { title: x.title, href: articleHref(x), slug: x.slug, section: sectionByCode(x.section)?.label ?? "", date: fmtDate(x.date) }; };
 
 function buildSeed(): Demo {
@@ -41,6 +65,7 @@ function buildSeed(): Demo {
   const others = COMPANIES.filter((c) => c.slug !== co.slug);
   const published = ARTICLES.find((x) => x.type !== "sponsored" && x.section === "technical_guides") ?? arts[0];
   const sec = (code: string) => sectionByCode(code)?.label ?? "";
+  const pubDraft = articleToDraft(published, BYLINE), pub2 = a(5), pub2Draft = articleToDraft(pub2, BYLINE);
   return {
     v: DEMO_VERSION,
     profile: { name: "Jordan Dale", initials: "JD", avatar: null, jobTitle: "Specification consultant", company: co.name, country: "GB", city: "Leeds", since: "Mar 2026", email: "jordan.dale@example.com", pendingEmail: null },
@@ -49,8 +74,8 @@ function buildSeed(): Demo {
       { id: "s1", title: "Hot-dip galvanizing thickness: what the mill certificate leaves out", status: "changes_requested", section: "Technical Guides", updated: "11 Oct 2026", submitted: "9 Oct 2026", reviewed: "11 Oct 2026", words: 1840, note: "The coating-weight figures in section 2 need a source: name the test method and the standard the values are measured against. Resubmit when the table carries both.", excerpt: "A mill certificate tells you what the coating weighed on the day it was tested, on the sample the mill chose. It does not tell you what arrives on site after cutting, welding and transport.\n\nThis article walks through the three numbers a buyer should ask for, and the one that is usually missing: the measurement location.", draft: { ...emptyDraft(BYLINE), title: "Hot-dip galvanizing thickness: what the mill certificate leaves out", dek: "A mill certificate tells you what the coating weighed on the day it was tested. Here is what to ask for so it tells you what arrives on site.", body: S1_BODY, section: "technical_guides", subsection: "surface_treatments", type: "guide", tags: ["surface:hdg", "product:welded_mesh_panel", "process:galvanizing"], standards: ["EN 10244-2"], topics: ["zinc-coating-costs"], sources: ["EN 10244-2:2023, Table 2 (coating classes)", ""], disclosure: "yes", disclosureText: "I work as a consultant for Hengtai Mesh, a panel producer; no product is named in the article.", checks: [true, true, true] } },
       { id: "s2", title: "Field notes: installing 358 mesh on uneven ground", status: "pending", section: "Applications", updated: "11 Oct 2026", submitted: "11 Oct 2026", words: 1260, excerpt: "Uneven ground is where a 358 fence either keeps its rating or loses it. Notes from three sites on stepping versus raking panels, and what each does to the anti-climb gap at the bottom rail." },
       { id: "s3", title: "Comparing weld shear results across three suppliers", status: "draft", section: "Technical Guides", updated: "12 Oct 2026", words: 420, excerpt: "Three suppliers, one test rig, forty welds each. Early numbers below; the method section still needs the jig drawing.", draft: { ...emptyDraft(BYLINE), title: "Comparing weld shear results across three suppliers", dek: "Three suppliers, one test rig, forty welds each.", body: "Three suppliers, one test rig, forty welds each. Early numbers below; the method section still needs the jig drawing.\n\n## Method\n\nTo be written.", section: "technical_guides", subsection: "", type: "analysis", tags: ["process:welding"] } },
-      { id: "s4", title: published.title, status: "published", section: sec(published.section), updated: "21 Sep 2026", submitted: "12 Sep 2026", reviewed: "19 Sep 2026", words: 2210, href: articleHref(published), excerpt: published.dek },
-      { id: "s5", title: "What a site acceptance checklist should contain", status: "published", section: "Buying Guides", updated: "2 Aug 2026", submitted: "20 Jul 2026", reviewed: "29 Jul 2026", words: 1540, href: articleHref(a(5)), excerpt: "Twelve checks that take an afternoon and save an argument later." },
+      { id: "s4", title: published.title, status: "published", section: sec(published.section), updated: "21 Sep 2026", submitted: "12 Sep 2026", reviewed: "19 Sep 2026", words: wordsOf(pubDraft), href: articleHref(published), excerpt: published.dek, draft: pubDraft },
+      { id: "s5", title: pub2.title, status: "published", section: sec(pub2.section), updated: "2 Aug 2026", submitted: "20 Jul 2026", reviewed: "29 Jul 2026", words: wordsOf(pub2Draft), href: articleHref(pub2), excerpt: pub2.dek, draft: pub2Draft },
       { id: "s6", title: "Five reasons our panels beat the competition", status: "rejected", section: "Buying Guides", updated: "2 Sep 2026", submitted: "28 Aug 2026", reviewed: "2 Sep 2026", words: 690, note: "Product promotion without verifiable test data. A new submission on the same topic is treated as new.", excerpt: "Our panels are stronger, cheaper and faster to install than anything else on the market." },
       { id: "s7", title: "Letter: on measurement location in coating audits", status: "draft", section: "Letters", updated: "5 Oct 2026", words: 180, excerpt: "Your article on coating audits misses where the gauge goes. Two millimetres from a weld is not the same panel." },
     ],
@@ -88,6 +113,18 @@ function buildSeed(): Demo {
     ],
     deactivated: false,
     contacts: COMPANIES.filter((c) => c.claimed).map((c) => ({ name: c.name, href: `/directory/${c.slug}/` })),
+    billing: (() => {
+      const details = { name: "Jordan Dale", company: co.name, email: "billing@example.com", country: "GB", address: "", taxId: "" };
+      return {
+        cycle: "monthly" as const, nextCycle: null, cancelled: false, cancelReason: "",
+        cards: [{ id: "a", brand: "Visa", last4: "4242", exp: "08/28" }, { id: "b", brand: "Mastercard", last4: "5100", exp: "02/27" }], defaultCard: "a",
+        details,
+        invoices: [
+          { no: "WMN-2026-0010", date: "1 Oct 2026", period: "1 Oct – 31 Oct 2026", billedTo: details },
+          { no: "WMN-2026-0009", date: "1 Sep 2026", period: "1 Sep – 30 Sep 2026", billedTo: { ...details, address: "14 Wellington St, Leeds LS1 4DL" } },
+        ],
+      };
+    })(),
   };
 }
 

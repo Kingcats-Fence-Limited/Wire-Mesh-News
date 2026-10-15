@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
   // Framework V2.4: canonical URLs end with a slash (/events/, /news/{slug}/).
   trailingSlash: true,
   poweredByHeader: false,
+  /* Share-card fonts are read from disk by src/lib/og.tsx. */
+  outputFileTracingIncludes: { "/og/**": ["./assets/og/**"] },
   async headers() {
     const base = [
       { key: "Content-Security-Policy", value: csp },

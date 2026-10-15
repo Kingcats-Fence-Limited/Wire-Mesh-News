@@ -9,7 +9,8 @@
 - **ICS feed** escapes commas, semicolons, backslashes and newlines (RFC 5545).
 - **Vocabulary API** (/api/vocab/subdivisions/{CC}/) is prebuilt per country; unknown codes are 404, not new cached pages.
 - **No secrets in the repo**; `.env*` is ignored. `DIRECTUS_TOKEN` must be a read-only role token, set in Vercel env only.
-- **Dependencies**: `pnpm audit --prod` clean. One dev-only advisory (braces, via eslint-config-next) has no patched release and is not shipped to the site.
+- **Account preview data** (localStorage) is shape-checked on load and falls back to the sample if it does not match; a failed write (storage full) is reported, not hidden. CSV exports neutralise cells that start with = + - @.
+- **Dependencies**: sanitize-html 2.18.1 (fixes GHSA-jxwj-j7wr-gfrw); `pnpm audit --prod` clean. One dev-only advisory (braces, via eslint-config-next) has no patched release and is not shipped to the site.
 
 ## Before Phase 2 (accounts, submissions, payments) goes live
 - Auth: Auth.js (or similar) with Google and Microsoft OAuth, email + password with hashed passwords (argon2/bcrypt), email verification codes sent by a real mail service, session cookies `HttpOnly; Secure; SameSite=Lax`.
@@ -18,3 +19,17 @@
 - Payments: card data only on the processor's hosted page (Stripe Checkout / Customer Portal); verify webhooks by signature.
 - Data protection: export and delete endpoints that match the Privacy Policy; retention jobs (unverified accounts after five days, logs after five months).
 - Turn on Vercel deployment protection for preview URLs and keep production behind the custom domain.
+
+### Demo-only shortcuts that must not survive into Phase 2
+The /account preview runs entirely in the browser. When real accounts are wired, each of these moves to the server:
+- Verification codes are generated and shown in the browser (src/components/ui/CodeVerify.tsx) → issue, store (hashed, 10-minute expiry, 5 attempts) and check on the server; send by email.
+- Sign-in accepts any address and password, and the "provider" email is typed by hand (AuthForms.tsx, SocialSignIn.tsx) → real OAuth and password checks.
+- Changing the password does not check the current one; changing the email needs no re-authentication → require the current password (or a fresh sign-in), and email the old address about any change.
+- Roles (READER / AUTHOR / COMPANY, PRO) are hard-coded in the UI → read them from the session; never trust a role sent by the browser.
+- /account has no guard → middleware that redirects to /signin/?next=/account/ without a session.
+- Submission status, comment status and company change requests are set by the browser → only editors change status, through the CMS.
+
+## SEO (in place)
+- Every public page sets a canonical URL (query strings never canonical), Open Graph and X card tags through src/lib/seo.ts; share images are rendered at build time (/og/ and /og/<article>/).
+- JSON-LD: NewsMediaOrganization + WebSite (home), NewsArticle/AnalysisNewsArticle/Article + BreadcrumbList (articles), Organization + BreadcrumbList (companies), ProfilePage/Person (authors), Event (upcoming events).
+- robots.txt blocks only /api/ and /search/ on the live domain; private pages (account, sign-in, register, submit, company contact forms) are crawlable but carry noindex, so search engines can see the noindex. Empty sub-sections are noindex and left out of the sitemap.

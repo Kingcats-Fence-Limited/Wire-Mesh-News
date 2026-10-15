@@ -8,7 +8,7 @@
    and a checklist that says what is still missing before it can be submitted.
    Phase 1: images are scaled down in the browser and kept with the draft; nothing uploads. */
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SECTION } from "@/data/vocab/section";
 import { SUBSECTION } from "@/data/vocab/subsection";
 import { ARTICLE_TYPE } from "@/data/vocab/article_type";
@@ -132,6 +132,23 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const set = <K extends keyof ArticleDraft>(k: K, v: ArticleDraft[K]) => setD((x) => ({ ...x, [k]: v }));
   const dirty = JSON.stringify(d) !== JSON.stringify(initial);
+  /* What was last handed to onSave/onSubmit. Leaving the editor any other way (another
+     account panel, the back link) saves unsaved text instead of dropping it, and closing
+     the tab asks first. */
+  const savedJson = useRef(JSON.stringify(initial));
+  const latest = useRef({ d, onSave });
+  latest.current = { d, onSave };
+  const unsaved = JSON.stringify(d) !== savedJson.current;
+  useEffect(() => () => {
+    const { d: last, onSave: save } = latest.current;
+    if (JSON.stringify(last) !== savedJson.current) save(last);
+  }, []);
+  useEffect(() => {
+    if (!unsaved) return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [unsaved]);
   const subs = SUBSECTION.filter((s) => s.section === d.section);
   const wc = words(d.body);
 
@@ -187,18 +204,18 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
   const done = 13 - Math.min(13, missing.length);
   const pct = Math.round((done / 13) * 100);
 
-  const save = () => { onSave(d); setSavedAt(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })); };
+  const save = () => { savedJson.current = JSON.stringify(d); onSave(d); setSavedAt(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })); };
   const cover = d.files.find((f) => f.cover && f.url);
 
   return (
     <div className="aed">
       <div className="aed-bar">
-        <div className="aed-tabs" role="tablist">
-          <button type="button" role="tab" aria-selected={view === "edit"} className={view === "edit" ? "on" : ""} onClick={() => setView("edit")}>Write</button>
-          <button type="button" role="tab" aria-selected={view === "preview"} className={view === "preview" ? "on" : ""} onClick={() => setView("preview")}>Preview</button>
+        <div className="aed-tabs" role="group" aria-label="View">
+          <button type="button" aria-pressed={view === "edit"} className={view === "edit" ? "on" : ""} onClick={() => setView("edit")}>Write</button>
+          <button type="button" aria-pressed={view === "preview"} className={view === "preview" ? "on" : ""} onClick={() => setView("preview")}>Preview</button>
         </div>
         <div className="aed-prog" title={`${done} of 13 requirements met`}><span style={{ width: `${pct}%` }} /></div>
-        <span className="aed-meta">{savedAt ? `Draft saved ${savedAt}` : dirty ? "Unsaved changes" : "No changes yet"}</span>
+        <span className="aed-meta">{unsaved ? "Unsaved changes" : savedAt ? `Draft saved ${savedAt}` : dirty ? "Saved" : "No changes yet"}</span>
       </div>
 
       {view === "preview" ? (
@@ -299,8 +316,8 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
 
           <section className="aed-card">
             <div className="aed-hd"><span className="aed-n">3</span><h3>Sources &amp; declarations</h3></div>
-            <div className="aed-fld">
-              <label>SOURCES</label>
+            <div className="aed-fld" role="group" aria-labelledby="ae-src">
+              <span className="lbl" id="ae-src">SOURCES</span>
               {d.sources.map((s, i) => (
                 <div key={i} style={{ display: "flex", gap: "6px" }}>
                   <input className="aed-inp" aria-label={`Source ${i + 1}`} value={s} placeholder="Standard number, publication, report, or interviewee and date" onChange={(e) => set("sources", d.sources.map((x, j) => (j === i ? e.target.value : x)))} />
@@ -311,8 +328,8 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
               <span className="aed-hint">Links must be publicly accessible; editors check every one before publication.</span>
             </div>
             <div className="aed-fld"><label htmlFor="ae-by">BY-LINE</label><input id="ae-by" className="aed-inp" value={d.byline} onChange={(e) => set("byline", e.target.value)} placeholder="Real name · title · organisation" /><span className="aed-hint">Outside contributions carry the real author or company name. Email addresses are never published.</span></div>
-            <div className="aed-fld">
-              <label>COMMERCIAL RELATIONSHIP</label>
+            <div className="aed-fld" role="radiogroup" aria-labelledby="ae-disc">
+              <span className="lbl" id="ae-disc">COMMERCIAL RELATIONSHIP</span>
               <label className="aed-radio"><input type="radio" name="disc" checked={d.disclosure === "none"} onChange={() => set("disclosure", "none")} />None: the article is not about my company, product, client or a related business</label>
               <label className="aed-radio"><input type="radio" name="disc" checked={d.disclosure === "yes"} onChange={() => set("disclosure", "yes")} />Yes, there is a relationship</label>
               {d.disclosure === "yes" && <textarea className="aed-inp" rows={2} aria-label="Describe the relationship" value={d.disclosureText} onChange={(e) => set("disclosureText", e.target.value)} placeholder="e.g. I work for the supplier of the panels described in section 3." />}
@@ -333,10 +350,10 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
           <div className="aed-miss-list" role="status"><b>Before you can submit ({missing.length}):</b><ul>{missing.map((m) => <li key={m}>{m}</li>)}</ul></div>
         )}
         <div className="aed-actions">
-          <button type="button" className="aed-btn dark" onClick={() => { if (missing.length) { setShowMissing(true); return; } onSubmit(d); }} aria-disabled={missing.length > 0}>{submitLabel}</button>
-          <button type="button" className="aed-btn" onClick={save} disabled={!dirty && !!savedAt}>Save draft</button>
+          <button type="button" className="aed-btn dark" onClick={() => { if (missing.length) { setShowMissing(true); return; } savedJson.current = JSON.stringify(d); onSubmit(d); }} aria-disabled={missing.length > 0}>{submitLabel}</button>
+          <button type="button" className="aed-btn" onClick={save} disabled={!unsaved}>Save draft</button>
           <button type="button" className="aed-btn" onClick={() => setView(view === "edit" ? "preview" : "edit")}>{view === "edit" ? "Preview" : "Back to writing"}</button>
-          {onClose && <button type="button" className="aed-btn ghost" onClick={() => { if (dirty) onSave(d); onClose(); }}>{dirty ? "Save and close" : "Close"}</button>}
+          {onClose && <button type="button" className="aed-btn ghost" onClick={() => { if (unsaved) save(); onClose(); }}>{unsaved ? "Save and close" : "Close"}</button>}
           <span className="aed-meta">{missing.length ? `${missing.length} item${missing.length > 1 ? "s" : ""} left to complete` : "Ready to submit"}{note ? <> · {note}</> : null}</span>
         </div>
       </div>

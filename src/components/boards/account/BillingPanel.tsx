@@ -1,23 +1,19 @@
 "use client";
 
 /* Account-G "Subscription & billing". Preview: every control works so the customer journey
-   can be reviewed, nothing is charged or saved. Card numbers are never typed into this site —
+   can be reviewed; nothing is charged, and changes live in the demo store like the rest of
+   the account. Card numbers are never typed into this site —
    the payment processor's own page handles them (Privacy Policy: card numbers never reach
    our systems). Cancellation follows the Terms: it stops the next renewal and access runs to
    the end of the paid period; it can be undone until then. */
 import Link from "next/link";
 import { useState } from "react";
 import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
-
-type Card = { id: string; brand: string; last4: string; exp: string };
+import { useDemo, type Billing, type BillingDetails } from "./store";
 type Open = null | "payment" | "details" | "cancel" | `inv-${string}`;
 
 const COUNTRIES = COUNTRY.slice().sort((a, b) => a.name.localeCompare(b.name));
 const REASONS = ["Too expensive", "I don't use it enough", "Missing a feature I need", "Switching to a company account", "Other"];
-const INVOICES = [
-  { no: "WMN-2026-0010", date: "1 Oct 2026", period: "1 Oct – 31 Oct 2026" },
-  { no: "WMN-2026-0009", date: "1 Sep 2026", period: "1 Sep – 30 Sep 2026" },
-];
 const PERIOD_END = "31 Oct 2026";
 
 const Box = ({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) => (
@@ -31,21 +27,21 @@ const Done = ({ children }: { children: React.ReactNode }) => (
 );
 
 export function BillingPanel() {
+  const { d, set, toast } = useDemo();
+  const b = d.billing;
+  const B = (fn: (b: Billing) => Billing) => set((x) => ({ ...x, billing: fn(x.billing) }));
   const [open, setOpen] = useState<Open>(null);
-  const [cards, setCards] = useState<Card[]>([{ id: "a", brand: "Visa", last4: "4242", exp: "08/28" }, { id: "b", brand: "Mastercard", last4: "5100", exp: "02/27" }]);
-  const [def, setDef] = useState("a");
   const [handoff, setHandoff] = useState(false);
-  const [details, setDetails] = useState({ name: "Jordan Dale", company: "Hengtai Mesh", email: "billing@hengtai.example", country: "CN", address: "", taxId: "" });
-  const [savedDetails, setSavedDetails] = useState(details);
+  const [details, setDetails] = useState<BillingDetails>(b.details);
   const [detailsSaved, setDetailsSaved] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
   const [reason, setReason] = useState("");
-  const [cycle, setCycle] = useState<"monthly" | "annual">("monthly");
-  const [cycleNote, setCycleNote] = useState(false);
+  const { cards, defaultCard: def, cancelled, cycle } = b;
+  const shown = b.nextCycle ?? cycle;
 
-  const toggle = (k: Exclude<Open, null>) => { setOpen((o) => (o === k ? null : k)); setHandoff(false); setDetailsSaved(false); };
+  const toggle = (k: Exclude<Open, null>) => { setOpen((o) => (o === k ? null : k)); setHandoff(false); setDetailsSaved(false); if (k === "details") setDetails(b.details); };
   const card = cards.find((c) => c.id === def) ?? cards[0];
-  const dset = (k: keyof typeof details, v: string) => { setDetails((d) => ({ ...d, [k]: v })); setDetailsSaved(false); };
+  const dset = (k: keyof BillingDetails, v: string) => { setDetails((x) => ({ ...x, [k]: v })); setDetailsSaved(false); };
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(details.email.trim());
 
   return (
     <div className="mini" id="billing">
@@ -64,12 +60,12 @@ export function BillingPanel() {
         {!cancelled && (
           <div role="group" aria-label="Billing period" style={{ display: "inline-flex", gap: "4px", marginTop: "12px", background: "rgba(255,255,255,.08)", borderRadius: "999px", padding: "3px" }}>
             {(["monthly", "annual"] as const).map((k) => (
-              <button key={k} type="button" aria-pressed={cycle === k} onClick={() => { setCycle(k); setCycleNote(k !== "monthly"); }} style={{ border: 0, borderRadius: "999px", minHeight: "30px", padding: "0 14px", fontFamily: "inherit", fontSize: "12px", fontWeight: 800, cursor: "pointer", background: cycle === k ? "#FFFFFF" : "transparent", color: cycle === k ? "var(--ink)" : "#FFFFFF" }}>{k === "monthly" ? "Monthly" : "Annual"}</button>
+              <button key={k} type="button" aria-pressed={shown === k} onClick={() => { B((x) => ({ ...x, nextCycle: k === x.cycle ? null : k })); toast(k === cycle ? "Kept on " + (k === "monthly" ? "monthly" : "annual") + " billing." : `Switches to ${k} billing at the next renewal (${PERIOD_END}).`); }} style={{ border: 0, borderRadius: "999px", minHeight: "30px", padding: "0 14px", fontFamily: "inherit", fontSize: "12px", fontWeight: 800, cursor: "pointer", background: shown === k ? "#FFFFFF" : "transparent", color: shown === k ? "var(--ink)" : "#FFFFFF" }}>{k === "monthly" ? "Monthly" : "Annual"}</button>
             ))}
           </div>
         )}
       </div>
-      {cycleNote && !cancelled && <Done>Switches to annual billing at the next renewal ({PERIOD_END}). The annual price is shown before you confirm in the live version.</Done>}
+      {b.nextCycle && !cancelled && <Done>Switches to {b.nextCycle} billing at the next renewal ({PERIOD_END}); until then you stay on {cycle} billing. The new price is shown before you confirm in the live version.</Done>}
 
       <div style={{ display: "flex", flexDirection: "column", gap: "9px", fontSize: "13.5px", fontWeight: 500 }}>
         <div style={{ display: "flex", gap: "10px" }}><span style={{ color: "var(--red-text)", fontWeight: 800, flexShrink: 0 }}>&#183;</span><span>No display advertising anywhere on the site</span></div>
@@ -78,7 +74,8 @@ export function BillingPanel() {
 
       <div style={{ borderTop: "1px solid var(--line)", paddingTop: "13px" }}>
         <div style={{ fontSize: "11.5px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", marginBottom: "6px" }}>BILLING HISTORY</div>
-        {INVOICES.map((inv, i) => {
+        {b.invoices.length === 0 && <span className="meta">No invoices yet.</span>}
+        {b.invoices.map((inv, i) => {
           const k = `inv-${inv.no}` as const;
           return (
             <div key={inv.no} style={{ borderTop: i ? "1px solid var(--line)" : undefined }}>
@@ -90,7 +87,7 @@ export function BillingPanel() {
                 <div style={{ background: "var(--paper)", borderRadius: "10px", padding: "14px 16px", marginBottom: "10px", fontSize: "13px", fontWeight: 500, lineHeight: 1.6 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginBottom: "8px" }}><b className="h" style={{ fontSize: "15px" }}>Invoice {inv.no}</b><span className="meta">{inv.date}</span></div>
                   <div className="meta">Billed to</div>
-                  <div style={{ marginBottom: "8px" }}>{savedDetails.company || savedDetails.name}<br />{savedDetails.address && <>{savedDetails.address}<br /></>}{COUNTRY_BY_CODE[savedDetails.country]?.name}{savedDetails.taxId && <> · Tax ID {savedDetails.taxId}</>}</div>
+                  <div style={{ marginBottom: "8px" }}>{inv.billedTo.company || inv.billedTo.name}<br />{inv.billedTo.address && <>{inv.billedTo.address}<br /></>}{COUNTRY_BY_CODE[inv.billedTo.country]?.name}{inv.billedTo.taxId && <> · Tax ID {inv.billedTo.taxId}</>}</div>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", borderTop: "1px solid var(--line)", padding: "8px 0" }}><span>Wire Mesh News Pro · {inv.period}</span><b>—</b></div>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", borderTop: "1px solid var(--line)", paddingTop: "8px" }}><span>Tax (where we are required to charge it)</span><b>—</b></div>
                   <p className="meta" style={{ margin: "8px 0 0" }}>Amounts appear once prices are announced. The issuing entity, its registered address and tax number are printed on the PDF, as in our <Link href="/policies/terms/" style={{ color: "var(--red-text)" }}>Terms</Link>.</p>
@@ -106,7 +103,7 @@ export function BillingPanel() {
         <button type="button" className={`btn${open === "payment" ? " dark" : ""}`} aria-expanded={open === "payment"} onClick={() => toggle("payment")}>Change payment method</button>
         <button type="button" className={`btn${open === "details" ? " dark" : ""}`} aria-expanded={open === "details"} onClick={() => toggle("details")}>Invoice details</button>
         {cancelled
-          ? <button type="button" className="btn dark" onClick={() => { setCancelled(false); setOpen(null); }}>Resume subscription</button>
+          ? <button type="button" className="btn dark" onClick={() => { B((x) => ({ ...x, cancelled: false, cancelReason: "" })); setOpen(null); toast(`Resumed. Pro renews on ${PERIOD_END}.`); }}>Resume subscription</button>
           : <button type="button" aria-expanded={open === "cancel"} onClick={() => toggle("cancel")} style={{ color: "var(--red-deep)", borderColor: "var(--st-red-bg)" }} className="btn">Cancel subscription</button>}
       </div>
 
@@ -118,7 +115,7 @@ export function BillingPanel() {
               <span style={{ fontSize: "13.5px", fontWeight: 700, flex: "1 1 auto" }}>{c.brand} ···· {c.last4}<span className="meta" style={{ display: "block" }}>Expires {c.exp}</span></span>
               {c.id === def
                 ? <span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="st">DEFAULT</span>
-                : <><button type="button" className="btn" style={{ minHeight: "32px", fontSize: "12px" }} onClick={() => setDef(c.id)}>Make default</button><button type="button" className="btn" style={{ minHeight: "32px", fontSize: "12px", color: "var(--red-deep)" }} onClick={() => setCards((cs) => cs.filter((x) => x.id !== c.id))}>Remove</button></>}
+                : <><button type="button" className="btn" style={{ minHeight: "32px", fontSize: "12px" }} onClick={() => { B((x) => ({ ...x, defaultCard: c.id })); toast(`${c.brand} ···· ${c.last4} is now the default card.`); }}>Make default</button><button type="button" className="btn" style={{ minHeight: "32px", fontSize: "12px", color: "var(--red-deep)" }} onClick={() => { B((x) => ({ ...x, cards: x.cards.filter((y) => y.id !== c.id) })); toast(`${c.brand} ···· ${c.last4} removed.`); }}>Remove</button></>}
             </div>
           ))}
           {!handoff
@@ -130,7 +127,7 @@ export function BillingPanel() {
 
       {open === "details" && (
         <Box title="Invoice details" onClose={() => setOpen(null)}>
-          <p className="meta" style={{ margin: 0 }}>Printed on every future invoice. Past invoices keep the details they were issued with.</p>
+          <p className="meta" style={{ margin: 0 }}>Printed on every future invoice. Invoices already issued keep the details they were issued with.</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }} className="g2f">
             {([["name", "NAME", "text"], ["company", "COMPANY (OPTIONAL)", "text"], ["email", "INVOICE EMAIL", "email"], ["taxId", "VAT / TAX ID (OPTIONAL)", "text"]] as const).map(([k, l, t]) => (
               <div key={k} style={{ display: "flex", flexDirection: "column", gap: "5px" }}><label htmlFor={`bd-${k}`} className="lbl">{l}</label><input id={`bd-${k}`} type={t} className="inp" value={details[k]} onChange={(e) => dset(k, e.target.value)} /></div>
@@ -141,8 +138,9 @@ export function BillingPanel() {
             <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}><label htmlFor="bd-addr" className="lbl">BILLING ADDRESS</label><input id="bd-addr" className="inp" value={details.address} autoComplete="street-address" onChange={(e) => dset("address", e.target.value)} /></div>
           </div>
           <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-            <button type="button" className="btn dark" disabled={!details.name || !details.email} onClick={() => { setSavedDetails(details); setDetailsSaved(true); }}>Save details</button>
-            {detailsSaved && <Done>Saved for this preview — open an invoice above to see them printed.</Done>}
+            <button type="button" className="btn dark" disabled={!details.name.trim() || !emailOk || JSON.stringify(details) === JSON.stringify(b.details)} onClick={() => { B((x) => ({ ...x, details })); setDetailsSaved(true); }}>Save details</button>
+            {details.email && !emailOk && <span className="meta" style={{ color: "var(--red-text)" }}>Enter a valid invoice email.</span>}
+            {detailsSaved && <Done>Saved. They will be printed on the next invoice; past invoices are unchanged.</Done>}
           </div>
         </Box>
       )}
@@ -157,7 +155,7 @@ export function BillingPanel() {
             <select id="bc-r" className="inp" value={reason} onChange={(e) => setReason(e.target.value)}><option value="">Prefer not to say</option>{REASONS.map((r) => <option key={r}>{r}</option>)}</select>
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <button type="button" className="btn" style={{ background: "var(--red)", borderColor: "var(--red)", color: "#FFFFFF" }} onClick={() => { setCancelled(true); setOpen(null); setCycleNote(false); }}>Confirm cancellation</button>
+            <button type="button" className="btn" style={{ background: "var(--red)", borderColor: "var(--red)", color: "#FFFFFF" }} onClick={() => { B((x) => ({ ...x, cancelled: true, cancelReason: reason, nextCycle: null })); setOpen(null); toast(`Cancelled. You keep Pro until ${PERIOD_END}.`); }}>Confirm cancellation</button>
             <button type="button" className="btn" onClick={() => setOpen(null)}>Keep Pro</button>
           </div>
         </Box>

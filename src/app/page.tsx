@@ -1,5 +1,9 @@
 /* Home — 1:1 port of canvas board Home-A, data from src/lib/content. Section order matches the board. */
+import type { Metadata } from "next";
 import { Shell } from "@/components/shell/Shell";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageMeta } from "@/lib/seo";
+import { siteGraph } from "@/lib/schema";
 import { Hero } from "@/components/boards/home/Hero";
 import { Gauge } from "@/components/boards/home/Gauge";
 import { MarketSnapshot } from "@/components/boards/home/MarketSnapshot";
@@ -19,7 +23,9 @@ import { COMPANIES, recentlyUpdated } from "@/lib/content/directory";
 import { STANDARDS, recentStandardChanges } from "@/lib/content/source";
 import { snapshotSeries, MARKET_LICENSED, TOPICS } from "@/lib/content/market";
 import { industryFigures } from "@/lib/content/figures";
-import { fmtDateShort, todayIso } from "@/lib/site";
+import { SITE, fmtDateShort, todayIso } from "@/lib/site";
+
+export const metadata: Metadata = pageMeta({ title: `${SITE.name}: independent news, markets and standards for wire mesh`, description: `${SITE.tagline}. Daily news, buying and technical guides, price data, a standards index and an editor-classified company directory.`, path: "/", absolute: true });
 
 export default function HomePage() {
   const TODAY = todayIso();
@@ -54,6 +60,8 @@ export default function HomePage() {
 
   return (
     <Shell header="full" board="b-home">
+      <JsonLd data={siteGraph()} />
+      <h1 className="sr-only">{SITE.name}: {SITE.tagline.toLowerCase()}</h1>
       <Hero top={top} side={[s1, s2]} brief={brief} date={fmtDateShort(TODAY)} />
       <Gauge />
       {MARKET_LICENSED && <MarketSnapshot series={snapshotSeries()} />}
