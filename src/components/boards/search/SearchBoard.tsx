@@ -1,8 +1,12 @@
+"use client";
+
 /* Ported 1:1 from canvas board Search-K: /search?q= with the same result types, badges and highlighting as the overlay (SearchOv-W). */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
+import { useEffect, useState } from "react";
 import { DropMenu } from "@/components/boards/shared/DropMenu";
-import { search, snippet, highlight, type SearchDoc, type SearchType } from "@/lib/search";
+import { searchIn, snippet, highlight, type SearchDoc, type SearchType } from "@/lib/search-core";
+import { loadSearchIndex } from "@/lib/search-index-client";
+import { useFlatParams } from "@/lib/use-flat-params";
 import { EDITORIAL_SECTIONS } from "@/lib/site";
 import "@/styles/board-srch.css";
 import { demoBg } from "@/lib/demo";
@@ -17,7 +21,7 @@ const TYPES: { k: SearchType | "all"; label: string; badge: string; tp: string }
   { k: "topic", label: "Topics", badge: "TOPIC", tp: "top" },
   { k: "event", label: "Events", badge: "EVENT", tp: "ev" },
 ];
-const BADGE: Record<SearchType, [string, string]> = { article: ["ARTICLE", "art"], letter: ["LETTER", "let"], opinion: ["OPINION", "op"], company: ["COMPANY", "co"], standard: ["STANDARD", "std"], topic: ["TOPIC", "top"], event: ["EVENT", "ev"] };
+const BADGE: Record<SearchType, [string, string]> = { article: ["ARTICLE", "art"], letter: ["LETTER", "let"], opinion: ["COLUMN", "op"], company: ["COMPANY", "co"], standard: ["STANDARD", "std"], topic: ["TOPIC", "top"], event: ["EVENT", "ev"] };
 const TIME: [string, string, number][] = [["any", "Any time", 0], ["month", "Past month", 31], ["quarter", "Past 3 months", 92], ["year", "Past year", 366]];
 const RELATED: Record<string, string[]> = { default: ["coating weight", "zinc g/m²", "EN 10244", "PVC coated", "358 mesh", "anti-dumping"] };
 const PER = 20;
@@ -34,7 +38,16 @@ function Thumb({ d }: { d: SearchDoc }) {
   }
 }
 
-export function SearchBoard({ sp }: { sp: SearchParamsT }) {
+/* The page is static; the query is read in the browser and matched against the site index
+   (/search-index.json), so results never need a server render. */
+export function SearchFromUrl() {
+  const sp = useFlatParams<SearchParamsT>();
+  const [index, setIndex] = useState<SearchDoc[] | null>(null);
+  useEffect(() => { let live = true; loadSearchIndex().then((x) => { if (live) setIndex(x); }); return () => { live = false; }; }, []);
+  return <SearchBoard sp={sp} index={index} />;
+}
+
+export function SearchBoard({ sp, index }: { sp: SearchParamsT; index: SearchDoc[] | null }) {
   const q = (sp.q ?? "").trim();
   const type = (TYPES.some((t) => t.k === sp.type) ? sp.type : "all") as SearchType | "all";
   const section = sp.section && EDITORIAL_SECTIONS.some((s) => s.code === sp.section) ? sp.section : undefined;
@@ -43,7 +56,8 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
   const page = Math.max(1, parseInt(sp.page ?? "1") || 1);
   const TODAY = new Date();
   const within = (d: SearchDoc) => !time[2] || (d.date ? (TODAY.getTime() - new Date(d.date).getTime()) / 86400000 <= time[2] : d.type !== "article");
-  const raw = q ? search(q, { type: "all" }) : [];
+  const raw = q && index ? searchIn(index, q, { type: "all" }) : [];
+  const loading = !!q && !index;
   const filtered = raw.filter((d) => (type === "all" || d.type === type || (type === "letter" && d.type === "opinion")) && (!section || d.section === section) && within(d));
   const list = sort === "date" ? [...filtered].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? "")) : filtered;
   const pages = Math.max(1, Math.ceil(list.length / PER));
@@ -55,7 +69,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
   const suggestions = RELATED.default.filter((s) => s.toLowerCase() !== q.toLowerCase()).slice(0, 4);
 
   return (
-    <Shell header="compact" board="b-srch">
+    <>
 <section style={{ paddingTop: "28px", paddingBottom: "0" }} className="wrap">
 <nav aria-label="Breadcrumb" className="meta" style={{ marginBottom: "16px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <b style={{ color: "var(--ink)" }}>Search</b></nav>
 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "20px", marginBottom: "16px" }}>
@@ -65,7 +79,7 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 <form action="/search/" method="get" style={{ display: "flex", alignItems: "center", gap: "12px", border: "2px solid var(--ink)", borderRadius: "999px", padding: "0 20px", minHeight: "56px", marginBottom: "18px" }}>
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.3" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg>
 <label htmlFor="sq" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Search</label>
-<input id="sq" name="q" type="search" defaultValue={q} placeholder="Articles, standards, companies, topics…" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "17px", fontWeight: "500", minHeight: "50px", background: "transparent", minWidth: 0 }} />
+<input key={q} id="sq" name="q" type="search" defaultValue={q} placeholder="Articles, standards, companies, topics…" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "17px", fontWeight: "500", minHeight: "50px", background: "transparent", minWidth: 0 }} />
 {type !== "all" && <input type="hidden" name="type" value={type} />}
 {section && <input type="hidden" name="section" value={section} />}
 {q && <Link href="/search/" aria-label="Clear search" style={{ width: "34px", height: "34px", border: "0", borderRadius: "999px", background: "var(--paper)", color: "var(--slate)", fontSize: "15px", flexShrink: "0", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>&#10005;</Link>}
@@ -92,6 +106,8 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 <div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}><div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "10px" }}>TRY</div><div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>{RELATED.default.map((s) => <Link key={s} href={`/search/?q=${encodeURIComponent(s)}`} style={{ minHeight: "34px", fontSize: "12.5px", fontWeight: "800" }} className="chip">{s}</Link>)}</div></div>
 <div style={{ background: "var(--paper)", borderRadius: "14px", padding: "18px 20px" }}><div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".1em", color: "var(--slate)", marginBottom: "10px" }}>WHAT IS SEARCHED</div><p className="meta" style={{ margin: 0, lineHeight: 1.6 }}>Articles, letters and columns, companies, standards, topics and events. Prices are not in search — licensed market series live on the <Link href="/market-data/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Market data</Link> page.</p></div>
 </div>
+) : loading ? (
+<p className="meta" role="status" style={{ margin: 0 }}>Searching…</p>
 ) : list.length === 0 ? (
 <div>
 <div style={{ display: "flex", gap: "18px", alignItems: "flex-start", marginBottom: "20px" }}>
@@ -162,6 +178,6 @@ export function SearchBoard({ sp }: { sp: SearchParamsT }) {
 </div>
 )}
 </section>
-    </Shell>
+    </>
   );
 }

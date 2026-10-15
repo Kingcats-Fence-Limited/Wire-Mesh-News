@@ -1,24 +1,32 @@
+"use client";
+
 /* Ported 1:1 from canvas board Author-P. */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
+import { useFlatParams } from "@/lib/use-flat-params";
 import { SocialGlyph } from "@/components/ui/SocialButton";
 import { AUTHORS } from "@/lib/content/people";
-import { byAuthor } from "@/lib/content/articles";
 import { sectionByCode, subsectionLabel, articleHref, fmtDate } from "@/lib/site";
 import type { Author, SectionCode } from "@/lib/content/types";
+
+/** The author's articles, prepared on the server (no article bodies). */
+export type AuthorArticle = { slug: string; title: string; dek: string; section: SectionCode; subsection: string; date: string; readMin: number };
 import "@/styles/board-auth.css";
 import { demoBg } from "@/lib/demo";
 
 const initials = (n: string) => n.split(/\s+/).map((x) => x[0]).join("").slice(0, 2).toUpperCase();
 
-export function AuthorBoard({ a, section }: { a: Author; section?: string }) {
-  const all = byAuthor(a.slug);
+/* Static page; the ?section= filter runs in the browser. */
+export function AuthorFromUrl({ a, all }: { a: Author; all: AuthorArticle[] }) {
+  return <AuthorBoard a={a} all={all} section={useFlatParams<{ section?: string }>().section} />;
+}
+
+export function AuthorBoard({ a, all, section }: { a: Author; all: AuthorArticle[]; section?: string }) {
   const list = section ? all.filter((x) => x.section === section) : all;
   const counts = Object.entries(all.reduce<Record<string, number>>((m, x) => ((m[x.section] = (m[x.section] ?? 0) + 1), m), {})).sort((x, y) => y[1] - x[1]);
   const others = AUTHORS.filter((x) => x.slug !== a.slug).slice(0, 3);
   const since = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric" }).format(new Date(a.since + "-01"));
   return (
-    <Shell header="compact" board="b-auth">
+    <>
 {/* 作者头部 */}
 <section style={{ background: "var(--paper)", borderBottom: "1px solid var(--line)" }}>
 <div style={{ paddingTop: "36px", paddingBottom: "36px" }} className="wrap">
@@ -101,6 +109,6 @@ export function AuthorBoard({ a, section }: { a: Author; section?: string }) {
 </div>
 </section>
 <div style={{ height: "4px", background: "var(--red)" }}></div>
-    </Shell>
+    </>
   );
 }

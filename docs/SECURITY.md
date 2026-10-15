@@ -45,7 +45,7 @@ The /account preview runs entirely in the browser. When real accounts are wired,
 
 ## Still to decide or do
 - CSP still allows inline scripts (Next.js bootstrap). Removing it needs nonces from middleware, which makes every page dynamic; revisit when real accounts arrive.
-- /directory, /events, /standards, /letters, /market-data and /search render on the server per request (they read the query string). Add a Vercel WAF rate limit, or move filtering to the browser so these pages can be cached.
+- Done: every page is now static and CDN-cached. Directory, events, standards, letters, market data, search, contact, sign-in/register and author pages render their default view on the server and apply the query string (filters, sort, paging, ?next=, ?claim=) in the browser. Unknown slugs return the prerendered 404.
 - HSTS `preload` commits every subdomain of wiremeshnews.com to HTTPS; confirm before submitting to the preload list.
 - COOP `same-origin` blocks popup-based OAuth; switch to `same-origin-allow-popups` when Google/Microsoft sign-in is wired.
 - `pnpm audit`: one dev-only advisory (braces via eslint-config-next), no patched release yet.

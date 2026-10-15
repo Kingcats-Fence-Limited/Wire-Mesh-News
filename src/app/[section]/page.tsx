@@ -5,6 +5,9 @@ import { EDITORIAL_SECTIONS, sectionBySlug, SECTION_INTRO, subsectionsOf, subsec
 import { CategoryBoard as CategoryPage } from "@/components/boards/category/CategoryBoard";
 import type { SectionCode } from "@/lib/content/types";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return EDITORIAL_SECTIONS.map((s) => ({ section: s.slug }));
 }

@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { flat } from "@/lib/params";
-import { getCompany } from "@/lib/content/directory";
+import { Suspense } from "react";
 import { privateMeta } from "@/lib/seo";
-import { AuthBoard } from "@/components/boards/auth/AuthBoard";
+import { Shell } from "@/components/shell/Shell";
+import { COMPANIES } from "@/lib/content/directory";
+import { AuthBoard, AuthFromUrl } from "@/components/boards/auth/AuthBoard";
 
 export const metadata: Metadata = privateMeta("Create an account", "/register/");
 
-export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ claim?: string }> }) {
-  const claim = flat<Awaited<typeof searchParams>>(await searchParams as Record<string, string | string[] | undefined>).claim;
-  /* Only a real directory slug can be carried through sign-up. */
-  return <AuthBoard mode="register" claim={claim && getCompany(claim) ? claim : undefined} />;
+export default function RegisterPage() {
+  return (
+    <Shell header="compact" board="b-login">
+      <Suspense fallback={<AuthBoard mode="register" />}>
+        <AuthFromUrl page="register" companySlugs={COMPANIES.map((c) => c.slug)} />
+      </Suspense>
+    </Shell>
+  );
 }

@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { STANDARDS, getStandard } from "@/lib/content/source";
 import { StandardBoard } from "@/components/boards/standards/StandardsBoard";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return STANDARDS.map((s) => ({ slug: s.slug }));
 }

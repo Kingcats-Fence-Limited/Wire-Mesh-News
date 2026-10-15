@@ -61,6 +61,11 @@
   --ph: #d2d4dd;           /* image placeholder fill */
   --ph-2: #c2c5ce;         /* placeholder pattern stroke */
   --mark: #ffe8b0;
+  /* text selection: its own colours, so selected text stays readable on light and dark blocks alike */
+  --sel-bg: #ffd0d4;
+  --focus-outer: #15161c;
+  --focus-inner: #ffffff;
+  --sel-fg: #15161c;
   --up: #1e6b35;
   --down: #c41822;
   --flat: #8a8f9e;
@@ -104,6 +109,10 @@
   --ph: #2a2c36;
   --ph-2: #4a4e63;
   --mark: #4a3d12;
+  --sel-bg: #9a1f28;
+  --focus-outer: #ffffff;
+  --focus-inner: #15161c;
+  --sel-fg: #ffffff;
   --up: #4fb06b;
   --down: #ff6b74;
   color-scheme: dark;
@@ -218,10 +227,14 @@
   }
   a { color: inherit; text-decoration: none; }
   mark { background: var(--mark); color: inherit; padding: 0 1px; border-radius: 2px; }
-  :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 2px; }
+  /* Keyboard focus: a two-tone ring (light inner, dark outer) that stays visible on white, dark
+     and red surfaces alike, in both themes. Shape is never changed on focus. */
+  :focus-visible { outline: 2px solid var(--focus-outer); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus-inner); }
+  /* Search fields drawn as pills hide the input outline; show the ring on the whole pill instead. */
+  form:has(> input:focus-visible), form:has(input[type="search"]:focus-visible) { outline: 2px solid var(--focus-outer); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus-inner); }
   button { font-family: inherit; }
   input, select, textarea { font-family: inherit; font-size: inherit; }
-  ::selection { background: var(--ink); color: #fff; }
+  ::selection { background: var(--sel-bg); color: var(--sel-fg); }
   /* grid/flex children default to min-width:auto, which lets long chip rows and tables push the page wider than the viewport */
   .grid > *, .flex > * { min-width: 0; }
 }

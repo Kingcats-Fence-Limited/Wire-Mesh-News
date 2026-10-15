@@ -54,7 +54,7 @@ export function LettersBlock({ letters, column, monthCount }: { letters: Letter[
 <div style={{ border: "2px solid var(--ink)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginBottom: "14px" }}>
 <span className="h" style={{ fontSize: "14px", letterSpacing: ".08em", color: "var(--grey)" }}>THIS WEEK&#8217;S COLUMN</span>
-<span style={{ border: "1.5px solid var(--line)", borderRadius: "4px", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".12em", padding: "4px 8px", color: "var(--slate)" }}>OPINION</span>
+<span style={{ border: "1.5px solid var(--line)", borderRadius: "4px", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".12em", padding: "4px 8px", color: "var(--slate)" }}>COLUMN</span>
 </div>
 <span className="h" style={{ fontSize: "44px", lineHeight: ".5", color: "var(--red-text)", display: "block", marginBottom: "14px" }}>&#8220;</span>
 <Link href={`/letters/columns/${column.slug}/`} className="h" style={{ display: "block", fontSize: "21px", lineHeight: "1.2", marginBottom: "12px" }}>{column.title}</Link>

@@ -19,7 +19,7 @@ export function Guides({ cards, list }: { cards: Article[]; list: Article[] }) {
 <div style={{ height: "6px", background: i === 0 ? "var(--red)" : "var(--ink)" }}></div>
 <span style={{ position: "relative", overflow: "hidden", background: "var(--line-2)", display: "block", aspectRatio: "16/7" }}><span aria-hidden="true" className="demo" style={{ position: "absolute", inset: 0, ...demoBg(a.slug, 0, "md") }} /></span>
 <div style={{ padding: "20px 22px 22px", display: "flex", flexDirection: "column", gap: "10px", flex: "1 1 auto" }}>
-<div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}><span className="h" aria-hidden="true" style={{ fontSize: "46px", color: "var(--line-soft)", lineHeight: "1" }}>{String(i + 1).padStart(2, "0")}</span><span className="mono meta" style={{ fontSize: "11px", fontWeight: "800" }}>{a.readMin} MIN</span></div>
+<div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}><span className="h gnum" aria-hidden="true" data-n={String(i + 1).padStart(2, "0")} style={{ fontSize: "46px", color: "var(--line-soft)", lineHeight: "1" }} /><span className="mono meta" style={{ fontSize: "11px", fontWeight: "800" }}>{a.readMin} MIN</span></div>
 <span className="kick"><i></i>{short(a)}</span>
 <span className="h" style={{ fontSize: "21px" }}>{a.title}</span>
 <span style={{ fontSize: "13.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>{a.dek}</span>

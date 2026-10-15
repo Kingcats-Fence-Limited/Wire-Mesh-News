@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { LETTERS, getLetter } from "@/lib/content/people";
 import { LetterBoard } from "@/components/boards/letters/LettersBoard";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return LETTERS.map((l) => ({ slug: l.slug }));
 }

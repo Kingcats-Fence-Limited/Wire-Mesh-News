@@ -1,9 +1,10 @@
+"use client";
+
 /* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. The sponsored block is physically separated from the editorial list and always labelled. */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
 import { FilterBar } from "./FilterBar";
-import { COMPANIES, SPONSORED } from "@/lib/content/directory";
-import { ARTICLES } from "@/lib/content/articles";
+import type { Sponsored } from "@/lib/content/directory";
+import { useFlatParams } from "@/lib/use-flat-params";
 import { MATERIAL_GROUP } from "@/data/vocab/material_group";
 import { APPLICATION_AREA, APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
 import { CATEGORY, CATEGORY_BY_CODE } from "@/data/vocab/category";
@@ -36,8 +37,9 @@ const PER = 12;
    facet are OR'd, facets are AND'd. `skip` leaves one facet out, for that facet's own counts. */
 export const vals = (v?: string) => (v ? v.split(",").filter(Boolean) : []);
 type Facet = "app" | "category" | "product" | "region" | "material";
-const artCount = (c: Company) => ARTICLES.filter((a) => a.companies?.includes(c.slug)).length;
-export function matches(c: Company, sp: DirParams, skip?: Facet) {
+/** Everything the directory needs, prepared on the server so article bodies never reach the browser. */
+export type DirData = { companies: Company[]; sponsored: Sponsored[]; artCounts: Record<string, number> };
+export function matches(c: Company, sp: DirParams, skip: Facet | undefined, artCount: (c: Company) => number) {
   const q = (sp.q ?? "").toLowerCase();
   const any = (f: Facet, test: (v: string) => boolean) => skip === f || vals(sp[f]).length === 0 || vals(sp[f]).some(test);
   return any("app", (v) => c.applications.includes(v)) && any("category", (v) => c.categories.includes(v)) && any("product", (v) => c.products.includes(v)) &&
@@ -46,19 +48,26 @@ export function matches(c: Company, sp: DirParams, skip?: Facet) {
     (!q || `${c.name} ${c.city} ${COUNTRY_BY_CODE[c.country]?.name ?? ""} ${c.products.map((p) => PRODUCT_BY_CODE[p]?.labelEn ?? p).join(" ")} ${c.summary}`.toLowerCase().includes(q));
 }
 
-export function filterCompanies(sp: DirParams) {
-  const art = artCount;
-  let list = COMPANIES.filter((c) => matches(c, sp));
+export function filterCompanies(sp: DirParams, data: DirData) {
+  const art = (c: Company) => data.artCounts[c.slug] ?? 0;
+  let list = data.companies.filter((c) => matches(c, sp, undefined, art));
   list = [...list].sort((a, b) => (sp.sort === "covered" ? art(b) - art(a) || a.name.localeCompare(b.name) : sp.sort === "recent" ? (a.updated < b.updated ? 1 : -1) : a.name.localeCompare(b.name)));
   return list;
 }
 
-export function DirectoryBoard({ sp }: { sp: DirParams }) {
-  const list = filterCompanies(sp);
+/* The page is static: the server renders the unfiltered directory, and this reads the
+   filters from the address bar in the browser. */
+export function DirectoryFromUrl({ data }: { data: DirData }) {
+  return <DirectoryBoard sp={useFlatParams<DirParams>()} data={data} />;
+}
+
+export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
+  const COMPANIES = data.companies, SPONSORED = data.sponsored;
+  const list = filterCompanies(sp, data);
   const page = Math.max(1, parseInt(sp.page ?? "1") || 1);
   const pages = Math.max(1, Math.ceil(list.length / PER));
   const slice = list.slice((page - 1) * PER, page * PER);
-  const art = (c: Company) => ARTICLES.filter((a) => a.companies?.includes(c.slug)).length;
+  const art = (c: Company) => data.artCounts[c.slug] ?? 0;
   const countries = new Set(COMPANIES.map((c) => c.country)).size;
   const href = (patch: Partial<DirParams>) => {
     const merged: Record<string, string | undefined> = { ...sp, page: undefined, ...patch };
@@ -70,7 +79,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   const toggle = (k: keyof DirParams, v: string) => { const cur = vals(sp[k]); const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]; return href({ [k]: next.length ? next.join(",") : undefined }); };
   const has = (k: Facet, v: string) => vals(sp[k]).includes(v);
   /* Faceted count: companies that match every other active filter and have this value. */
-  const fc = (k: Facet, f: (c: Company) => boolean) => COMPANIES.filter((c) => matches(c, sp, k) && f(c)).length;
+  const fc = (k: Facet, f: (c: Company) => boolean) => COMPANIES.filter((c) => matches(c, sp, k, art) && f(c)).length;
   const chips = (k: Facet, label: (v: string) => string) => vals(sp[k]).map((v) => ({ label: label(v), href: toggle(k, v) }));
   const active: { label: string; href: string }[] = [
     ...chips("app", (v) => APPLICATION_AREA_BY_CODE[v]?.labelEn ?? v),
@@ -87,7 +96,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   const sort = sp.sort ?? "az";
 
   return (
-    <Shell header="compact" active="directory" board="b-dir">
+    <>
 {/* 页头 */}
 <section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
 <PageHeadArt src={HEAD_ART.panels} />
@@ -108,7 +117,7 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 <form action="/directory/" method="get" style={{ display: "flex", alignItems: "center", gap: "11px", background: "var(--card)", borderRadius: "999px", padding: "0 20px", minHeight: "54px", marginTop: "24px", maxWidth: "640px" }}>
 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--grey)" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5 21 21" /></svg>
 <label htmlFor="ds" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Search companies</label>
-<input id="ds" name="q" defaultValue={sp.q ?? ""} type="search" placeholder="Search by company, product or country" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "15.5px", fontWeight: "500", minHeight: "48px", color: "var(--ink)", background: "transparent" }} />
+<input key={sp.q ?? ""} id="ds" name="q" defaultValue={sp.q ?? ""} type="search" placeholder="Search by company, product or country" style={{ border: "0", outline: "0", flex: "1 1 auto", fontFamily: "inherit", fontSize: "15.5px", fontWeight: "500", minHeight: "48px", color: "var(--ink)", background: "transparent" }} />
 {sp.app && <input type="hidden" name="app" value={sp.app} />}
 </form>
 </div>
@@ -150,9 +159,9 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
   rows={[
     { label: "MATERIAL", ticks: MATERIALS.map(([k, l]) => ({ label: l, href: toggle("material", k), on: has("material", k), count: fc("material", (c) => !!c.materials?.includes(k as never)) })) },
     { label: "PROFILE", ticks: [
-      { label: "Claimed", href: href({ claimed: sp.claimed === "1" ? undefined : "1" }), on: sp.claimed === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, claimed: undefined }) && c.claimed).length },
-      { label: "Has photos", href: href({ photos: sp.photos === "1" ? undefined : "1" }), on: sp.photos === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, photos: undefined }) && c.productCards.some((p) => p.photos > 0)).length },
-      { label: "In our coverage", href: href({ covered: sp.covered === "1" ? undefined : "1" }), on: sp.covered === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, covered: undefined }) && art(c) > 0).length },
+      { label: "Claimed", href: href({ claimed: sp.claimed === "1" ? undefined : "1" }), on: sp.claimed === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, claimed: undefined }, undefined, art) && c.claimed).length },
+      { label: "Has photos", href: href({ photos: sp.photos === "1" ? undefined : "1" }), on: sp.photos === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, photos: undefined }, undefined, art) && c.productCards.some((p) => p.photos > 0)).length },
+      { label: "In our coverage", href: href({ covered: sp.covered === "1" ? undefined : "1" }), on: sp.covered === "1", count: COMPANIES.filter((c) => matches(c, { ...sp, covered: undefined }, undefined, art) && art(c) > 0).length },
     ] },
   ]}
   sort={<div role="group" aria-label="Sort" className="seg">
@@ -291,6 +300,6 @@ export function DirectoryBoard({ sp }: { sp: DirParams }) {
 </div>
 </section>
 <div style={{ height: "4px", background: "var(--red)" }}></div>
-    </Shell>
+    </>
   );
 }

@@ -4,6 +4,9 @@ import { pageMeta } from "@/lib/seo";
 import { POLICIES, getPolicy } from "@/lib/content/policies";
 import { PolicyBoard } from "@/components/boards/contact/PolicyBoard";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return POLICIES.map((p) => ({ slug: p.slug }));
 }

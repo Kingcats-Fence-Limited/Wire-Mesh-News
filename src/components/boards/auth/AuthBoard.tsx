@@ -1,12 +1,22 @@
+"use client";
+
 /* Ported 1:1 from canvas board Auth-Q: sign in (①), register (②/③), reset (④). The sign-in-required interstitial (⑤) reuses the same card with a "next" target. */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
+import { useFlatParams } from "@/lib/use-flat-params";
 import { SignInForm, RegisterForm, ResetForm } from "./AuthForms";
 import "@/styles/board-login.css";
 
+/* Sign-in and register pages are static; ?mode=, ?next= and ?claim= are read in the browser.
+   next is checked by safeNext where it is used; claim must be a known directory slug. */
+export function AuthFromUrl({ page, companySlugs }: { page: "signin" | "register"; companySlugs?: string[] }) {
+  const sp = useFlatParams<{ mode?: string; next?: string; claim?: string }>();
+  if (page === "register") return <AuthBoard mode="register" claim={sp.claim && companySlugs?.includes(sp.claim) ? sp.claim : undefined} />;
+  return <AuthBoard mode={sp.mode === "reset" ? "reset" : "signin"} next={sp.next} />;
+}
+
 export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" | "reset"; next?: string; claim?: string }) {
   return (
-    <Shell header="compact" board="b-login">
+    <>
 <section style={{ paddingTop: "40px", paddingBottom: "56px" }} className="wrap">
 <div style={{ maxWidth: "860px", margin: "0 auto" }}>
 {next && (
@@ -49,6 +59,6 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 </div>
 </div>
 </section>
-    </Shell>
+    </>
   );
 }

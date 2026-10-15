@@ -4,12 +4,15 @@ import { notFound } from "next/navigation";
 import { COLUMNS, getColumn } from "@/lib/content/people";
 import { ColumnBoard } from "@/components/boards/letters/LettersBoard";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return COLUMNS.map((c) => ({ slug: c.slug }));
 }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const c = getColumn((await params).slug);
-  return c ? pageMeta({ title: `${c.title} · Opinion`, description: c.summary, path: `/letters/columns/${c.slug}/` }) : {};
+  return c ? pageMeta({ title: `${c.title} · Column`, description: c.summary, path: `/letters/columns/${c.slug}/` }) : {};
 }
 
 export default async function ColumnPage({ params }: { params: Promise<{ slug: string }> }) {

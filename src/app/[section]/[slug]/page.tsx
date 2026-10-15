@@ -10,6 +10,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { articleLd, breadcrumbs } from "@/lib/schema";
 import type { SectionCode } from "@/lib/content/types";
 
+/* Unknown slugs get the prerendered 404 (rendered on the server, with the theme script) instead of an on-demand render. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   const params: { section: string; slug: string }[] = [];
   for (const s of EDITORIAL_SECTIONS) {

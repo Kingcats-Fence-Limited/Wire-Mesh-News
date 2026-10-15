@@ -101,7 +101,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
         ))}
         <span style={{ width: "1px", height: "18px", background: "var(--line)" }}></span>
         {[["directory", "Directory", "/directory/"], ["events", "Events", "/events/"], ["standards", "Standards", "/standards/"]].map(([code, label, href]) => (
-          <Link key={code} href={href} style={{ color: open === code ? "var(--red)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={(e) => { place(e.currentTarget); show(code); }} onFocus={(e) => { place(e.currentTarget); show(code); }} onClick={() => setOpen(null)}>{label}</Link>
+          <Link key={code} href={href} style={{ color: open === code ? "var(--red-text)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={(e) => { place(e.currentTarget); show(code); }} onFocus={(e) => { place(e.currentTarget); show(code); }} onClick={() => setOpen(null)}>{label}</Link>
         ))}
       </nav>
 

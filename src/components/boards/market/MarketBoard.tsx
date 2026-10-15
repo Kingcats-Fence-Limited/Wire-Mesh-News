@@ -1,9 +1,11 @@
+"use client";
+
 /* Ported 1:1 from canvas board Market-X ② (the standalone /market-data page). States ③ and the three required texts ④ live in the Method-X2 page. */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
 import { MarketChart } from "./MarketChart";
 import { MARKET_SERIES, MARKET_LICENSED, MARKET_FEED_LIVE } from "@/lib/content/market";
-import { byMarketSeries, bySection } from "@/lib/content/articles";
+import { useFlatParams } from "@/lib/use-flat-params";
+import type { SectionCode } from "@/lib/content/types";
 import { articleHref, fmtDateShort, fmtNum, sectionByCode } from "@/lib/site";
 import type { MarketSeries } from "@/lib/content/types";
 import "@/styles/board-mkt.css";
@@ -14,13 +16,19 @@ const LIC: Record<MarketSeries["licence"], [string, string]> = { delayed30: ["DE
 const LIC_SAMPLE: [string, string] = ["SAMPLE", "warn"];
 const asOf = (s: MarketSeries) => s.licence === "delayed30" ? new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" }).format(new Date(s.asOf)) + " UTC" : s.licence === "nextday" ? "Previous close" : fmtDateShort(s.asOf);
 
-export function MarketBoard({ selected }: { selected?: string }) {
+/** Articles that explain each series (prepared on the server). */
+export type MarketData = { related: Record<string, { slug: string; title: string; type: string; section: SectionCode; date: string }[]>; tagged: Record<string, boolean> };
+
+export function MarketFromUrl({ data }: { data: MarketData }) {
+  return <MarketBoard selected={useFlatParams<{ series?: string }>().series} data={data} />;
+}
+
+export function MarketBoard({ selected, data }: { selected?: string; data: MarketData }) {
   const sel = MARKET_SERIES.find((s) => s.code === selected) ?? MARKET_SERIES[0];
-  const moved = byMarketSeries(sel.code, 3);
-  const fallback = bySection("market_insights", 3);
-  const items = moved.length ? moved : fallback;
+  const items = data.related[sel.code] ?? [];
+  const moved = { length: data.tagged[sel.code] ? 1 : 0 };
   return (
-    <Shell header="compact" active="market_insights" board="b-mkt">
+    <>
 <section style={{ paddingTop: "34px", paddingBottom: "24px", borderBottom: "1px solid var(--line)" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--slate)", marginBottom: "14px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <Link href="/market-insights/" style={{ color: "var(--slate)" }}>Market Insights</Link> / <span style={{ color: "var(--ink)", fontWeight: "800" }}>Market data</span></nav>
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "32px", flexWrap: "wrap" }}>
@@ -28,7 +36,7 @@ export function MarketBoard({ selected }: { selected?: string }) {
 <h1 style={{ margin: "0 0 10px", fontSize: "50px", letterSpacing: "-.05em", lineHeight: "1" }} className="h">Market data<span style={{ color: "var(--red-text)" }}>.</span></h1>
 <p style={{ margin: "0", fontSize: "16.5px", fontWeight: "500", lineHeight: "1.55", color: "var(--slate)" }}>{MARKET_FEED_LIVE ? "Six licensed price series behind every quotation — exchange zinc, wire rod, hot-rolled coil, our own panel survey and container freight — with the articles that explain why they moved." : "The six price series this page will carry — exchange zinc, wire rod, hot-rolled coil, our own panel survey and container freight. The figures below are illustrative while no feed is licensed; they are not prices."}</p>
 </div>
-<div style={{ display: "flex", gap: "10px", flexShrink: "0", alignItems: "center" }}>
+<div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
 {MARKET_FEED_LIVE ? <span className="badge bad"><span style={{ width: "6px", height: "6px", borderRadius: "999px", background: "var(--red)" }}></span>DELAYED 30 MIN</span> : <span className="badge warn">SAMPLE DATA &#183; NOT A PRICE FEED</span>}
 <Link href="/market-data/methodology/" style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "2px solid var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}>Methodology</Link>
 </div>
@@ -119,6 +127,6 @@ export function MarketBoard({ selected }: { selected?: string }) {
 </div>
 </section>
 )}
-    </Shell>
+    </>
   );
 }

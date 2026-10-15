@@ -56,7 +56,12 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
     const s: Submission = { id: uid(), title: "Untitled draft", status: "draft", section: "—", updated: today(), excerpt: "", words: 0, draft: emptyDraft(`${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`) };
     setFresh(s); setF("all"); startEdit(s);
   };
-  useEffect(() => { const i = intent; intent = {}; if (i.fresh) newDraft(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+  useEffect(() => {
+    const i = intent; intent = {};
+    if (i.fresh) newDraft();
+    // Runs once on open; newDraft is recreated every render but only its first version matters here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const fromDraft = (dr: ArticleDraft): Partial<Submission> => ({ title: dr.title.trim() || "Untitled draft", excerpt: dr.dek || dr.body.slice(0, 280), words: dr.body.trim() ? dr.body.trim().split(/\s+/).length : 0, section: SECTION.find((x) => x.code === dr.section)?.label ?? "—", draft: dr, updated: today() });
 
   const cur = editing ? d.submissions.find((x) => x.id === editing) ?? (fresh?.id === editing ? fresh : undefined) : undefined;

@@ -45,7 +45,7 @@ export const breadcrumbs = (items: { name: string; path: string }[]) => ({
 export function articleLd(a: Article) {
   const au = getAuthor(a.author);
   const url = abs(articleHref(a));
-  const type = a.type === "column" ? "OpinionNewsArticle" : a.type === "analysis" ? "AnalysisNewsArticle" : a.type === "news" ? "NewsArticle" : "Article";
+  const type = a.type === "column" || a.type === "opinion" ? "OpinionNewsArticle" : a.type === "analysis" ? "AnalysisNewsArticle" : a.type === "news" ? "NewsArticle" : "Article";
   return {
     "@context": "https://schema.org",
     "@type": type,

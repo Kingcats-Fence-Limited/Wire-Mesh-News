@@ -1,14 +1,13 @@
+"use client";
+
 /* Ported 1:1 from canvas board Events-F. */
 import Link from "next/link";
-import { Shell } from "@/components/shell/Shell";
 import { EVENT_TYPE } from "@/data/vocab/event_type";
 import { SectionNewsletter } from "@/components/boards/category/SectionNewsletter";
-import { COMPANIES } from "@/lib/content/directory";
-import { EVENTS, upcomingEvents } from "@/lib/content/source";
-import { bySubsection, getArticle } from "@/lib/content/articles";
+import { useFlatParams } from "@/lib/use-flat-params";
 import { COUNTRY_BY_CODE } from "@/data/vocab/country";
 import { REGION } from "@/data/vocab/region";
-import { fmtDate, articleHref } from "@/lib/site";
+import { fmtDate } from "@/lib/site";
 import type { EventItem } from "@/lib/content/types";
 import "@/styles/board-ev.css";
 import "@/styles/board-dir.css";
@@ -30,11 +29,26 @@ const range = (e: EventItem) => {
 };
 const where = (e: EventItem) => e.online ? `Online${e.organiser ? ` · ${e.organiser}` : ""}` : [e.city, COUNTRY_BY_CODE[e.country ?? ""]?.name ?? e.country, e.venue].filter(Boolean).join(" · ");
 
-const reportHref = (slug: string) => { const a = getArticle(slug); return a ? articleHref(a) : "/news/events-exhibitions/"; };
+/** Prepared on the server: event list, show-report links and side-column cards. */
+export type EvData = {
+  events: EventItem[];
+  reportHrefs: Record<string, string>;
+  reports: { slug: string; title: string; href: string; date: string; readMin: number }[];
+  exhibitors: { slug: string; name: string }[];
+};
 
-export function EventsBoard({ sp }: { sp: EvParams }) {
-  /* The page renders per request, so "today" — and with it Upcoming / Past and the Month list — is always the current date. */
-  const TODAY = new Date().toISOString().slice(0, 10);
+/* The page is static; the browser applies the filters from the address bar. */
+export function EventsFromUrl({ data }: { data: EvData }) {
+  return <EventsBoard sp={useFlatParams<EvParams>()} data={data} />;
+}
+
+export function EventsBoard({ sp, data, today }: { sp: EvParams; data: EvData; today?: string }) {
+  /* "Today" is the visitor's date in the browser (the static first paint uses the build/revalidation date),
+     so Upcoming / Past and the Month list are always current. */
+  const TODAY = today ?? new Date().toISOString().slice(0, 10);
+  const EVENTS = data.events;
+  const upcomingEvents = (from: string) => EVENTS.filter((e) => (e.end ?? e.start) >= from).sort((a, b) => (a.start > b.start ? 1 : -1));
+  const reportHref = (slug: string) => data.reportHrefs[slug] ?? "/news/events-exhibitions/";
   const past = sp.when === "past";
   const pool = past ? EVENTS.filter((e) => (e.end ?? e.start) < TODAY).sort((a, b) => (a.start < b.start ? 1 : -1)) : upcomingEvents(TODAY);
   const monthOf = (e: EventItem) => e.start.slice(0, 7);
@@ -47,8 +61,7 @@ export function EventsBoard({ sp }: { sp: EvParams }) {
   const months = [...new Set(pool.map(monthOf))].sort(past ? (a, b) => (a < b ? 1 : -1) : undefined);
   const monthLabel = (m: string) => new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${m}-01`));
   const next = upcomingEvents(TODAY).find((e) => e.weAttend) ?? upcomingEvents(TODAY)[0];
-  const reports = bySubsection("news", "events_exhibitions").slice(0, 2);
-  const exhibitors = COMPANIES.filter((c) => c.claimed).slice(0, 2);
+  const { reports, exhibitors } = data;
   const href = (patch: Partial<EvParams>) => { const m: Record<string, string | undefined> = { ...sp, ...patch }; const p = new URLSearchParams(); for (const [k, v] of Object.entries(m)) if (v) p.set(k, v); const s = p.toString(); return `/events/${s ? `?${s}` : ""}`; };
   const toggle = (k: keyof EvParams, v: string) => { const cur = (sp[k] ?? "").split(",").filter(Boolean); const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]; return href({ [k]: next.length ? next.join(",") : undefined }); };
   const has = (k: "type" | "region" | "month", v: string) => (sp[k] ?? "").split(",").includes(v);
@@ -56,7 +69,7 @@ export function EventsBoard({ sp }: { sp: EvParams }) {
   for (const e of list) { const label = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(e.start)).toUpperCase(); const g = groups.find((x) => x.label === label); if (g) g.items.push(e); else groups.push({ label, items: [e] }); }
 
   return (
-    <Shell header="compact" active="events" board="b-ev">
+    <>
 {/* 页头 */}
 <section style={{ paddingTop: "34px", paddingBottom: "24px", borderBottom: "1px solid var(--line)" }} className="wrap">
 <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: "500", color: "var(--slate)", marginBottom: "14px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <span style={{ color: "var(--ink)", fontWeight: "800" }}>Events</span></nav>
@@ -157,7 +170,7 @@ Subscribe to calendar
 <h2 style={{ margin: "36px 0 2px", fontSize: "23px", borderBottom: "3px solid var(--ink)", paddingBottom: "10px" }} className="h">Show reports</h2>
 <div className="g2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "22px", paddingTop: "20px" }}>
 {reports.map((a) => (
-<article key={a.slug} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><Link href={articleHref(a)} className="thumb" style={demoBg(a.slug, 0, "md")} aria-hidden="true" tabIndex={-1}></Link><span className="kicker"><i></i>NEWS · EVENTS &amp; EXHIBITIONS</span><Link href={articleHref(a)} style={{ fontSize: "18px" }} className="h">{a.title}</Link><span className="meta">{fmtDate(a.date)} · {a.readMin} min</span></article>
+<article key={a.slug} style={{ display: "flex", flexDirection: "column", gap: "9px" }}><Link href={a.href} className="thumb" style={demoBg(a.slug, 0, "md")} aria-hidden="true" tabIndex={-1}></Link><span className="kicker"><i></i>NEWS · EVENTS &amp; EXHIBITIONS</span><Link href={a.href} style={{ fontSize: "18px" }} className="h">{a.title}</Link><span className="meta">{fmtDate(a.date)} · {a.readMin} min</span></article>
 ))}
 </div>
 </div>
@@ -170,7 +183,7 @@ Subscribe to calendar
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "18px", marginBottom: "9px" }} className="h">Submit an event</div>
 <p style={{ margin: "0 0 13px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>Trade shows and industry events can be submitted for listing with an official website and dates. Editors verify before adding to the calendar; listing is free and order is never paid for.</p>
-<Link href="/contact/?subject=event" style={{ border: "2px solid var(--ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit event details</Link>
+<Link href="/contact/?subject=other" style={{ border: "2px solid var(--ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit event details</Link>
 </div>
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "18px", marginBottom: "12px" }} className="h">Exhibiting companies</div>
@@ -182,6 +195,6 @@ Subscribe to calendar
 </aside>
 </div>
 </section>
-    </Shell>
+    </>
   );
 }
