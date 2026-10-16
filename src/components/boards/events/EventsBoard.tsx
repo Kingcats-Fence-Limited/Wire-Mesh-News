@@ -183,7 +183,7 @@ Subscribe to calendar
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "18px", marginBottom: "9px" }} className="h">Submit an event</div>
 <p style={{ margin: "0 0 13px", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>Trade shows and industry events can be submitted for listing with an official website and dates. Editors verify before adding to the calendar; listing is free and order is never paid for.</p>
-<Link href="/contact/?subject=other" style={{ border: "2px solid var(--ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit event details</Link>
+<Link href="/contact/?form=event#form" style={{ border: "2px solid var(--ink)", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Submit event details</Link>
 </div>
 <div style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "22px" }}>
 <div style={{ fontSize: "18px", marginBottom: "12px" }} className="h">Exhibiting companies</div>

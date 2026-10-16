@@ -355,3 +355,10 @@ html.adfree .ad, html.adfree .adtag, html.adfree .adlbl, html.adfree .tall-ad, h
 /* Directory Sponsor ribbon (yearly sponsorship mark). */
 .spmark{display:inline-flex;align-items:center;gap:5px;background:var(--red);color:#FFFFFF;font-family:var(--font-sans);font-size:10px;font-weight:800;letter-spacing:.12em;line-height:1;padding:6px 15px 6px 9px;border-radius:4px 0 0 4px;clip-path:polygon(0 0,100% 0,calc(100% - 7px) 50%,100% 100%,0 100%);white-space:nowrap;box-shadow:0 6px 14px -8px rgba(229,36,47,.8)}
 .spmark[data-small]{font-size:9.5px;padding:5px 13px 5px 8px}
+
+/* "Go Pro" entry in the main navigation. */
+.navpro{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--red);color:var(--red-text);font-weight:800;font-size:13.5px;padding:0 14px;min-height:32px;border-radius:999px;white-space:nowrap}
+.navpro:hover{background:var(--red);color:#FFFFFF}
+.navrow > *{white-space:nowrap;flex-shrink:0}
+@media (max-width:1240px){.navrow{gap:20px!important}.navrow .navx{display:none}}
+.mastbtn{white-space:nowrap}

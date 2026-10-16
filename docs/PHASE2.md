@@ -40,6 +40,7 @@ only. Deployments of the `phase2` branch are then live; production stays as it i
 | `DIRECTUS_URL` | yes | e.g. `https://cms.wiremeshnews.com` |
 | `DIRECTUS_SERVER_TOKEN` | yes | Static token printed by `scripts/directus-setup.mjs` (role "Website server"). Never the admin token. |
 | `RESEND_API_KEY` | yes | Email sending (sign-in codes, notices). resend.com → API Keys. |
+| `RESEND_WEBHOOK_SECRET` | recommended | Resend → Webhooks signing secret (`whsec_…`). Bounced and spam-reported addresses leave the newsletter automatically. |
 | `MAIL_FROM` | no | Default `Wire Mesh News <no-reply@wiremeshnews.com>`. The domain must be verified in Resend. |
 | `EDITORS_INBOX` | no | Where claims, enquiries, contact forms and new comments are emailed. Default `hello@wiremeshnews.com`. |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | for Google | See below. |
@@ -94,6 +95,19 @@ site's `wmn_rate_limit` and `wmn_email_code`. Same SQL: docs/auth-schema.sql.
 resend.com → Domains → add `wiremeshnews.com` → add the DNS records it shows (SPF, DKIM, and
 DMARC if not present) at your DNS host → wait for "Verified" → API Keys → create a "Sending"
 key → `RESEND_API_KEY`.
+
+Then Webhooks → Add endpoint → `https://wiremeshnews.com/api/hooks/resend/` → events
+`email.bounced` and `email.complained` → copy the signing secret → `RESEND_WEBHOOK_SECRET`.
+
+**How newsletter addresses are kept clean.** (1) Before any email is sent, the address is
+checked: valid format, not a known throwaway inbox, not an obvious typo of a big provider
+(the reader gets "Did you mean …@gmail.com?" with a one-click fix), and the domain must have a
+mail server (MX record). (2) Double opt-in: the address stays `pending` and gets nothing until
+the reader opens the email and clicks **Confirm my subscription** on the site. Opening the
+link alone does not confirm, so company mail scanners that pre-open links cannot confirm for
+someone. (3) Unconfirmed sign-ups are deleted after 7 days (daily purge). (4) A hard bounce or
+spam complaint sets the status to `bounced` / `complained`; such addresses are never mailed
+again, even if the form is filled in again. **Send newsletters only to `status = active`.**
 
 ### 4. Google sign-in
 

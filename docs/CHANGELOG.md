@@ -40,3 +40,8 @@
 - Templates & tools: welded mesh calculator, specification/checklist library; Reports shop
 - Directory: no pinned or separate paid placement; Directory Sponsors keep their place with a ★ SPONSOR mark, highlighted card, website button and labelled rotating sponsor spots; Company plan analytics and profile extras
 - Ad-free for paying readers (set before paint)
+
+## 0.5.1 — Phase 2 · forms, navigation, newsletter hygiene (2026-10-16)
+- "Suggest a listing" and "Submit an event" open their own forms (company / event fields) instead of the general contact form
+- Main navigation: "★ Go Pro" entry (shows "Pro" for subscribers) and Tenders link; mobile menu gains intelligence links and Go Pro
+- Newsletter: address check before any email (format, disposable inboxes, provider typos with "Did you mean…", domain mail server); confirmation needs a click on the site, so mail scanners cannot confirm; Resend webhook marks hard bounces and spam complaints and they are never mailed again

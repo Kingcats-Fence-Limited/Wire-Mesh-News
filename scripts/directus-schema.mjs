@@ -158,7 +158,7 @@ export const COLLECTIONS = [
     icon: "outgoing_mail",
     note: "Weekly brief and alert sign-ups (double opt-in).",
     display_template: "{{email}} · {{status}}",
-    fields: [uuidPk, str("email", "", { required: true, unique: true, max: 320 }), json("lists", "[\"brief\", …]"), choice("status", "", ["pending", "active", "unsubscribed"], "pending"), str("confirm_hash", "Hash of the confirmation token (website only)", { max: 128, meta: { hidden: true } }), str("source", "Which form", { max: 60 }), ts("confirmed_at", ""), created],
+    fields: [uuidPk, str("email", "", { required: true, unique: true, max: 320 }), json("lists", "[\"brief\", …]"), choice("status", "bounced / complained are set by the Resend webhook; never mail them", ["pending", "active", "unsubscribed", "bounced", "complained"], "pending"), str("confirm_hash", "Hash of the confirmation token (website only)", { max: 128, meta: { hidden: true } }), str("source", "Which form", { max: 60 }), ts("confirmed_at", ""), created],
   },
   {
     collection: "contact_messages",
