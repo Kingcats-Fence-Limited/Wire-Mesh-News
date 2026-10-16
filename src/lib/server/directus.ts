@@ -5,7 +5,7 @@ import { ENV } from "./env";
    role can read and write only the user-data collections, so a bug here cannot touch
    editorial content or Directus' own settings. */
 
-type Query = { filter?: unknown; fields?: string[]; sort?: string[]; limit?: number; search?: string };
+type Query = { filter?: unknown; fields?: string[]; sort?: string[]; limit?: number; search?: string; page?: number; offset?: number };
 
 export class DirectusError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -18,6 +18,8 @@ function qs(q: Query = {}) {
   if (q.sort) p.set("sort", q.sort.join(","));
   p.set("limit", String(q.limit ?? 200));
   if (q.search) p.set("search", q.search);
+  if (q.page) p.set("page", String(q.page));
+  if (q.offset) p.set("offset", String(q.offset));
   return p.toString();
 }
 

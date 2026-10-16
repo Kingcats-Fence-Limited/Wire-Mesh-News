@@ -41,6 +41,7 @@ export const ENV = {
     team: { monthly: v("STRIPE_PRICE_TEAM_MONTHLY"), yearly: v("STRIPE_PRICE_TEAM_YEARLY") },
     company: { monthly: v("STRIPE_PRICE_COMPANY_MONTHLY"), yearly: v("STRIPE_PRICE_COMPANY_YEARLY") },
     teamSeat: { monthly: v("STRIPE_PRICE_TEAM_SEAT_MONTHLY"), yearly: v("STRIPE_PRICE_TEAM_SEAT_YEARLY") },
+    sponsorYearly: v("STRIPE_PRICE_SPONSOR_YEARLY"),
   },
   /** The legal seller shown on the pricing page, Terms and invoices. */
   sellerName: v("SELLER_NAME"),

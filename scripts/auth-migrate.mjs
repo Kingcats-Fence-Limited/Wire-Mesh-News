@@ -40,6 +40,8 @@ create index if not exists wmn_email_code_user on wmn_email_code (user_id, purpo
 create table if not exists wmn_meter (user_id text not null, month text not null, slug text not null, at timestamptz not null default now(), primary key (user_id, month, slug));
 create table if not exists wmn_company_views (company_slug text not null, day date not null, country text not null default '', views integer not null default 0, primary key (company_slug, day, country));
 create table if not exists wmn_fetch_log (source text primary key, ran_at timestamptz not null, found integer not null default 0, added integer not null default 0, error text);
+create table if not exists wmn_trade (source text not null, reporter text not null, partner text not null, flow text not null, hs text not null, period text not null, value numeric not null, currency text not null, qty_kg numeric, fetched_at timestamptz not null default now(), primary key (source, reporter, partner, flow, hs, period));
+create index if not exists wmn_trade_q on wmn_trade (hs, reporter, flow, period);
 `;
 
 if (process.argv.includes("--sql")) {

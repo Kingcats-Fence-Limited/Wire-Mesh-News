@@ -175,7 +175,7 @@ export const COLLECTIONS = [
     display_template: "{{plan}} · {{status}} · {{member.email}}",
     fields: [
       uuidPk, member("Owner (who pays)"),
-      choice("plan", "", ["pro", "team", "company"], "pro"),
+      choice("plan", "sponsor = Directory Sponsor (yearly)", ["pro", "team", "company", "sponsor"], "pro"),
       choice("cycle", "", ["monthly", "yearly"], "monthly"),
       choice("status", "Stripe status", ["trialing", "active", "past_due", "unpaid", "canceled", "incomplete", "incomplete_expired", "paused"], "incomplete"),
       str("stripe_subscription", "", { required: true, unique: true, max: 64, meta: { readonly: true } }),
@@ -230,6 +230,7 @@ export const COLLECTIONS = [
       ts("published_on", "Date the notice was published"), ts("deadline", "Submission deadline"),
       str("source", "ted / worldbank / sam / manual", { max: 40, width: "half" }), str("source_id", "Notice id at the source", { max: 120, width: "half" }),
       str("url", "Original notice", { max: 500 }), str("language", "", { max: 8, width: "half" }), json("raw", "What the fetcher found (for the editor)"),
+      ts("published_at", "Set by the website when an editor publishes it (used for alerts)"),
       created, updated,
     ],
   },
@@ -268,6 +269,7 @@ export const COLLECTIONS = [
       uuidPk, review("draft"), rel("case", "trade_cases", "Case this notice belongs to", "SET NULL"),
       str("title", "", { required: true, max: 400 }), text("summary", ""), ts("date", "Publication date"),
       str("source", "federal_register / eu_oj / rss / manual", { max: 40, width: "half" }), str("source_id", "", { max: 160, width: "half" }), str("url", "", { max: 500 }), json("raw", ""),
+      ts("published_at", "Set by the website when an editor publishes it (used for alerts)"),
       created,
     ],
   },
@@ -276,20 +278,6 @@ export const COLLECTIONS = [
     icon: "bookmark_added",
     note: "Members following a trade case (Pro); emailed when a published update is added.",
     fields: [uuidPk, member(), rel("case", "trade_cases", "Followed case"), created],
-  },
-
-  /* ---------------- Trade statistics ---------------- */
-  {
-    collection: "trade_flows",
-    icon: "query_stats",
-    note: "Monthly import/export statistics from official public sources (Eurostat Comext, US Census). Written by the fetcher.",
-    display_template: "{{reporter}} {{flow}} {{hs}} {{period}}",
-    fields: [
-      uuidPk, str("source", "eurostat / us_census", { max: 20, width: "half" }), str("reporter", "Reporting country (ISO or EU27)", { max: 8, width: "half" }),
-      str("partner", "Partner country (ISO) or WORLD", { max: 8, width: "half" }), choice("flow", "", ["import", "export"], "import"),
-      str("hs", "HS code (4 or 6 digits)", { max: 10, width: "half" }), str("period", "YYYY-MM", { max: 7, width: "half" }),
-      num("value_usd", "Value, US dollars"), num("qty_kg", "Net mass, kg"), created,
-    ],
   },
 
   /* ---------------- Company premium ---------------- */

@@ -31,6 +31,8 @@ Website users. Created on first sign-in; sign-in itself is handled by the websit
 | `company_slug` | string(120) |  | Claimed company (directory slug), set by the directory editor when a claim is approved |
 | `terms_accepted_at` | timestamp |  | When the user accepted the Terms and Privacy Policy |
 | `deletion_requested_at` | timestamp |  | Account deletion requested; data is removed 30 days later unless the user signs in and cancels |
+| `stripe_customer_id` | string(64) |  | Stripe customer (set by the website) |
+| `trial_used` | boolean | required, default false | Has had a free trial (one per account) |
 | `date_created` | timestamp |  |  |
 | `date_updated` | timestamp |  |  |
 
@@ -200,6 +202,188 @@ Contact and advertising enquiries from the site forms.
 | `status` | string(40) | required, default "new" | values: new / handled |
 | `date_created` | timestamp |  |  |
 
+## `subscriptions`
+
+Paid plans. Written by the website from Stripe webhooks — change plans in Stripe, not here.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `member` | uuid → members |  | Owner (who pays) |
+| `plan` | string(40) | required, default "pro" | sponsor = Directory Sponsor (yearly) · values: pro / team / company / sponsor |
+| `cycle` | string(40) | required, default "monthly" | values: monthly / yearly |
+| `status` | string(40) | required, default "incomplete" | Stripe status · values: trialing / active / past_due / unpaid / canceled / incomplete / incomplete_expired / paused |
+| `stripe_subscription` | string(64) | required, unique |  |
+| `stripe_customer` | string(64) |  |  |
+| `seats` | integer | default 1 | Team: people included |
+| `trial_end` | timestamp |  |  |
+| `period_end` | timestamp |  | Current period ends / renews |
+| `cancel_at_period_end` | boolean | required, default false | Cancelled; access runs to period_end |
+| `date_created` | timestamp |  |  |
+| `date_updated` | timestamp |  |  |
+
+## `team_seats`
+
+People added to a Team subscription by its owner. Matched to members by email.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `subscription` | uuid → subscriptions |  | Team subscription |
+| `email` | string(320) | required |  |
+| `date_created` | timestamp |  |  |
+
+## `purchases`
+
+One-off purchases (reports). Written by the website from Stripe webhooks.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `member` | uuid → members |  | Buyer |
+| `product` | string(120) | required | Report slug |
+| `stripe_session` | string(128) | unique |  |
+| `amount` | integer | default 0 | Minor units (cents) |
+| `currency` | string(3) |  |  |
+| `date_created` | timestamp |  |  |
+
+## `reports`
+
+Paid reports sold one by one on /reports/. The file is only downloadable by buyers.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `slug` | string(120) | required, unique | URL name |
+| `status` | string(40) | required, default "draft" | draft = found automatically, waiting for an editor · published = live on the site · rejected = not relevant · values: draft / published / rejected |
+| `title` | string(200) | required |  |
+| `summary` | text |  | Shown on the shop page |
+| `contents` | json |  | Table of contents: ["…"] |
+| `price_usd` | integer | default 299 | Whole US dollars |
+| `stripe_price` | string(64) |  | Stripe price id (one-off) |
+| `pages` | integer | default 0 |  |
+| `published_at` | timestamp |  |  |
+| `file` | uuid → directus_files |  | The report PDF (private) |
+| `cover` | uuid → directus_files |  | Cover image (public) |
+| `sample` | uuid → directus_files |  | Free sample pages PDF (public) |
+| `date_created` | timestamp |  |  |
+| `date_updated` | timestamp |  |  |
+
+## `tenders`
+
+Tenders and project leads. The website's fetchers add drafts (TED, World Bank, SAM.gov); editors check, add products and publish.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `status` | string(40) | required, default "draft" | draft = found automatically, waiting for an editor · published = live on the site · rejected = not relevant · values: draft / published / rejected |
+| `title` | string(300) | required |  |
+| `summary` | text |  | Plain-English summary written or checked by the editor |
+| `buyer` | string(255) |  | Contracting authority / owner |
+| `country` | string(2) |  | ISO alpha-2 |
+| `city` | string(120) |  |  |
+| `products` | json |  | Product codes (vocabulary: product), e.g. ["welded_mesh_panel"] |
+| `kind` | string(40) | required, default "tender" | values: tender / prequalification / award / project |
+| `quantity` | string(255) |  | As stated |
+| `value` | decimal |  | Estimated value |
+| `currency` | string(3) |  |  |
+| `published_on` | timestamp |  | Date the notice was published |
+| `deadline` | timestamp |  | Submission deadline |
+| `source` | string(40) |  | ted / worldbank / sam / manual |
+| `source_id` | string(120) |  | Notice id at the source |
+| `url` | string(500) |  | Original notice |
+| `language` | string(8) |  |  |
+| `raw` | json |  | What the fetcher found (for the editor) |
+| `published_at` | timestamp |  | Set by the website when an editor publishes it (used for alerts) |
+| `date_created` | timestamp |  |  |
+| `date_updated` | timestamp |  |  |
+
+## `tender_alerts`
+
+Saved tender searches (Pro). A daily email lists new matches.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `member` | uuid → members |  | The site user this belongs to |
+| `name` | string(80) |  |  |
+| `products` | json |  |  |
+| `countries` | json |  |  |
+| `last_sent` | timestamp |  |  |
+| `date_created` | timestamp |  |  |
+
+## `trade_cases`
+
+Anti-dumping, countervailing and safeguard cases on wire, mesh, fencing and grating.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `status` | string(40) | required, default "draft" | draft = found automatically, waiting for an editor · published = live on the site · rejected = not relevant · values: draft / published / rejected |
+| `slug` | string(160) | unique |  |
+| `importing_country` | string(8) |  | Country or bloc imposing the measure (ISO, or EU) |
+| `origins` | json |  | Exporting countries (ISO) ["CN", …] |
+| `product` | string(255) |  | Product as named in the case |
+| `hs_codes` | json |  | ["7314.20", …] |
+| `products` | json |  | Product codes (vocabulary) |
+| `measure` | string(40) | required, default "anti_dumping" | values: anti_dumping / countervailing / safeguard / anti_circumvention |
+| `stage` | string(40) | required, default "initiation" | values: initiation / provisional / definitive / expiry_review / interim_review / terminated / expired |
+| `rates` | json |  | Duty rates: [{"company":"…","country":"CN","rate":"35.2%"}] |
+| `summary` | text |  | Editor summary |
+| `next_date` | timestamp |  | Next key date (expiry, review deadline) |
+| `authority` | string(160) |  | e.g. US Commerce / EU Commission |
+| `case_no` | string(80) |  |  |
+| `url` | string(500) |  | Official page |
+| `date_created` | timestamp |  |  |
+| `date_updated` | timestamp |  |  |
+
+## `trade_case_updates`
+
+Notices about a case (initiation, duties, reviews). Fetchers add drafts from official journals; editors link them to a case and publish.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `status` | string(40) | required, default "draft" | draft = found automatically, waiting for an editor · published = live on the site · rejected = not relevant · values: draft / published / rejected |
+| `case` | uuid → trade_cases |  | Case this notice belongs to |
+| `title` | string(400) | required |  |
+| `summary` | text |  |  |
+| `date` | timestamp |  | Publication date |
+| `source` | string(40) |  | federal_register / eu_oj / rss / manual |
+| `source_id` | string(160) |  |  |
+| `url` | string(500) |  |  |
+| `raw` | json |  |  |
+| `published_at` | timestamp |  | Set by the website when an editor publishes it (used for alerts) |
+| `date_created` | timestamp |  |  |
+
+## `case_follows`
+
+Members following a trade case (Pro); emailed when a published update is added.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `member` | uuid → members |  | The site user this belongs to |
+| `case` | uuid → trade_cases |  | Followed case |
+| `date_created` | timestamp |  |  |
+
+## `company_extras`
+
+Extra profile content for companies on the Company plan (catalogue, video, contacts). Reviewed before it shows.
+
+| Field | Type | Rules | Notes |
+| --- | --- | --- | --- |
+| `id` | uuid (primary key) | required |  |
+| `member` | uuid → members |  | Submitted by |
+| `company_slug` | string(120) | required |  |
+| `status` | string(40) | required, default "pending" | values: pending / approved / rejected |
+| `catalogue` | uuid → directus_files |  | Product catalogue PDF |
+| `video_url` | string(255) |  | YouTube or Vimeo link |
+| `contacts` | json |  | [{"name":"…","role":"…","email":"…","phone":"…"}] |
+| `editor_note` | text |  |  |
+| `date_created` | timestamp |  |  |
+| `date_updated` | timestamp |  |  |
+
 ## Extra fields on `directus_files`
 
 | Field | Type | Notes |
@@ -212,6 +396,7 @@ Contact and advertising enquiries from the site forms.
 - `website-avatars`
 - `website-submissions`
 - `website-company`
+- `website-reports`
 
 ## Access
 

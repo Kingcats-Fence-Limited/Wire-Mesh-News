@@ -146,3 +146,10 @@
 .b-dir .fbar > .sheetwrap{border-radius:0}
 .b-dir .ddfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);margin-top:6px;padding:10px 6px 4px}
 .b-dir .ddfoot .fdone{min-height:34px;padding:0 16px;font-size:12.5px}
+/* Directory Sponsor card: same size and place as every card, highlighted frame, full red band, website button. */
+.b-dir .card.sp{position:relative;border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset}
+.b-dir .band.sp{background:var(--red)}
+.b-dir .card .stretch{color:inherit}
+.b-dir .card .stretch::after{content:"";position:absolute;inset:0;border-radius:16px}
+.b-dir .card .ext{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;white-space:nowrap;flex-shrink:0;border-radius:999px;border:1.5px solid var(--red);color:var(--red-text);font-size:12.5px;font-weight:800;background:var(--card)}
+.b-dir .card .ext:hover{background:var(--red);color:#FFFFFF}

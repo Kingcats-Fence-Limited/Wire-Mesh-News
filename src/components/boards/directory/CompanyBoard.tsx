@@ -1,7 +1,9 @@
 /* Ported 1:1 from canvas board Company-E. */
 import Link from "next/link";
 import { SaveButton } from "@/components/live/SaveButton";
-import { PaidMark } from "@/components/live/PaidMark";
+import { SponsorMark } from "@/components/live/SponsorMark";
+import { SponsorSpot } from "@/components/live/SponsorSpot";
+import { CompanyExtras } from "@/components/live/CompanyExtras";
 import { Shell } from "@/components/shell/Shell";
 import { COMPANIES } from "@/lib/content/directory";
 import { upcomingEvents } from "@/lib/content/source";
@@ -52,7 +54,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ display: "flex", alignItems: "center", gap: "11px", flexWrap: "wrap" }}>
 <h1 style={{ margin: "0", fontSize: "42px", letterSpacing: "-.05em", color: "#FFFFFF", lineHeight: "1.02" }} className="h">{c.name}</h1>
 {c.claimed ? <span style={{ background: "#1E6B35", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 10px", borderRadius: "4px" }}>CLAIMED</span> : <span style={{ border: "1px solid var(--line-dark)", color: "var(--grey-3)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 10px", borderRadius: "4px" }}>UNCLAIMED</span>}
-<PaidMark slug={c.slug} paidMember={c.paidMember} />
+<SponsorMark slug={c.slug} />
 </div>
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 11px", borderRadius: "5px" }}>{orgType.toUpperCase()}</span>
@@ -95,6 +97,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ background: "var(--paper)", borderLeft: "4px solid var(--ink)", borderRadius: "0 10px 10px 0", padding: "14px 18px", marginTop: "18px" }}>
 <div style={{ fontSize: "13px", fontWeight: "500", lineHeight: "1.65", color: "var(--fg-3)" }}><b>About the photos:</b> product images are supplied by the company, which declares it holds the rights, and are shown after editorial review. They illustrate appearance only and are not a specification or proof of performance; the agreed technical documents govern. Wire Mesh News does not endorse product quality.</div>
 </div>
+<CompanyExtras slug={c.slug} name={c.name} />
 </section>
 {/* 主体 */}
 <section style={{ paddingBottom: "50px" }} className="wrap">
@@ -207,6 +210,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <Link href={`/register/?claim=${c.slug}`} style={{ background: "var(--red)", color: "#FFFFFF", fontWeight: "800", fontSize: "13.5px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Claim this profile</Link>
 </div>
 )}
+<SponsorSpot products={c.products} applications={c.applications} exclude={c.slug} />
 </aside>
 </div>
 </section>

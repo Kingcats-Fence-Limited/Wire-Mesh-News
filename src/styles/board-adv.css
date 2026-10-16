@@ -13,3 +13,4 @@
 .b-adv .cols, .b-adv .g2{grid-template-columns:1fr !important}
 .b-adv h1{font-size:36px !important}
 }
+.b-adv .lnk{font-weight:800;color:var(--red-text);text-decoration:underline;text-underline-offset:2px}

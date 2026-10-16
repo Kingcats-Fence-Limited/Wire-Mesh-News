@@ -143,6 +143,7 @@ function BillingLive() {
               })}
             </div>
             <span className="meta">{s.trialUsed ? "" : "Nothing is charged during the trial; we remind you 3 days before it ends. "}<Link href="/pricing/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Compare all plans</Link></span>
+            {s.hasCompany && <span className="meta">Want more visibility for your company? <Link href="/pricing/#sponsor" style={{ color: "var(--red-text)", fontWeight: 800 }}>Directory Sponsor</Link> — a SPONSOR mark, highlighted card and sponsor spots, yearly.</span>}
           </div>
         ) : (
           <div className="note">Paid plans open soon. See what they include on <Link href="/pricing/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Plans &amp; pricing</Link>; nothing is ever charged without you choosing a plan.</div>

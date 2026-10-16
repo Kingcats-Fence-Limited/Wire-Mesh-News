@@ -55,6 +55,13 @@ export async function POST(req: Request) {
       } else {
         await tell(c.member, "company", "companyEnquiries", `Your claim for ${name}`, `Your claim for ${name} was not approved.${c.editor_note ? ` Note: ${c.editor_note}` : ""}`, "/account/#company");
       }
+    } else if (b.collection === "company_extras") {
+      const x = await dx.get<{ status: string; editor_note: string | null; member: Member | null }>("company_extras", id, ["status", "editor_note", ...MEMBER_FIELDS]).catch(() => null);
+      if (x && ["approved", "rejected"].includes(x.status)) await tell(x.member, "company", "companyEnquiries", x.status === "approved" ? "Your profile extras are live" : "Your profile extras were not accepted", x.status === "approved" ? "Your catalogue, video and contacts are now on your public profile." : `Your profile extras were not accepted.${x.editor_note ? ` Note: ${x.editor_note}` : ""}`, "/account/#company");
+    } else if (b.collection === "tenders" || b.collection === "trade_case_updates") {
+      /* Stamp the publish time once (alerts send what was published since the last email). */
+      const t = await dx.get<{ status: string; published_at: string | null }>(b.collection, id, ["status", "published_at"]).catch(() => null);
+      if (t?.status === "published" && !t.published_at) await dx.update(b.collection, id, { published_at: new Date().toISOString() });
     } else if (b.collection === "company_change_requests") {
       const r = await dx.get<{ status: string; kind: string; editor_note: string | null; member: Member | null }>("company_change_requests", id, ["status", "kind", "editor_note", ...MEMBER_FIELDS]).catch(() => null);
       if (!r || !["approved", "rejected"].includes(r.status)) continue;

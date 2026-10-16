@@ -34,7 +34,7 @@ const S1_BODY = `A mill certificate tells you what the coating weighed on the da
 The measurement location. Two certificates can quote the same figure and describe two very different products, because one was measured on wire coil and the other on the panel a buyer will actually install. Ask for both, in writing, before the order is placed.`;
 
 /* A published article as the editor sees it, so "Submit an edit" starts from the full text. */
-const plain = (html: string) => html.replace(/<(strong|b)>(.*?)<\/\1>/g, "**$2**").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#8217;|&rsquo;/g, "’").replace(/&nbsp;/g, " ");
+const plain = (html: string) => html.replace(/<(strong|b)>(.*?)<\/\1>/g, "**$2**").replace(/<[^>]+>/g, "").replace(/&#8217;|&rsquo;/g, "’").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
 function articleToDraft(a: Article, byline: string): ArticleDraft {
   const body = a.body.map((b) => {
     switch (b.type) {

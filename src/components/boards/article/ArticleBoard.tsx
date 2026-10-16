@@ -9,6 +9,7 @@ import { SubscribeModal } from "@/components/boards/subscribe/SubscribeModal";
 import { SideNewsletter } from "./SideNewsletter";
 import { CopyLink } from "./CopyLink";
 import { SaveButton } from "@/components/live/SaveButton";
+import { SponsorSpot } from "@/components/live/SponsorSpot";
 import { ArticleComments, CommentCount } from "@/components/live/ArticleComments";
 import { SocialGlyph } from "@/components/ui/SocialButton";
 import { bySection, readNext, previewBlocks } from "@/lib/content/articles";
@@ -223,6 +224,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 {/* 侧栏 */}
 <aside style={{ display: "flex", flexDirection: "column", gap: "20px", position: "sticky", top: "24px" }} className="side">
 <SideNewsletter />
+{!sponsored && <SponsorSpot products={(a.facets ?? []).filter((x) => x.startsWith("product:")).map((x) => x.slice(8))} applications={(a.facets ?? []).filter((x) => x.startsWith("application:")).map((x) => x.slice(12))} />}
 {next.length > 0 && (
 <div style={{ border: "1px solid var(--line)", borderRadius: "14px", padding: "20px" }}>
 <div style={{ fontSize: "13px", letterSpacing: ".08em", color: "var(--grey)", marginBottom: "14px" }} className="h">RELATED {a.section === "technical_guides" || a.section === "buying_guides" ? "GUIDES" : "ARTICLES"}</div>

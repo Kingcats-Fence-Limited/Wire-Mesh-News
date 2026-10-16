@@ -27,15 +27,17 @@ export type Entitlement = {
   plan: PlanId;
   /** Pro content and tools (Pro, Team owner and seats, Company owner). */
   pro: boolean;
-  /** Company plan features (needs a claimed company). */
+  /** Company plan features (needs a claimed company). Included in Directory Sponsor. */
   company: boolean;
+  /** Directory Sponsor (yearly): SPONSOR mark, highlighted card, sponsor spots. */
+  sponsor: boolean;
   paid: boolean;
   own: SubRow | null;
   /** Set when access comes from someone else's Team subscription. */
   seatOf: string | null;
 };
 
-const RANK: Record<PlanId, number> = { free: 0, pro: 1, company: 2, team: 3 };
+const RANK: Record<PlanId, number> = { free: 0, pro: 1, company: 2, team: 3, sponsor: 4 };
 
 export async function entitlement(m: Pick<MemberRow, "id" | "email">): Promise<Entitlement> {
   const own = await dx.list<SubRow>("subscriptions", { filter: { member: { _eq: m.id }, status: { _in: ACTIVE } }, sort: ["-date_created"], limit: 5 });
@@ -46,15 +48,17 @@ export async function entitlement(m: Pick<MemberRow, "id" | "email">): Promise<E
   }
   const best = own.slice().sort((a, b) => RANK[b.plan] - RANK[a.plan])[0] ?? null;
   const plan = (best?.plan ?? (seat ? "team" : "free")) as PlanId;
-  return { plan, pro: plan !== "free", company: own.some((s) => s.plan === "company"), paid: plan !== "free", own: best, seatOf: best ? null : seat?.subscription.id ?? null };
+  return { plan, pro: plan !== "free", company: own.some((s) => s.plan === "company" || s.plan === "sponsor"), sponsor: own.some((s) => s.plan === "sponsor"), paid: plan !== "free", own: best, seatOf: best ? null : seat?.subscription.id ?? null };
 }
 
 export function priceId(plan: PaidPlan, cycle: Cycle) {
-  return ENV.stripePrices[plan][cycle];
+  if (plan === "sponsor") return cycle === "yearly" ? ENV.stripePrices.sponsorYearly : "";
+  return ENV.stripePrices[plan as "pro" | "team" | "company"][cycle];
 }
 /** Which plan and cycle a Stripe price id stands for. */
 export function planOfPrice(id: string): { plan: PaidPlan; cycle: Cycle } | { seat: Cycle } | null {
-  for (const plan of ["pro", "team", "company"] as PaidPlan[]) for (const cycle of ["monthly", "yearly"] as Cycle[]) if (ENV.stripePrices[plan][cycle] === id) return { plan, cycle };
+  for (const plan of ["pro", "team", "company"] as const) for (const cycle of ["monthly", "yearly"] as Cycle[]) if (ENV.stripePrices[plan][cycle] === id) return { plan, cycle };
+  if (ENV.stripePrices.sponsorYearly && ENV.stripePrices.sponsorYearly === id) return { plan: "sponsor", cycle: "yearly" };
   for (const cycle of ["monthly", "yearly"] as Cycle[]) if (ENV.stripePrices.teamSeat[cycle] === id) return { seat: cycle };
   return null;
 }
