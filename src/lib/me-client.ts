@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { AUTH_LIVE } from "@/lib/live";
 
-export type MeSummary = { signedIn: boolean; name?: string; initials?: string; bookmarks?: { id: string; href: string }[]; follows?: { id: string; slug: string }[] };
+export type MeSummary = { signedIn: boolean; name?: string; initials?: string; plan?: "free" | "pro" | "team" | "company"; pro?: boolean; company?: boolean; bookmarks?: { id: string; href: string }[]; follows?: { id: string; slug: string }[] };
 
 let cached: Promise<MeSummary> | null = null;
 const subs = new Set<(m: MeSummary) => void>();
@@ -15,7 +15,11 @@ export function loadMe(force = false): Promise<MeSummary> {
   if (!AUTH_LIVE) return Promise.resolve({ signedIn: false });
   if (!cached || force) {
     cached = fetch("/api/me/summary/", { credentials: "same-origin" }).then((r) => (r.ok ? r.json() : { signedIn: false })).catch(() => ({ signedIn: false }));
-    cached.then((m) => { latest = m; subs.forEach((f) => f(m)); });
+    cached.then((m) => {
+      latest = m; subs.forEach((f) => f(m));
+      /* Paying readers: hide advertising now (the cookie covers later visits before paint). */
+      document.documentElement.classList.toggle("adfree", !!m.pro);
+    });
   }
   return cached;
 }

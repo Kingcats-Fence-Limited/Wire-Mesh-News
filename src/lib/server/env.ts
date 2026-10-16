@@ -32,11 +32,28 @@ export const ENV = {
   cronSecret: v("CRON_SECRET"),
   /* Directus Flow → /api/hooks/directus sends this in the x-wmn-hook header. */
   hookSecret: v("DIRECTUS_HOOK_SECRET"),
+  /* Payments (Stripe, Hong Kong account). Price ids from the Stripe dashboard → Product catalogue. */
+  stripeSecret: v("STRIPE_SECRET_KEY"),
+  stripeWebhookSecret: v("STRIPE_WEBHOOK_SECRET"),
+  stripeTax: v("STRIPE_TAX") === "on",
+  stripePrices: {
+    pro: { monthly: v("STRIPE_PRICE_PRO_MONTHLY"), yearly: v("STRIPE_PRICE_PRO_YEARLY") },
+    team: { monthly: v("STRIPE_PRICE_TEAM_MONTHLY"), yearly: v("STRIPE_PRICE_TEAM_YEARLY") },
+    company: { monthly: v("STRIPE_PRICE_COMPANY_MONTHLY"), yearly: v("STRIPE_PRICE_COMPANY_YEARLY") },
+    teamSeat: { monthly: v("STRIPE_PRICE_TEAM_SEAT_MONTHLY"), yearly: v("STRIPE_PRICE_TEAM_SEAT_YEARLY") },
+  },
+  /** The legal seller shown on the pricing page, Terms and invoices. */
+  sellerName: v("SELLER_NAME"),
+  /* Data sources for the fetchers (all optional). */
+  samApiKey: v("SAM_API_KEY"),
+  censusApiKey: v("CENSUS_API_KEY"),
 };
 
 /** Accounts are live only when sign-in, its database and Directus are all configured. */
 export const AUTH_LIVE = !!(ENV.authSecret && ENV.databaseUrl && ENV.directusUrl && ENV.directusServerToken);
 export const DIRECTUS_LIVE = !!(ENV.directusUrl && ENV.directusServerToken);
+/** Payments are live when accounts are live and Stripe is configured. */
+export const BILLING_LIVE = AUTH_LIVE && !!(ENV.stripeSecret && ENV.stripeWebhookSecret && ENV.stripePrices.pro.monthly);
 export const MAIL_LIVE = !!(ENV.resendKey || ENV.mailSinkFile);
 
 export function missingForLive(): string[] {

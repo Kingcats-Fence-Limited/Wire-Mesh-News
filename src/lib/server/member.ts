@@ -17,6 +17,7 @@ export type MemberRow = {
   country: string | null; city: string | null; avatar: string | null; author_bio: string | null; author_public_email: string | null;
   author_linkedin: string | null; author_x: string | null; author_website: string | null; author_expertise: string[] | null; author_visible: boolean;
   prefs: Partial<Demo["prefs"]> | null; roles: string[] | null; company_slug: string | null; terms_accepted_at: string | null; deletion_requested_at: string | null;
+  stripe_customer_id?: string | null; trial_used?: boolean;
   date_created: string;
 };
 

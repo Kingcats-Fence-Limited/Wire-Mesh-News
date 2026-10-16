@@ -12,6 +12,7 @@ const live = preview ? " https://vercel.live" : "";
 const env = (k: string) => (process.env[k] ?? "").trim();
 const authLive = !!(env("BETTER_AUTH_SECRET") && env("DATABASE_URL") && env("DIRECTUS_URL") && env("DIRECTUS_SERVER_TOKEN"));
 const google = authLive && !!(env("GOOGLE_CLIENT_ID") && env("GOOGLE_CLIENT_SECRET"));
+const billingLive = authLive && !!(env("STRIPE_SECRET_KEY") && env("STRIPE_WEBHOOK_SECRET") && env("STRIPE_PRICE_PRO_MONTHLY"));
 const microsoft = authLive && !!(env("MICROSOFT_CLIENT_ID") && env("MICROSOFT_CLIENT_SECRET"));
 const oneTap = google && env("GOOGLE_ONE_TAP") !== "off";
 const turnstile = !!env("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
@@ -42,6 +43,8 @@ const nextConfig: NextConfig = {
   /* Read by client components; only on/off flags and public IDs, never secrets. */
   env: {
     NEXT_PUBLIC_AUTH_LIVE: authLive ? "1" : "",
+    NEXT_PUBLIC_BILLING_LIVE: billingLive ? "1" : "",
+    NEXT_PUBLIC_SELLER_NAME: env("SELLER_NAME"),
     NEXT_PUBLIC_AUTH_GOOGLE: google ? "1" : "",
     NEXT_PUBLIC_AUTH_MICROSOFT: microsoft ? "1" : "",
     NEXT_PUBLIC_GOOGLE_ONE_TAP_ID: oneTap ? env("GOOGLE_CLIENT_ID") : "",

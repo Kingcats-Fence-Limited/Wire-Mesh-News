@@ -348,3 +348,6 @@
   figure,table,blockquote,.cell,#sources{break-inside:avoid;page-break-inside:avoid}
   p{orphans:3;widows:3}
 }
+
+/* Paying readers: no advertising (class set before paint from the wmn_adfree cookie). */
+html.adfree .ad, html.adfree .adtag, html.adfree .adlbl, html.adfree .tall-ad, html.adfree [data-ad] { display: none !important; }
