@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useFlatParams } from "@/lib/use-flat-params";
 import { CONTACT_SUBJECT } from "@/data/vocab/contact_subject";
 import { SimpleForm } from "@/components/boards/shared/SimpleForm";
+import { ListingForm, EventForm } from "./FocusedForms";
 import { SITE } from "@/lib/site";
 import "@/styles/board-contact.css";
 
@@ -12,10 +13,11 @@ const REASONS: [string, string][] = CONTACT_SUBJECT.map((c) => [c.code, c.label]
 
 /* Static page; ?subject= preselects the reason in the browser. */
 export function ContactFromUrl() {
-  return <ContactBoard subject={useFlatParams<{ subject?: string }>().subject} />;
+  const p = useFlatParams<{ subject?: string; form?: string }>();
+  return <ContactBoard subject={p.subject} form={p.form === "listing" || p.form === "event" ? p.form : undefined} />;
 }
 
-export function ContactBoard({ subject }: { subject?: string }) {
+export function ContactBoard({ subject, form }: { subject?: string; form?: "listing" | "event" }) {
   const def = REASONS.some(([k]) => k === subject) ? subject : "editorial_tip";
   return (
     <>
@@ -56,7 +58,8 @@ export function ContactBoard({ subject }: { subject?: string }) {
 <p style={{ margin: "13px 0 0", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--grey-5)" }}>The operating company, its ownership and the data controller are stated on <Link href="/about/" style={{ color: "var(--grey-3)", textDecoration: "underline" }}>About</Link>, <Link href="/policies/privacy/" style={{ color: "var(--grey-3)", textDecoration: "underline" }}>Privacy</Link> and <Link href="/policies/terms/" style={{ color: "var(--grey-3)", textDecoration: "underline" }}>Terms</Link>; the footer does not repeat them.</p>
 </div>
 </div>
-<div id="form" style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "26px" }}>
+<div id="form" style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "26px", scrollMarginTop: "20px" }}>
+{form === "listing" ? <ListingForm /> : form === "event" ? <EventForm /> : <>
 <div style={{ fontSize: "22px", marginBottom: "6px" }} className="h">Send a message</div>
 <p style={{ margin: "0 0 18px", lineHeight: "1.55" }} className="meta">Not sure who to write to? Use this form.</p>
 <SimpleForm send="contact" success={<><div className="h" style={{ fontSize: "22px", marginBottom: "8px" }}>Message sent.</div><p className="meta" style={{ fontSize: "14px", margin: 0 }}>Thank you. We reply by email, usually within two working days.</p></>}>
@@ -73,6 +76,7 @@ export function ContactBoard({ subject }: { subject?: string }) {
 <button type="submit" style={{ width: "100%", minHeight: "50px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "15px", fontWeight: "800", cursor: "pointer" }}>Send message</button>
 <p style={{ margin: "12px 0 0", lineHeight: "1.55" }} className="meta">You will see a confirmation, an error, or a duplicate-submission notice. The form is rate-limited.</p>
 </SimpleForm>
+</>}
 </div>
 </div>
 </section>

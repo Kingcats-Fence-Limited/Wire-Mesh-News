@@ -19,12 +19,23 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
   /* On /subscribe/ this is the page heading; inside the modal it sits under the page's own h1. */
   const H = modal ? "h2" : "h1";
   const [email, setEmail] = useState("");
-  const { sent, err, busy, submit } = useSubscribe(modal ? "subscribe-modal" : "subscribe-page");
+  const { sent, err, busy, submit, suggestion } = useSubscribe(modal ? "subscribe-modal" : "subscribe-page");
   /* Result of the confirmation / unsubscribe links (the page itself stays static). */
   const [back, setBack] = useState<string | null>(null);
+  /* Token from the confirmation email: the reader confirms with a click (see /api/newsletter/confirm). */
+  const [token, setToken] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const confirm = async () => {
+    setConfirming(true);
+    const r = await fetch("/api/newsletter/confirm/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ t: token }) }).catch(() => null);
+    setConfirming(false); setToken(null);
+    setBack(r?.ok ? "You are subscribed. The first brief arrives on Monday." : r ? (((await r.json().catch(() => ({}))) as { error?: string }).error ?? "Something went wrong. Try again.") : "Check your connection and try again.");
+  };
   useEffect(() => {
     if (modal) return;
     const q = new URLSearchParams(location.search);
+    const t = q.get("confirm");
+    if (t) { setToken(t); history.replaceState(null, "", location.pathname); return; }
     const msg = q.get("confirmed") === "1" ? "You are subscribed. The first brief arrives on Monday." : q.get("confirmed") === "0" ? "That confirmation link has expired or was already used. Sign up again below." : q.get("unsubscribed") === "1" ? "You are unsubscribed. No more emails will be sent." : q.get("unsubscribed") === "0" ? "That unsubscribe link is not valid. Use the link in the latest email, or write to us." : null;
     if (msg) { setBack(msg); history.replaceState(null, "", location.pathname); }
   }, [modal]);
@@ -44,8 +55,14 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
         )}
         <H className="h" id="sub-title" style={{ margin: "0 0 12px", fontSize: "34px", letterSpacing: "-.05em", lineHeight: 1.04, maxWidth: "390px" }}>Mondays, one email,<br />the whole week’s <span style={{ color: "var(--red-text)" }}>mesh</span>.</H>
         <p style={{ margin: "0 0 20px", fontSize: "15px", fontWeight: 500, lineHeight: 1.6, color: "var(--slate)", maxWidth: "400px" }}>News, price moves and standards updates on one page. Written for people who make decisions, not for the algorithm.</p>
+        {token && (
+          <div style={{ border: "1.5px solid var(--ink)", borderRadius: "14px", padding: "16px 18px", marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 12px", fontSize: "14px", fontWeight: 700, lineHeight: 1.5 }}>One more click: confirm that you want the weekly brief at this address.</p>
+            <button type="button" className="btn" onClick={() => void confirm()} disabled={confirming} style={{ border: 0, background: "var(--red)", color: "#FFFFFF", fontFamily: "inherit", fontWeight: 800, fontSize: "14px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", cursor: "pointer" }}>{confirming ? "Confirming…" : "Confirm my subscription"}</button>
+          </div>
+        )}
         {back && <div role="status" style={{ background: "var(--paper)", borderRadius: "12px", padding: "12px 16px", marginBottom: "16px", fontSize: "14px", fontWeight: 700 }}>{back}</div>}
-        {sent ? (
+        {token ? null : sent ? (
           <div style={{ border: "1.5px solid var(--ink)", borderRadius: "14px", padding: "16px 18px", marginBottom: "16px", fontSize: "14px", fontWeight: 700, lineHeight: 1.5 }}>
             Check your inbox for a confirmation link. Nothing is sent until you click it.
           </div>
@@ -54,7 +71,7 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
             <label htmlFor="mnl" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Email address</label>
             <input id="mnl" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
             <button type="submit" disabled={busy}>Subscribe<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
-          {err && <p role="alert" style={{ margin: "8px 0 0", fontSize: "12.5px", fontWeight: 800, color: "var(--red-text)", flexBasis: "100%" }}>{err}</p>}
+          {err && <p role="alert" style={{ margin: "8px 0 0", fontSize: "12.5px", fontWeight: 800, color: "var(--red-text)", flexBasis: "100%" }}>{err}{suggestion && <> <button type="button" onClick={() => { setEmail(suggestion); void submit(suggestion); }} style={{ border: 0, background: "transparent", padding: 0, font: "inherit", color: "var(--ink)", textDecoration: "underline", cursor: "pointer" }}>Use {suggestion}</button></>}</p>}
 </form>
         )}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap", paddingTop: "16px", borderTop: "1px solid var(--line)" }}>

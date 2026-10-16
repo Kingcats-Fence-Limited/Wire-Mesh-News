@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ProNavLink } from "@/components/live/ProNavLink";
 import { useEffect, useRef, useState } from "react";
 import { demoBg } from "@/lib/demo";
 
@@ -91,7 +92,7 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
 
   return (
     <div className="nav" style={{ borderTop: "1px solid var(--ink)", borderBottom: "3px solid var(--ink)", background: "var(--bg)", position: "relative", zIndex: 40 }} onMouseLeave={hide}>
-      <nav ref={navRef} className="wrap" aria-label="Primary" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
+      <nav ref={navRef} className="wrap navrow" aria-label="Primary" style={{ height: "50px", display: "flex", alignItems: "center", gap: "28px", fontSize: "14.5px", fontWeight: "700" }}>
         {data.sections.map((s) => (
           <Link key={s.code} href={s.href} style={navLink(open === s.code || (!open && active === s.code))} aria-expanded={open === s.code} aria-haspopup="true" onMouseEnter={() => show(s.code)} onFocus={() => show(s.code)} onClick={() => setOpen(null)}>
             {s.label}
@@ -103,6 +104,8 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
         {[["directory", "Directory", "/directory/"], ["events", "Events", "/events/"], ["standards", "Standards", "/standards/"]].map(([code, label, href]) => (
           <Link key={code} href={href} style={{ color: open === code ? "var(--red-text)" : "var(--slate)", fontWeight: "500" }} onMouseEnter={(e) => { place(e.currentTarget); show(code); }} onFocus={(e) => { place(e.currentTarget); show(code); }} onClick={() => setOpen(null)}>{label}</Link>
         ))}
+        <Link href="/tenders/" className="navx" style={{ color: "var(--slate)", fontWeight: "500" }} onMouseEnter={() => setOpen(null)}>Tenders</Link>
+        <span style={{ marginLeft: "auto" }} onMouseEnter={() => setOpen(null)}><ProNavLink /></span>
       </nav>
 
       {open && (
@@ -184,13 +187,13 @@ export function MegaNav({ data, active }: { data: MenuData; active?: string }) {
               <div style={{ pointerEvents: "auto", display: "inline-grid", gridTemplateColumns: "auto auto 230px", gap: "26px", padding: "20px 22px 22px", background: "var(--card)", border: "1px solid var(--line)", borderTop: 0, borderRadius: "0 0 14px 14px", boxShadow: "0 24px 48px -24px rgba(21,22,28,.22)", marginLeft: `${narrowLeft}px`, maxWidth: "calc(100% - 28px)" }}>
                 <div>
                   <div className="colhd"><span style={{ fontSize: "14px" }} className="h">Directory</span></div>
-                  {[["list", "Browse companies", "/directory/"], ["shield", "Standards Index", "/standards/"], ["plus", "Suggest a listing", "/contact/?subject=directory"]].map(([ic, l, h]) => (
+                  {[["list", "Browse companies", "/directory/"], ["shield", "Standards Index", "/standards/"], ["plus", "Suggest a listing", "/contact/?form=listing#form"]].map(([ic, l, h]) => (
                     <Link key={h} href={h} onClick={() => setOpen(null)} style={{ padding: "8px 10px", margin: "0 -10px" }} className="mi"><span style={{ width: "30px", height: "30px" }} className="ic"><Icon id={ic} size={15} /></span><span><b>{l}</b></span></Link>
                   ))}
                 </div>
                 <div>
                   <div className="colhd"><span style={{ fontSize: "14px" }} className="h">Events</span></div>
-                  {[["cal", "Calendar", "/events/"], ["report", "Show reports", "/news/events-exhibitions/"], ["plus", "Submit an event", "/contact/?subject=other"]].map(([ic, l, h]) => (
+                  {[["cal", "Calendar", "/events/"], ["report", "Show reports", "/news/events-exhibitions/"], ["plus", "Submit an event", "/contact/?form=event#form"]].map(([ic, l, h]) => (
                     <Link key={h} href={h} onClick={() => setOpen(null)} style={{ padding: "8px 10px", margin: "0 -10px" }} className="mi"><span style={{ width: "30px", height: "30px" }} className="ic"><Icon id={ic} size={15} /></span><span><b>{l}</b></span></Link>
                   ))}
                 </div>

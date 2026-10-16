@@ -22,6 +22,8 @@ export const ENV = {
   directusServerToken: v("DIRECTUS_SERVER_TOKEN"),
   /* Email. */
   resendKey: v("RESEND_API_KEY"),
+  /** Resend → Webhooks → signing secret (whsec_…), for bounces and spam complaints. */
+  resendWebhookSecret: v("RESEND_WEBHOOK_SECRET"),
   mailFrom: v("MAIL_FROM") || "Wire Mesh News <no-reply@wiremeshnews.com>",
   editorsInbox: v("EDITORS_INBOX") || "hello@wiremeshnews.com",
   /** Local testing only: write outgoing mail to this file instead of sending it. */
