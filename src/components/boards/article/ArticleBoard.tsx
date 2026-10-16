@@ -11,7 +11,8 @@ import { CopyLink } from "./CopyLink";
 import { SaveButton } from "@/components/live/SaveButton";
 import { ArticleComments, CommentCount } from "@/components/live/ArticleComments";
 import { SocialGlyph } from "@/components/ui/SocialButton";
-import { bySection, readNext } from "@/lib/content/articles";
+import { bySection, readNext, previewBlocks } from "@/lib/content/articles";
+import { PremiumGate } from "./PremiumGate";
 import { getAuthor, lettersFor } from "@/lib/content/people";
 import { getStandardByNo } from "@/lib/content/source";
 import { getCompany } from "@/lib/content/directory";
@@ -65,6 +66,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "22px" }}>
 <span style={{ background: sponsored ? "#FFFFFF" : "var(--red)", color: sponsored ? "var(--ink)" : "#FFFFFF", fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", padding: "7px 12px", borderRadius: "4px" }}>{sponsored ? "SPONSORED CONTENT" : sec.label.toUpperCase()}</span>
 {!sponsored && <span style={{ border: "1.5px solid rgba(255,255,255,.3)", fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", padding: "6px 12px", borderRadius: "4px", color: "#E3E4EA" }}>{TYPE_LABEL[a.type]}</span>}
+{a.premium && <Link href="/pricing/" style={{ background: "#FFFFFF", color: "var(--ink)", fontSize: "11px", fontWeight: "800", letterSpacing: ".12em", padding: "7px 12px", borderRadius: "4px" }}>PRO</Link>}
 <span style={{ fontSize: "12.5px", fontWeight: "600", color: "var(--grey-2)" }}>Published {fmtDate(a.date, { day: "numeric", month: "long", year: "numeric" })}{a.updated && <> &#183; Updated {fmtDate(a.updated, { day: "numeric", month: "long", year: "numeric" })}</>}</span>
 </div>
 <h1 style={{ margin: "0", fontSize: "60px", maxWidth: "900px", letterSpacing: "-.045em" }} className="h title">{a.title}</h1>
@@ -165,7 +167,12 @@ export function ArticleBoard({ a }: { a: Article }) {
 </>)}
 </div>
 )}
-<ArticleBody blocks={a.body} showAd={!sponsored && toc.length >= 3} />
+{a.premium ? (
+  <>
+    <div id="art-preview"><ArticleBody blocks={previewBlocks(a.body)} showAd={false} /></div>
+    <PremiumGate slug={a.slug} showAd={!sponsored && toc.length >= 3} />
+  </>
+) : <ArticleBody blocks={a.body} showAd={!sponsored && toc.length >= 3} />}
 {a.sources && a.sources.length > 0 && (
 <div id="sources" style={{ border: "2px solid var(--ink)", borderRadius: "14px", padding: "22px 24px", marginBottom: "22px" }}>
 <div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "14px" }}>
