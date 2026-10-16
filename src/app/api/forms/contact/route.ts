@@ -15,6 +15,28 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const cut = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
+const URL_OK = (v: unknown) => { try { const u = new URL(String(v ?? "").trim()); return (u.protocol === "https:" || u.protocol === "http:") && u.hostname.includes("."); } catch { return false; } };
+const DATE_OK = (v: unknown) => /^\d{4}-\d{2}-\d{2}$/.test(String(v ?? "")) && !Number.isNaN(Date.parse(String(v)));
+
+/* The focused forms' required fields, checked here too (the browser's checks can be skipped). */
+function focusedError(b: Record<string, unknown>): string | null {
+  if (b.form === "listing") {
+    if (!cut(b.company_name, 160)) return "Add the company name.";
+    if (!URL_OK(b.website)) return "Add the company website, starting with https://.";
+    if (!/^[A-Z]{2}$/.test(String(b.country ?? ""))) return "Choose the company's country.";
+    if (!["employee", "customer", "other"].includes(String(b.relation))) return "Choose your connection to the company.";
+    if (cut(b.what, 1500).length < 10) return "Add a little more about what the company makes or does.";
+  } else if (b.form === "event") {
+    if (!cut(b.event_name, 200)) return "Add the event name.";
+    if (!DATE_OK(b.start)) return "Add the start date.";
+    if (b.end && (!DATE_OK(b.end) || String(b.end) < String(b.start))) return "The end date must be on or after the start date.";
+    if (!["in_person", "online", "hybrid"].includes(String(b.format))) return "Choose the event format.";
+    if (!URL_OK(b.website)) return "Add the official event website, starting with https://.";
+    if (!cut(b.organiser, 160)) return "Add the organiser.";
+    if (b.country && !/^[A-Z]{2}$/.test(String(b.country))) return "Choose the country from the list.";
+  }
+  return null;
+}
 
 export async function POST(req: Request) {
   if (!AUTH_LIVE) return json({ error: "Not open yet." }, 404);
@@ -27,7 +49,9 @@ export async function POST(req: Request) {
   if (!rl.ok) return json({ error: "Too many messages from this network. Try again later, or email us directly." }, 429);
 
   const source = b.source === "advertise" ? "advertise" : "contact";
-  /* Focused forms from the menu: build the message from their fields. */
+  /* Focused forms from the menu: check, then build the message from their fields. */
+  const fe = focusedError(b);
+  if (fe) return json({ error: fe }, 400);
   if (b.form === "listing") {
     b.message = [`Directory listing suggestion`, `Company: ${cut(b.company_name, 160)}`, `Website: ${cut(b.website, 255)}`, `Country: ${cut(b.country, 2)}`, `Connection: ${cut(b.relation, 20)}`, "", cut(b.what, 1500)].join("\n");
     b.company = b.company_name;

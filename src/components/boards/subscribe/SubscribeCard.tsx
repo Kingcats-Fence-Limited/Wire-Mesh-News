@@ -28,8 +28,12 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
   const confirm = async () => {
     setConfirming(true);
     const r = await fetch("/api/newsletter/confirm/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ t: token }) }).catch(() => null);
-    setConfirming(false); setToken(null);
-    setBack(r?.ok ? "You are subscribed. The first brief arrives on Monday." : r ? (((await r.json().catch(() => ({}))) as { error?: string }).error ?? "Something went wrong. Try again.") : "Check your connection and try again.");
+    setConfirming(false);
+    /* Keep the button after a network or server failure so the reader can retry; drop it only
+       on success or when the server says the link is invalid / used (400). */
+    if (r?.ok) { setToken(null); setBack("You are subscribed. The first brief arrives on Monday."); return; }
+    if (r?.status === 400) { setToken(null); setBack((((await r.json().catch(() => ({}))) as { error?: string }).error) ?? "That confirmation link has expired or was already used. Sign up again below."); return; }
+    setBack(r ? "Something went wrong on our side. Try the button again in a moment." : "Check your connection and try the button again.");
   };
   useEffect(() => {
     if (modal) return;
