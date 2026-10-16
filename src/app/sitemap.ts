@@ -6,6 +6,7 @@ import { STANDARDS } from "@/lib/content/source";
 import { TOPICS } from "@/lib/content/market";
 import { AUTHORS, LETTERS, COLUMNS } from "@/lib/content/people";
 import { POLICIES } from "@/lib/content/policies";
+import { TEMPLATES } from "@/lib/content/templates";
 import type { SectionCode } from "@/lib/content/types";
 
 /* Public, indexable pages only: no account, search, sign-in or submission pages. */
@@ -16,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     u("/", newest(ed)), u("/directory/"), u("/events/"), u("/standards/"), u("/market-data/"), u("/market-data/methodology/"),
     u("/topics/"), u("/letters/"), u("/about/"), u("/contact/"), u("/advertise/"), u("/subscribe/"), u("/pricing/"),
+    u("/tenders/"), u("/trade-defence/"), u("/trade-data/"), u("/tools/"), u("/reports/"), ...TEMPLATES.map((t) => u(`/tools/templates/${t.slug}/`)),
     ...EDITORIAL_SECTIONS.flatMap((s) => [
       u(`/${s.slug}/`, newest(ed.filter((a) => a.section === s.code))),
       ...subsectionsOf(s.code as SectionCode).filter((x) => ed.some((a) => a.section === s.code && a.subsection === x.code)).map((x) => u(`/${s.slug}/${subsectionSlug(x.code)}/`, newest(ed.filter((a) => a.section === s.code && a.subsection === x.code)))),
