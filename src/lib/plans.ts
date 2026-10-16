@@ -49,7 +49,7 @@ export type Feature = { group: string; label: string; hint?: string; free: boole
 export const FEATURES: Feature[] = [
   { group: "News & analysis", label: "News, guides, standards and the Directory", free: true, pro: true, team: true, company: true },
   { group: "News & analysis", label: "Pro analysis articles", hint: "Market outlooks, project and company deep dives, show briefings", free: `${FREE_PREMIUM_PER_MONTH} a month`, pro: "Unlimited", team: "Unlimited", company: "Unlimited (1 user)" },
-  { group: "News & analysis", label: "Ad-free reading", free: false, pro: true, team: true, company: true },
+  { group: "News & analysis", label: "Ad-free reading", hint: "No display advertising. Labelled Directory Sponsor spots still appear", free: false, pro: true, team: true, company: true },
   { group: "Leads", label: "Tenders & project leads", hint: "Fencing, mesh and grating tenders worldwide, with buyer, quantity, deadline and the original notice", free: "Titles and countries", pro: "Full details", team: "Full details", company: "Full details" },
   { group: "Leads", label: "Tender alerts by product and country", free: false, pro: "Daily email", team: "Daily email, shared", company: "Matched to your products" },
   { group: "Trade intelligence", label: "Trade defence tracker", hint: "Anti-dumping, countervailing and safeguard cases on wire, mesh, fencing and grating", free: "Case list", pro: "Duty rates, companies, key dates", team: true, company: true },

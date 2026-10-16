@@ -1,6 +1,7 @@
 "use client";
 
-/* A labelled sponsor spot outside the editorial lists: one Directory Sponsor, chosen from those
+/* A labelled sponsor spot outside the editorial lists (shown to every reader, paying ones too —
+   it is a Directory Sponsor listing, not display advertising): one Directory Sponsor, chosen from those
    matching the page's products or application areas, rotating on every visit. */
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ export function SponsorSpot({ products = [], applications = [], exclude }: { pro
   }, [list, key]);
   if (!pick) return null;
   return (
-    <aside aria-label="Sponsored" data-ad style={{ border: "1.5px solid var(--red)", borderRadius: "14px", padding: "16px 18px", background: "var(--card)", display: "flex", flexDirection: "column", gap: "10px" }}>
+    <aside aria-label="Sponsored" style={{ border: "1.5px solid var(--red)", borderRadius: "14px", padding: "16px 18px", background: "var(--card)", display: "flex", flexDirection: "column", gap: "10px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
         <span style={{ fontSize: "10px", fontWeight: 800, letterSpacing: ".16em", color: "var(--grey)" }}>SPONSORED</span>
         <SponsorRibbon year={pick.year} small />

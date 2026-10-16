@@ -254,7 +254,8 @@ Directory Sponsor. Stripe emails receipts; the site sends trial, end and failed-
   reused with attribution.
 - Tender and trade-defence sources other than TED, World Bank, SAM.gov and the Federal Register
   are added as RSS feeds (`TRADE_RSS_FEEDS`) or entered by editors.
-- Sponsor spots and in-article ads are hidden for paying readers (ad-free promise).
+- Paying readers see no display advertising (banners, in-article ads). Labelled Directory Sponsor
+  spots are not display ads and are shown to everyone, paying readers included.
 
 ## Local end-to-end test
 

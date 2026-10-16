@@ -10,7 +10,7 @@ import { useMe } from "@/lib/me-client";
 
 const POINTS: Record<Exclude<PlanId, "sponsor">, string[]> = {
   free: ["All news, guides, standards and the Directory", "2 Pro analysis articles a month", "Tender titles and trade-defence case list", "Claim and edit your company profile"],
-  pro: ["Every Pro analysis article", "Tenders & project leads with full details and daily alerts", "Trade-defence tracker: duty rates, companies, alerts", "Monthly trade statistics with CSV download", "Specification templates and checklists", "No advertising"],
+  pro: ["Every Pro analysis article", "Tenders & project leads with full details and daily alerts", "Trade-defence tracker: duty rates, companies, alerts", "Monthly trade statistics with CSV download", "Specification templates and checklists", "No display advertising"],
   team: ["Everything in Pro for 5 people", "Shared tender alerts", "One invoice with your company and tax details", "Add people any time (US$15/month each)"],
   company: ["Profile analytics: views, enquiries, countries", "Catalogue PDF, video and extra contacts on your profile", "Tenders matched to your products", "Pro for one person"],
 };

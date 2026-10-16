@@ -71,7 +71,7 @@ export function PricingBoard() {
             <div style={{ fontSize: "18px", marginBottom: "10px" }} className="h">What paying buys</div>
             <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "14px", fontWeight: 500, lineHeight: 1.8, color: "var(--fg-3)" }}>
               <li>Tools and information: analysis, tenders, trade data, templates</li>
-              <li>An ad-free site</li>
+              <li>A site without display advertising</li>
               <li>For companies: analytics and extra content on their own profile</li>
               <li>For Directory Sponsors: a SPONSOR mark, a highlighted card and labelled sponsor spots</li>
             </ul>
