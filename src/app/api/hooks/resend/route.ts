@@ -30,9 +30,10 @@ export async function POST(req: Request) {
   const body = await req.text();
   if (!verified(req, body)) return new Response("Bad signature", { status: 401 });
   const ev = JSON.parse(body) as Event;
-  /* Temporary failures (mailbox full, greylisting) are not removals. */
-  const transient = /transient|temporary|soft/i.test(ev.data?.bounce?.type ?? "");
-  const status = ev.type === "email.complained" ? "complained" : ev.type === "email.bounced" && !transient ? "bounced" : null;
+  /* Only a permanent bounce removes an address. Transient (mailbox full, greylisting),
+     Undetermined or any unknown type is left alone. */
+  const permanent = /^permanent$/i.test(String(ev.data?.bounce?.type ?? "").trim());
+  const status = ev.type === "email.complained" ? "complained" : ev.type === "email.bounced" && permanent ? "bounced" : null;
   if (!status) return Response.json({ ok: true, ignored: ev.type });
   const to = (Array.isArray(ev.data?.to) ? ev.data!.to : [ev.data?.to ?? ""]).map((e) => String(e).trim().toLowerCase()).filter(Boolean);
   let changed = 0;
