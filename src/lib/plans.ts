@@ -34,7 +34,7 @@ export const PLANS: Plan[] = [
     rotating sponsor spots outside the editorial list. Never changes order or coverage. */
 export const SPONSOR = { id: "sponsor" as const, name: "Directory Sponsor", priceYearly: 1990, cta: "Become a sponsor" };
 export const SPONSOR_POINTS = [
-  "★ SPONSOR mark with the year on your Directory card and profile",
+  "SPONSOR mark with the year on your Directory card and profile",
   "Highlighted card with a “Visit website” button",
   "Rotating, labelled sponsor spots on related articles and section pages (max. 2 per page)",
   "Everything in the Company plan: analytics, catalogue, video, contacts, matched tenders",

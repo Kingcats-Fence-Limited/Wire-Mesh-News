@@ -32,3 +32,11 @@
 - Live public features: Save, Follow a standard, article comments, Contact a company, contact / advertising forms, newsletter double opt-in, "My account" in the header — pages stay static
 - Directus review hook (notices + emails), daily purge cron, scripts for Directus collections and sign-in tables, docs/PHASE2.md and docs/PHASE2-DIRECTUS.md
 - All of it stays off until the environment variables are set; without them the site is the Phase 1 preview
+
+## 0.5.0 — Paid plans and intelligence (branch `phase2`, 2026-10-16, not live)
+- Plans: Pro, Team, Company (monthly/yearly, 14-day trial with card) and Directory Sponsor (yearly); /pricing/; Stripe Checkout, customer portal and webhook; billing panel with trial, card, invoices, team seats, reports
+- Pro analysis articles: opening on the static page, rest served to entitled readers; 2 free a month for signed-in readers; paywall structured data
+- Tenders & project leads, Trade defence tracker, Trade statistics: daily fetchers to editor drafts (TED, World Bank, SAM.gov, Federal Register, RSS, Eurostat, US Census), alerts, Pro detail and CSV
+- Templates & tools: welded mesh calculator, specification/checklist library; Reports shop
+- Directory: no pinned or separate paid placement; Directory Sponsors keep their place with a ★ SPONSOR mark, highlighted card, website button and labelled rotating sponsor spots; Company plan analytics and profile extras
+- Ad-free for paying readers (set before paint)

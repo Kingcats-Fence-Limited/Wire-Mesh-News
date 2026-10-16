@@ -21,13 +21,19 @@ export async function GET(req: Request) {
     total = list.length; list = list.slice((page - 1) * PER, page * PER); items = list;
   } else {
     const filter: Record<string, unknown> = { status: { _eq: "published" } };
-    if (product) filter.products = { _contains: `"${product}"` }; // JSON array stored as text: match the quoted code
     if (country) filter.country = { _eq: country };
     if (kind) filter.kind = { _eq: kind };
     if (open) filter._or = [{ deadline: { _null: true } }, { deadline: { _gte: new Date().toISOString() } }];
-    items = await dx.list<TenderItem>("tenders", { filter, fields: FIELDS, sort: ["-published_on", "-date_created"], limit: PER + 1, offset: (page - 1) * PER, search: text || undefined });
-    total = (page - 1) * PER + items.length;
-    items = items.slice(0, PER);
+    if (product) {
+      /* Directus cannot filter inside JSON arrays: take the newest 1,000 and filter here. */
+      const all = (await dx.list<TenderItem>("tenders", { filter, fields: FIELDS, sort: ["-published_on", "-date_created"], limit: 1000, search: text || undefined })).filter((t) => (t.products ?? []).includes(product));
+      total = all.length;
+      items = all.slice((page - 1) * PER, page * PER);
+    } else {
+      items = await dx.list<TenderItem>("tenders", { filter, fields: FIELDS, sort: ["-published_on", "-date_created"], limit: PER + 1, offset: (page - 1) * PER, search: text || undefined });
+      total = (page - 1) * PER + items.length;
+      items = items.slice(0, PER);
+    }
   }
   const full = v.pro;
   const shown = items.map((t) => (full ? t : { id: t.id, title: t.title, country: t.country, products: t.products ?? [], kind: t.kind, published_on: t.published_on }));

@@ -71,7 +71,7 @@ export function PricingPlans() {
               <div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}><span className="amt">{paid ? usd(amount) : "US$0"}</span>{paid && <span className="per">/ {cycle === "yearly" ? "year" : "month"}</span>}</div>
                 <div className="per" style={{ marginTop: "6px", minHeight: "18px" }}>
-                  {paid && cycle === "yearly" ? `${usd(Math.round((amount / 12) * 100) / 100)} a month · save ${usd(yearlySaving(p))}` : paid ? `or ${usd(p.price!.yearly)} a year` : "Free for ever"}
+                  {paid && cycle === "yearly" ? `US$${(amount / 12).toFixed(2)} a month · save ${usd(yearlySaving(p))}` : paid ? `or ${usd(p.price!.yearly)} a year` : "Free for ever"}
                   {p.seats ? ` · ${p.seats.included} people` : ""}
                 </div>
               </div>

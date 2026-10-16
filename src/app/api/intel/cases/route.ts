@@ -18,9 +18,9 @@ export async function GET(req: Request) {
   } else {
     const filter: Record<string, unknown> = { status: { _eq: "published" } };
     if (importing) filter.importing_country = { _eq: importing };
-    if (origin) filter.origins = { _contains: origin };
     if (measure) filter.measure = { _eq: measure };
-    items = await dx.list<CaseItem>("trade_cases", { filter, fields: FIELDS, sort: ["-date_updated", "-date_created"], limit: 200 });
+    items = await dx.list<CaseItem>("trade_cases", { filter, fields: FIELDS, sort: ["-date_updated", "-date_created"], limit: 500 });
+    if (origin) items = items.filter((c) => (c.origins ?? []).includes(origin)); // JSON array: filtered here
     if (v.pro && items.length) {
       const ups = await dx.list<{ title: string; date: string | null; url: string | null; case: string }>("trade_case_updates", { filter: { status: { _eq: "published" }, case: { _in: items.map((c) => c.id) } }, fields: ["title", "date", "url", "case"], sort: ["-date"], limit: 1000 });
       items = items.map((c) => ({ ...c, updates: ups.filter((u) => u.case === c.id).slice(0, 10).map(({ title, date, url }) => ({ title, date, url })) }));
