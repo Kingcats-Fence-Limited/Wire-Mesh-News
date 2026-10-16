@@ -19,6 +19,8 @@ const turnstile = !!env("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
 /* Google One Tap and Cloudflare Turnstile load their own script and frame. */
 const gsi = oneTap ? " https://accounts.google.com" : "";
 const cf = turnstile ? " https://challenges.cloudflare.com" : "";
+/* Company-plan profiles may embed one YouTube (privacy-enhanced) or Vimeo video. */
+const video = authLive ? " https://www.youtube-nocookie.com https://player.vimeo.com" : "";
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${live}${gsi}${cf}`,
@@ -26,7 +28,7 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src 'self'${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}${gsi}`,
-  preview || gsi || cf ? `frame-src${preview ? " https://vercel.live" : ""}${gsi}${cf}` : "frame-src 'none'",
+  preview || gsi || cf || video ? `frame-src${preview ? " https://vercel.live" : ""}${gsi}${cf}${video}` : "frame-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

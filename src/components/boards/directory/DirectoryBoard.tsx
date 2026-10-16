@@ -1,9 +1,10 @@
 "use client";
 
-/* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. Paying companies are not pinned or placed apart: same list, same order, marked PAID MEMBER on the card. */
+/* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. Directory Sponsors are not pinned or placed apart: same list, same order, a SPONSOR mark and highlighted card. */
 import Link from "next/link";
 import { FilterBar } from "./FilterBar";
-import { usePaidMembers } from "@/lib/paid-members";
+import { useSponsorYears } from "@/lib/paid-members";
+import { SponsorRibbon } from "@/components/live/SponsorMark";
 import { useFlatParams } from "@/lib/use-flat-params";
 import { MATERIAL_GROUP } from "@/data/vocab/material_group";
 import { APPLICATION_AREA, APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
@@ -38,6 +39,13 @@ const PER = 12;
 export const vals = (v?: string) => (v ? v.split(",").filter(Boolean) : []);
 type Facet = "app" | "category" | "product" | "region" | "material";
 /** Everything the directory needs, prepared on the server so article bodies never reach the browser. */
+/* Sponsors with a website get a website button, so their card is a box with a stretched name
+   link (no link inside a link); every other card is one link. Same size, same place. */
+function CardShell({ slug, sponsor, website, children }: { slug: string; sponsor?: number; website?: string; children: React.ReactNode }) {
+  if (sponsor && website) return <div className="card sp">{children}</div>;
+  return <Link href={`/directory/${slug}/`} className={`card${sponsor ? " sp" : ""}`}>{children}</Link>;
+}
+
 export type DirData = { companies: Company[]; artCounts: Record<string, number> };
 export function matches(c: Company, sp: DirParams, skip: Facet | undefined, artCount: (c: Company) => number) {
   const q = (sp.q ?? "").toLowerCase();
@@ -63,7 +71,7 @@ export function DirectoryFromUrl({ data }: { data: DirData }) {
 
 export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
   const COMPANIES = data.companies;
-  const paid = usePaidMembers(COMPANIES);
+  const sponsors = useSponsorYears();
   const list = filterCompanies(sp, data);
   const page = Math.max(1, parseInt(sp.page ?? "1") || 1);
   const pages = Math.max(1, Math.ceil(list.length / PER));
@@ -178,10 +186,10 @@ export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
 </div>
 )}
 </FilterBar>
-{/* Paying companies are not pinned or placed apart: they sit in the same list, in the same order, with a PAID MEMBER mark on their card. */}
+{/* Sponsors are not pinned or placed apart: same list, same order, a SPONSOR mark and a highlighted card. */}
 <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "18px", padding: "12px 16px", border: "1px solid var(--line)", borderRadius: "12px", background: "var(--paper-2)" }}>
-<span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)", flexShrink: 0 }} className="cert">PAID MEMBER</span>
-<p style={{ margin: "0", fontSize: "12px", lineHeight: "1.6" }} className="meta">Every company is listed free, in the same order for everyone: alphabetical, by coverage or by update date. Companies that pay for the Company plan carry a <b style={{ color: "var(--ink)" }}>PAID MEMBER</b> mark; paying never moves a company up, pins it or hides others. <Link href="/policies/directory-listing-policy/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Listing policy</Link></p>
+<span style={{ flexShrink: 0, marginTop: "1px" }}><SponsorRibbon year={new Date().getFullYear()} small /></span>
+<p style={{ margin: "0", fontSize: "12px", lineHeight: "1.6" }} className="meta">Every company is listed free, in the same order for everyone: alphabetical, by coverage or by update date. Companies that sponsor the Directory for the year carry this mark and a highlighted card; sponsorship never moves a company up, pins it or hides others. <Link href="/policies/directory-listing-policy/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Listing policy</Link></p>
 </div>
 {/* 企业卡片：全部等宽 */}
 <div id="apps" style={{ display: "flex", alignItems: "center", gap: "12px", margin: "26px 0 14px" }}>
@@ -196,13 +204,13 @@ export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
   const cert = c.certifications.find((x) => x.verified);
   const n = art(c);
   return (
-<Link key={c.slug} href={`/directory/${c.slug}/`} className="card">
-<span className="band" aria-hidden="true" />
+<CardShell key={c.slug} slug={c.slug} sponsor={sponsors.get(c.slug)} website={c.website}>
+<span className={`band${sponsors.has(c.slug) ? " sp" : ""}`} aria-hidden="true" />
 <div className="cbody">
 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
 <span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><img src={logoSrc(c.slug)} alt="" width="52" height="52" style={{ display: "block", width: "52px", height: "52px" }} /></span>
-<span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{(ORGANISATION_TYPE_BY_CODE[c.orgType]?.labelEn ?? c.orgType).toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{c.name}</span></span>
-<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{c.country}</span>{c.claimed && <span style={{ background: "var(--ink)", color: "var(--on-ink)" }} className="cert">&#9679; CLAIMED</span>}{paid.has(c.slug) && <span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)" }} className="cert" title="Pays for the Company plan. Payment does not change its place in the list.">PAID MEMBER</span>}</span>
+<span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{(ORGANISATION_TYPE_BY_CODE[c.orgType]?.labelEn ?? c.orgType).toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{sponsors.has(c.slug) && c.website ? <Link href={`/directory/${c.slug}/`} className="stretch">{c.name}</Link> : c.name}</span></span>
+<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{c.country}</span>{c.claimed && <span style={{ background: "var(--ink)", color: "var(--on-ink)" }} className="cert">&#9679; CLAIMED</span>}{sponsors.has(c.slug) && <SponsorRibbon year={sponsors.get(c.slug)!} small />}</span>
 </div>
 {photos > 0 && (
 <div style={{ display: "flex", gap: "6px" }}>
@@ -220,10 +228,11 @@ export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
 </div>
 <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--line-soft)", paddingTop: "13px" }}>
 <span style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--grey)" }} className="mono">{n} ARTICLE{n === 1 ? "" : "S"} &#183; UPDATED {fmtDateShort(c.updated)}</span>
+{sponsors.has(c.slug) && c.website && <a href={c.website} className="ext" target="_blank" rel="sponsored noopener">Visit website &#8599;</a>}
 <span className="go"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
 </div>
 </div>
-</Link>
+</CardShell>
   );
 })}
 </div>

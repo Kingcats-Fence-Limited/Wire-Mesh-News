@@ -95,8 +95,8 @@ export type Company = {
   founded?: number;
   employees?: string;
   claimed: boolean;
-  /** Pays for the Company plan (preview data; live from Stripe). Shown as a PAID MEMBER mark only — never changes order or placement. */
-  paidMember?: boolean;
+  /** Directory Sponsor year (preview data; live from Stripe). Shown as a "★ SPONSOR <year>" mark and a highlighted card — never changes order or placement. */
+  sponsor?: number;
   verifiedAt?: string;
   summary: string;
   website?: string;

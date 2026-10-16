@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDemo } from "./store";
 import { CompanyPanel, liveCode, type HistItem } from "./CompanyPanel";
+import { CompanyPlanPanel } from "./CompanyPlanPanel";
 import { Head } from "./ui";
 import { CodeVerify } from "@/components/ui/CodeVerify";
 import { COUNTRY_BY_CODE } from "@/data/vocab/country";
@@ -31,6 +32,7 @@ export function LiveCompany() {
     <>
       <Head title="My company" sub="The directory profile you manage. Edits are reviewed before they go live; the public page keeps its current content until then." actions={<Link href={`/directory/${data.co.slug}/`} className="btn">View public profile</Link>} />
       <CompanyPanel co={data.co} related={data.related} subs0={data.subs0} history={data.history} />
+      <CompanyPlanPanel />
     </>
   );
 }

@@ -136,7 +136,7 @@ function TenderAlerts({ live, full, signedIn }: { live: boolean; full: boolean; 
               <select multiple size={6} value={c} onChange={(e) => setC([...e.target.selectedOptions].map((o) => o.value))} style={{ border: "1px solid var(--line-2)", borderRadius: "10px", padding: "6px", fontFamily: "inherit", fontSize: "13px", background: "var(--card)", color: "var(--ink)" }}>{COUNTRIES.map((x) => <option key={x.alpha2} value={x.alpha2}>{x.name}</option>)}</select>
             </label>
           </div>
-          <span className="meta">Hold Ctrl (⌘ on Mac) to choose several. Leave one list empty for "any".</span>
+          <span className="meta">Hold Ctrl (⌘ on Mac) to choose several. Leave one list empty for &ldquo;any&rdquo;.</span>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <label className="sr-only" htmlFor="ta-n">Alert name</label>
             <input id="ta-n" className="inp" style={{ flex: "1 1 220px" }} placeholder="Name (optional), e.g. UK security fencing" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} />

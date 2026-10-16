@@ -1,5 +1,6 @@
 /* Ported 1:1 from canvas board Category-B. Markup + inline styles are the board's; data from src/lib/content. */
 import Link from "next/link";
+import { SponsorSpot } from "@/components/live/SponsorSpot";
 import { Shell } from "@/components/shell/Shell";
 import { CategoryList, type ListItem } from "./CategoryList";
 import { SectionNewsletter } from "./SectionNewsletter";
@@ -151,6 +152,7 @@ export function CategoryBoard({ section, subs, activeSub }: { section: { code: s
 </div>
 <div><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ aspectRatio: "6/5" }} className="ad">[ 300 &#215; 250 ]</div></div>
 <div className="sticky tall-ad" style={{ marginTop: "18px" }}><div style={{ marginBottom: "7px" }} className="adtag">ADVERTISEMENT</div><div style={{ height: "600px" }} className="ad">[ 300 &#215; 600 ]</div></div>
+<SponsorSpot />
 </aside>
 </div>
 </section>

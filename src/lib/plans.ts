@@ -2,7 +2,7 @@
    checks. Prices are in whole US dollars; the Stripe price ids come from the environment
    (docs/PHASE2.md → Payments). Yearly = two months free. */
 
-export type PlanId = "free" | "pro" | "team" | "company";
+export type PlanId = "free" | "pro" | "team" | "company" | "sponsor";
 export type Cycle = "monthly" | "yearly";
 export type PaidPlan = Exclude<PlanId, "free">;
 
@@ -28,7 +28,20 @@ export const PLANS: Plan[] = [
   { id: "team", name: "Team", tagline: "Pro for your sales or purchasing team, on one invoice.", price: { monthly: 99, yearly: 990 }, seats: { included: 5, extraMonthly: 15, extraYearly: 150 }, trialDays: TRIAL_DAYS, cta: "Start 14-day free trial" },
   { id: "company", name: "Company", tagline: "For manufacturers and suppliers listed in the Directory.", price: { monthly: 49, yearly: 490 }, trialDays: TRIAL_DAYS, cta: "Start 14-day free trial" },
 ];
-export const PLAN = Object.fromEntries(PLANS.map((p) => [p.id, p])) as Record<PlanId, Plan>;
+
+/** Directory Sponsor: a separate, yearly-only product for listed companies. Everything in the
+    Company plan, plus a SPONSOR mark, a highlighted card with a website button, and labelled
+    rotating sponsor spots outside the editorial list. Never changes order or coverage. */
+export const SPONSOR = { id: "sponsor" as const, name: "Directory Sponsor", priceYearly: 1990, cta: "Become a sponsor" };
+export const SPONSOR_POINTS = [
+  "★ SPONSOR mark with the year on your Directory card and profile",
+  "Highlighted card with a “Visit website” button",
+  "Rotating, labelled sponsor spots on related articles and section pages (max. 2 per page)",
+  "Everything in the Company plan: analytics, catalogue, video, contacts, matched tenders",
+  "Pro for one person",
+  "Your place in the Directory list stays exactly the same",
+];
+export const PLAN = Object.fromEntries([...PLANS, { id: "sponsor", name: SPONSOR.name, tagline: "Yearly Directory sponsorship.", price: { monthly: Math.round(SPONSOR.priceYearly / 12), yearly: SPONSOR.priceYearly }, trialDays: 0, cta: SPONSOR.cta }].map((p) => [p.id, p])) as Record<PlanId, Plan>;
 
 /** What each plan unlocks. `true` = included; a string = included with that note; false = not included. */
 export type Feature = { group: string; label: string; hint?: string; free: boolean | string; pro: boolean | string; team: boolean | string; company: boolean | string };
@@ -45,7 +58,6 @@ export const FEATURES: Feature[] = [
   { group: "Tools", label: "Specification templates & checklists", free: "2 samples", pro: "Full library", team: "Full library", company: "Full library" },
   { group: "Tools", label: "Mesh weight & cost calculator", free: true, pro: true, team: true, company: true },
   { group: "Your company", label: "Claim and edit your Directory profile", hint: "Always free; paying never changes order or placement", free: true, pro: true, team: true, company: true },
-  { group: "Your company", label: "PAID MEMBER mark on your card and profile", hint: "Readers see who supports us; your place in the list stays exactly the same", free: false, pro: false, team: false, company: true },
   { group: "Your company", label: "Profile analytics", hint: "Views, enquiries and where they come from", free: false, pro: false, team: false, company: true },
   { group: "Your company", label: "Catalogue PDF, video and extra contacts on your profile", free: false, pro: false, team: false, company: true },
   { group: "Account", label: "People included", free: "1", pro: "1", team: "5 (+US$15/month each)", company: "1" },

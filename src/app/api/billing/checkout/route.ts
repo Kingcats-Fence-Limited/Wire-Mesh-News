@@ -16,9 +16,10 @@ export async function POST(req: Request) {
   const rl = await limit(`checkout:${ctx.m.id}`, 20, 3600);
   if (!rl.ok) return json({ error: "Too many attempts. Try again later." }, 429);
   const b = (await req.json().catch(() => ({}))) as { plan?: string; cycle?: string; seats?: number };
-  const plan = b.plan as PaidPlan, cycle = (b.cycle === "yearly" ? "yearly" : "monthly") as Cycle;
-  if (!["pro", "team", "company"].includes(plan)) return json({ error: "Choose a plan." }, 400);
-  if (plan === "company" && !ctx.m.company_slug) return json({ error: "The Company plan is for claimed Directory profiles. Claim your company first under My company.", claim: true }, 400);
+  const plan = b.plan as PaidPlan;
+  const cycle = (plan === "sponsor" || b.cycle === "yearly" ? "yearly" : "monthly") as Cycle; // Directory Sponsor is yearly only
+  if (!["pro", "team", "company", "sponsor"].includes(plan)) return json({ error: "Choose a plan." }, 400);
+  if ((plan === "company" || plan === "sponsor") && !ctx.m.company_slug) return json({ error: `${plan === "sponsor" ? "Directory sponsorship" : "The Company plan"} is for claimed Directory profiles. Claim your company first under My company.`, claim: true }, 400);
   const price = priceId(plan, cycle);
   if (!price) return json({ error: "This plan is not available yet." }, 400);
   const ent = await entitlement(ctx.m);
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
   }
   const origin = new URL(req.url).origin;
   const customer = await customerFor(ctx.m);
-  const trial = !ctx.m.trial_used;
+  const trial = !ctx.m.trial_used && plan !== "sponsor"; // sponsorship starts paid
   const session = await stripe().checkout.sessions.create({
     mode: "subscription",
     customer,

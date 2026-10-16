@@ -175,7 +175,7 @@ export const COLLECTIONS = [
     display_template: "{{plan}} · {{status}} · {{member.email}}",
     fields: [
       uuidPk, member("Owner (who pays)"),
-      choice("plan", "", ["pro", "team", "company"], "pro"),
+      choice("plan", "sponsor = Directory Sponsor (yearly)", ["pro", "team", "company", "sponsor"], "pro"),
       choice("cycle", "", ["monthly", "yearly"], "monthly"),
       choice("status", "Stripe status", ["trialing", "active", "past_due", "unpaid", "canceled", "incomplete", "incomplete_expired", "paused"], "incomplete"),
       str("stripe_subscription", "", { required: true, unique: true, max: 64, meta: { readonly: true } }),

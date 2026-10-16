@@ -33,7 +33,7 @@ export const COMPANIES: Company[] = [
   },
   {
     slug: "northline-fencing",
-    paidMember: true,
+    sponsor: 2026,
     name: "Northline Fencing Systems",
     orgType: "processor",
     categories: ["fencing"], applications: ["industrial_security"], materials: ["carbon_steel"],

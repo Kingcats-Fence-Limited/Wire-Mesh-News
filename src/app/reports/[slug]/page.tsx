@@ -23,7 +23,10 @@ export default async function ReportPage({ params }: { params: Promise<{ slug: s
       <section style={{ paddingTop: "28px", paddingBottom: "56px", maxWidth: "900px" }} className="wrap">
         <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: 500, color: "var(--slate)", marginBottom: "14px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <Link href="/reports/" style={{ color: "var(--slate)" }}>Reports</Link></nav>
         <div style={{ display: "grid", gridTemplateColumns: r.cover ? "220px minmax(0,1fr)" : "1fr", gap: "28px" }} className="cols">
-          {r.cover && /* eslint-disable-next-line @next/next/no-img-element */ <img src={`/api/reports/${r.slug}/cover/`} alt={`Cover of ${r.title}`} width={220} style={{ width: "100%", borderRadius: "10px", border: "1px solid var(--line)" }} />}
+          {r.cover && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={`/api/reports/${r.slug}/cover/`} alt={`Cover of ${r.title}`} width={220} style={{ width: "100%", borderRadius: "10px", border: "1px solid var(--line)" }} />
+          )}
           <div>
             {r.soon && <span className="sample">COMING SOON</span>}
             <h1 style={{ margin: "10px 0 12px", fontSize: "38px", letterSpacing: "-.04em", lineHeight: 1.06 }} className="h">{r.title}</h1>

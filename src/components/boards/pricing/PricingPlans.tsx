@@ -8,11 +8,11 @@ import { PLANS, yearlySaving, usd, TRIAL_DAYS, type Cycle, type PlanId } from "@
 import { AUTH_LIVE, BILLING_LIVE } from "@/lib/live";
 import { useMe } from "@/lib/me-client";
 
-const POINTS: Record<PlanId, string[]> = {
+const POINTS: Record<Exclude<PlanId, "sponsor">, string[]> = {
   free: ["All news, guides, standards and the Directory", "2 Pro analysis articles a month", "Tender titles and trade-defence case list", "Claim and edit your company profile"],
   pro: ["Every Pro analysis article", "Tenders & project leads with full details and daily alerts", "Trade-defence tracker: duty rates, companies, alerts", "Monthly trade statistics with CSV download", "Specification templates and checklists", "No advertising"],
   team: ["Everything in Pro for 5 people", "Shared tender alerts", "One invoice with your company and tax details", "Add people any time (US$15/month each)"],
-  company: ["PAID MEMBER mark on your Directory card", "Profile analytics: views, enquiries, countries", "Catalogue PDF, video and extra contacts on your profile", "Tenders matched to your products", "Pro for one person"],
+  company: ["Profile analytics: views, enquiries, countries", "Catalogue PDF, video and extra contacts on your profile", "Tenders matched to your products", "Pro for one person"],
 };
 
 export function PricingPlans() {
@@ -85,7 +85,7 @@ export function PricingPlans() {
                 <button type="button" className="cta dark" disabled title="Paid plans open soon">Opens soon</button>
               )}
               {err?.plan === p.id && <p role="alert" style={{ margin: "-4px 0 0", fontSize: "12.5px", fontWeight: 700, color: "var(--red-text)" }}>{err.text} {err.link && <Link href={err.link[0]} style={{ textDecoration: "underline" }}>{err.link[1]}</Link>}</p>}
-              <ul className="incl">{POINTS[p.id].map((t) => <li key={t}>{t}</li>)}</ul>
+              <ul className="incl">{POINTS[p.id as Exclude<PlanId, "sponsor">].map((t) => <li key={t}>{t}</li>)}</ul>
             </div>
           );
         })}
@@ -94,3 +94,27 @@ export function PricingPlans() {
     </>
   );
 }
+
+/* Directory Sponsor checkout (yearly; needs a claimed company). */
+export function SponsorButton() {
+  const me = useMe();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<{ text: string; link?: [string, string] } | null>(null);
+  if (!BILLING_LIVE) return <button type="button" className="cta dark" style={{ width: "auto", alignSelf: "flex-start" }} disabled>Opens soon</button>;
+  const go = async () => {
+    if (!me?.signedIn) { location.assign(`/signin/?next=${encodeURIComponent("/pricing/#sponsor")}`); return; }
+    setBusy(true); setErr(null);
+    const r = await fetch("/api/billing/checkout/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan: "sponsor", cycle: "yearly" }) }).catch(() => null);
+    const j = (await r?.json().catch(() => ({}))) as { url?: string; error?: string; claim?: boolean; manage?: boolean } | undefined;
+    if (r?.ok && j?.url) { location.assign(j.url); return; }
+    setBusy(false); setErr({ text: j?.error ?? "Could not open checkout. Try again.", link: j?.claim ? ["/account/#company", "Claim your company"] : j?.manage ? ["/account/#billing", "Subscription & billing"] : undefined });
+  };
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "flex-start" }}>
+      <button type="button" className="cta red" style={{ width: "auto" }} disabled={busy} onClick={() => void go()}>{busy ? "Opening secure checkout…" : SPONSOR_CTA}</button>
+      {err && <span role="alert" style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--red-text)" }}>{err.text} {err.link && <Link href={err.link[0]} className="lnk">{err.link[1]}</Link>}</span>}
+      <span className="meta">Needs a claimed Directory profile. Invoice with your company and tax details.</span>
+    </div>
+  );
+}
+const SPONSOR_CTA = "Become a sponsor";

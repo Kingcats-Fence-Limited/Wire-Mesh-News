@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     total = list.length; list = list.slice((page - 1) * PER, page * PER); items = list;
   } else {
     const filter: Record<string, unknown> = { status: { _eq: "published" } };
-    if (product) filter.products = { _contains: product };
+    if (product) filter.products = { _contains: `"${product}"` }; // JSON array stored as text: match the quoted code
     if (country) filter.country = { _eq: country };
     if (kind) filter.kind = { _eq: kind };
     if (open) filter._or = [{ deadline: { _null: true } }, { deadline: { _gte: new Date().toISOString() } }];
