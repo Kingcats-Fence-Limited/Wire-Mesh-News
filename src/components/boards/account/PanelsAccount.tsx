@@ -180,7 +180,7 @@ export function Settings() {
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}><b style={{ fontSize: "14px" }}>{d.profile.email}</b><Pill tone="green">VERIFIED</Pill></div>
         {d.profile.pendingEmail ? (
           <div className="compose">
-            <CodeVerify compact email={d.profile.pendingEmail} purpose="the new sign-in address" onVerified={() => { set((x) => ({ ...x, profile: { ...x.profile, email: x.profile.pendingEmail!, pendingEmail: null } })); toast("Email verified and changed. Use it next time you sign in."); }} />
+            <CodeVerify compact email={d.profile.pendingEmail} purpose="confirm the new sign-in address" onVerified={() => { set((x) => ({ ...x, profile: { ...x.profile, email: x.profile.pendingEmail!, pendingEmail: null } })); toast("Email verified and changed. Use it next time you sign in."); }} />
             <span className="meta">Until you enter the code you keep signing in with the address above.</span>
             <div><button type="button" className="btn sm" onClick={() => set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: null } }))}>Cancel change</button></div>
           </div>

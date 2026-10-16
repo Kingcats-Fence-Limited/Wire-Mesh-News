@@ -6,14 +6,26 @@ import type { NextConfig } from "next";
 /* The Vercel toolbar (vercel.live + its websocket) is allowed on preview deployments only. */
 const preview = process.env.VERCEL_ENV !== "production";
 const live = preview ? " https://vercel.live" : "";
+
+/* Phase 2 switches (see src/lib/server/env.ts). Accounts go live only when sign-in, its
+   database and Directus are all configured; until then the site stays in preview mode. */
+const env = (k: string) => (process.env[k] ?? "").trim();
+const authLive = !!(env("BETTER_AUTH_SECRET") && env("DATABASE_URL") && env("DIRECTUS_URL") && env("DIRECTUS_SERVER_TOKEN"));
+const google = authLive && !!(env("GOOGLE_CLIENT_ID") && env("GOOGLE_CLIENT_SECRET"));
+const microsoft = authLive && !!(env("MICROSOFT_CLIENT_ID") && env("MICROSOFT_CLIENT_SECRET"));
+const oneTap = google && env("GOOGLE_ONE_TAP") !== "off";
+const turnstile = !!env("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
+/* Google One Tap and Cloudflare Turnstile load their own script and frame. */
+const gsi = oneTap ? " https://accounts.google.com" : "";
+const cf = turnstile ? " https://challenges.cloudflare.com" : "";
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${live}`,
-  "style-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${live}${gsi}${cf}`,
+  `style-src 'self' 'unsafe-inline'${gsi}`,
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self'${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
-  preview ? "frame-src https://vercel.live" : "frame-src 'none'",
+  `connect-src 'self'${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}${gsi}`,
+  preview || gsi || cf ? `frame-src${preview ? " https://vercel.live" : ""}${gsi}${cf}` : "frame-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -27,6 +39,13 @@ const nextConfig: NextConfig = {
   // Framework V2.4: canonical URLs end with a slash (/events/, /news/{slug}/).
   trailingSlash: true,
   poweredByHeader: false,
+  /* Read by client components; only on/off flags and public IDs, never secrets. */
+  env: {
+    NEXT_PUBLIC_AUTH_LIVE: authLive ? "1" : "",
+    NEXT_PUBLIC_AUTH_GOOGLE: google ? "1" : "",
+    NEXT_PUBLIC_AUTH_MICROSOFT: microsoft ? "1" : "",
+    NEXT_PUBLIC_GOOGLE_ONE_TAP_ID: oneTap ? env("GOOGLE_CLIENT_ID") : "",
+  },
   /* Share-card fonts are read from disk by src/lib/og.tsx. */
   outputFileTracingIncludes: { "/og/**": ["./assets/og/**"] },
   /* Page <title>, description and canonical always go in <head>, for every visitor. Next 15
@@ -46,11 +65,13 @@ const nextConfig: NextConfig = {
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()" },
       { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-      { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+      /* Google One Tap needs to talk to its own window; otherwise the strictest setting. */
+      { key: "Cross-Origin-Opener-Policy", value: oneTap ? "same-origin-allow-popups" : "same-origin" },
     ];
     return [
       { source: "/:path*", headers: indexable ? base : [...base, { key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       { source: "/account/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }, { key: "Cache-Control", value: "private, no-store" }] },
+      { source: "/api/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
     ];
   },
 };

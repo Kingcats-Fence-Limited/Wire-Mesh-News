@@ -328,7 +328,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
             </Field>
             {mailFree && <span className="meta" style={{ color: "var(--red-text)", display: "block", marginTop: "5px" }}>Free mailboxes ({mailDomain}) are not accepted for a company. Use an address at your company&apos;s own domain{siteDomain ? ` (${siteDomain})` : ""}.</span>}
             {mailOffDomain && <span className="meta" style={{ display: "block", marginTop: "5px" }}>This is not at {siteDomain}, the domain of your website. The editor will ask how the two are related before it goes live.</span>}
-            {verifying && !mailVerified && <div className="compose" style={{ marginTop: "8px" }}><CodeVerify compact email={f.email} purpose="that this inbox belongs to the company" onVerified={() => { setVerifiedEmail(f.email); setVerifying(false); toast("Enquiry email verified."); }} /></div>}
+            {verifying && !mailVerified && <div className="compose" style={{ marginTop: "8px" }}><CodeVerify compact email={f.email} purpose="confirm that this inbox belongs to the company" onVerified={() => { setVerifiedEmail(f.email); setVerifying(false); toast("Enquiry email verified."); }} /></div>}
             {f.email && !mailVerified && !verifying && !mailFree && <span className="meta" style={{ display: "block", marginTop: "5px" }}>Until this address is verified, the “Contact this company” button stays hidden on your profile.</span>}
             {!f.email && <span className="meta" style={{ display: "block", marginTop: "5px" }}>No enquiry email: the “Contact this company” button is hidden.</span>}
             </div>

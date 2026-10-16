@@ -9,12 +9,12 @@ import "@/styles/board-login.css";
 /* Sign-in and register pages are static; ?mode=, ?next= and ?claim= are read in the browser.
    next is checked by safeNext where it is used; claim must be a known directory slug. */
 export function AuthFromUrl({ page, companySlugs }: { page: "signin" | "register"; companySlugs?: string[] }) {
-  const sp = useFlatParams<{ mode?: string; next?: string; claim?: string }>();
+  const sp = useFlatParams<{ mode?: string; next?: string; claim?: string; error?: string }>();
   if (page === "register") return <AuthBoard mode="register" claim={sp.claim && companySlugs?.includes(sp.claim) ? sp.claim : undefined} />;
-  return <AuthBoard mode={sp.mode === "reset" ? "reset" : "signin"} next={sp.next} />;
+  return <AuthBoard mode={sp.mode === "reset" ? "reset" : "signin"} next={sp.next} error={sp.error} />;
 }
 
-export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" | "reset"; next?: string; claim?: string }) {
+export function AuthBoard({ mode, next, claim, error }: { mode: "signin" | "register" | "reset"; next?: string; claim?: string; error?: string }) {
   return (
     <>
 <section style={{ paddingTop: "40px", paddingBottom: "56px" }} className="wrap">
@@ -30,9 +30,9 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "20px", letterSpacing: "-.05em", padding: "2px 7px 4px", borderRadius: "6px" }} className="h">news</span>
 </div>
 {mode === "signin" && (<>
-<h1 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">Welcome back</h1>
-<p style={{ margin: "0 0 20px" }} className="hint">Sign in to submit, comment and save.</p>
-<SignInForm next={next} />
+<h1 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">Sign in or create an account</h1>
+<p style={{ margin: "0 0 20px" }} className="hint">One click with Google or Microsoft, or a code by email. No password to remember.</p>
+<SignInForm next={next} error={error} />
 </>)}
 {mode === "register" && <RegisterForm claim={claim} />}
 {mode === "reset" && <ResetForm />}
@@ -43,7 +43,7 @@ export function AuthBoard({ mode, next, claim }: { mode: "signin" | "register" |
 <div style={{ fontSize: "11.5px", fontWeight: "800", letterSpacing: ".12em", color: "var(--grey-2)", marginBottom: "14px" }}>{next ? "HOW SUBMISSION WORKS" : "WITH AN ACCOUNT"}</div>
 {next ? (
 <div style={{ display: "flex", flexDirection: "column" }}>
-{[["Register and verify your email", "Unverified accounts cannot submit."], ["Write and save drafts", "Drafts are private to you and can be previewed any time."], ["Submit for review", "The body is locked once submitted; you can withdraw it to a draft."], ["Editorial feedback", "Approved, returned or declined — see it in your account and notifications."]].map(([b, s], i) => (
+{[["Sign in", "Google, Microsoft or an email code; the first sign-in creates your account."], ["Write and save drafts", "Drafts are private to you and can be previewed any time."], ["Submit for review", "The body is locked once submitted; you can withdraw it to a draft."], ["Editorial feedback", "Approved, returned or declined — see it in your account and notifications."]].map(([b, s], i) => (
 <div key={b} className="step" style={{ borderColor: "var(--line-dark)", ...(i === 3 ? { borderBottom: 0 } : {}) }}><span className="sn" style={{ background: "var(--red)" }}>{i + 1}</span><div><b style={{ color: "#FFFFFF" }}>{b}</b><span style={{ fontSize: "12px", color: "var(--grey-3)", fontWeight: 500 }}>{s}</span></div></div>
 ))}
 </div>
