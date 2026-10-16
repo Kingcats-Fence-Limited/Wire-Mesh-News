@@ -51,11 +51,11 @@ export function MobileMenu({ data }: { data: MenuData }) {
               ))}
             </div>
             <div style={{ display: "flex", gap: "7px", flexWrap: "wrap", marginTop: "14px" }}>
-              {[["Directory", "/directory/"], ["Events", "/events/"], ["Standards", "/standards/"], ["Market data", "/market-data/"], ["Tenders", "/tenders/"], ["Trade defence", "/trade-defence/"], ["Trade statistics", "/trade-data/"], ["Templates & tools", "/tools/"], ["Letters", "/letters/"], ["Topics", "/topics/"]].map(([l, h]) => (
+              {[["Directory", "/directory/"], ["Events", "/events/"], ["Standards", "/standards/"], ["Market data", "/market-data/"], ["Tenders & trade data", "/tenders/"], ["Letters", "/letters/"], ["Topics", "/topics/"]].map(([l, h]) => (
                 <Link key={h} href={h} onClick={() => setOpen(false)} style={{ border: "1px solid var(--line-dark)", borderRadius: "999px", padding: "8px 13px", fontSize: "12.5px", fontWeight: "700", color: "var(--on-dark-2)" }}>{l}</Link>
               ))}
             </div>
-            <Link href="/pricing/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", minHeight: "44px", marginTop: "16px", borderRadius: "999px", border: "1.5px solid var(--red)", color: "#FFFFFF", fontSize: "14px", fontWeight: 800 }}>★ Go Pro — tenders, trade data, analysis</Link>
+            <Link href="/pricing/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", minHeight: "44px", marginTop: "16px", borderRadius: "999px", border: "1.5px solid var(--red)", color: "#FFFFFF", fontSize: "14px", fontWeight: 800 }}>★ Go Pro</Link>
             <div style={{ display: "flex", gap: "9px", marginTop: "10px" }}>
               <Link href="/subscribe/" onClick={() => setOpen(false)} style={{ flex: "1 1 0", display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "44px", borderRadius: "999px", background: "var(--red)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }}>Subscribe free</Link>
               <AccountLink onClick={() => setOpen(false)} style={{ flex: "1 1 0", display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "44px", borderRadius: "999px", background: "transparent", border: "1.5px solid var(--line-dark)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }} />
@@ -65,7 +65,7 @@ export function MobileMenu({ data }: { data: MenuData }) {
               <SocialRow size={38} />
             </div>
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "18px", fontSize: "12.5px", fontWeight: 700, color: "var(--grey-3)" }}>
-              {[["About", "/about/"], ["Contact", "/contact/"], ["Submit an Article", "/submit/"], ["Plans & pricing", "/pricing/"], ["Advertise", "/advertise/"]].map(([l, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ color: "var(--grey-3)" }}>{l}</Link>)}
+              {[["About", "/about/"], ["Contact", "/contact/"], ["Submit an Article", "/submit/"], ["Advertise", "/advertise/"]].map(([l, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ color: "var(--grey-3)" }}>{l}</Link>)}
             </div>
           </div>
         </div>

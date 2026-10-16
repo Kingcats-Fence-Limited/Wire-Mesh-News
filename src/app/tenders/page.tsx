@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMeta({ title: "Tenders & project leads", d
 export default function TendersPage() {
   return (
     <Shell header="compact" board="b-intel">
-      <IntelHero crumb="Tenders & projects" title="Tenders and project leads" lede="Fencing, mesh, gabion and grating tenders from public procurement portals around the world, found every morning and checked by an editor before they appear." />
+      <IntelHero here="/tenders/" crumb="Tenders & projects" title="Tenders and project leads" lede="Fencing, mesh, gabion and grating tenders from public procurement portals around the world, found every morning and checked by an editor before they appear." />
       <TendersBoard live={AUTH_LIVE} />
     </Shell>
   );

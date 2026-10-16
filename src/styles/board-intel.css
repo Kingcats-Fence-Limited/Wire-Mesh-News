@@ -24,3 +24,9 @@
 .b-intel .sample{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.1em;background:var(--st-review-bg);color:var(--st-review-fg);padding:5px 10px;border-radius:5px}
 @media (max-width:820px){.b-intel .dl{grid-template-columns:repeat(2,minmax(0,1fr))}.b-intel h1{font-size:36px !important}.b-intel .tablewrap{overflow-x:auto}}
 .b-intel .lnk,.b-price .lnk,.b-adv .lnk{font-weight:800;color:var(--red-text);text-decoration:underline;text-underline-offset:2px}
+
+/* Tabs linking the intelligence pages (inside the dark hero). */
+.site .itabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:24px}
+.site .itabs a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.18);color:var(--on-dark-2);font-size:13px;font-weight:700;white-space:nowrap}
+.site .itabs a:hover{color:#FFFFFF;border-color:rgba(255,255,255,.45)}
+.site .itabs a[aria-current="page"]{background:#FFFFFF;border-color:#FFFFFF;color:#15161C}

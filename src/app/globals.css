@@ -357,8 +357,8 @@ html.adfree .ad, html.adfree .adtag, html.adfree .adlbl, html.adfree .tall-ad, h
 .spmark[data-small]{font-size:9.5px;padding:5px 13px 5px 8px}
 
 /* "Go Pro" entry in the main navigation. */
-.navpro{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--red);color:var(--red-text);font-weight:800;font-size:13.5px;padding:0 14px;min-height:32px;border-radius:999px;white-space:nowrap}
-.navpro:hover{background:var(--red);color:#FFFFFF}
+.site a.navpro, .navpro{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--red);color:var(--red-text);font-weight:800;font-size:13.5px;padding:0 14px;min-height:32px;border-radius:999px;white-space:nowrap}
+.site a.navpro:hover, .navpro:hover{background:var(--red);border-color:var(--red);color:#FFFFFF}
 .navrow > *{white-space:nowrap;flex-shrink:0}
 @media (max-width:1240px){.navrow{gap:20px!important}.navrow .navx{display:none}}
 .mastbtn{white-space:nowrap}

@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMeta({ title: "Trade defence tracker", des
 export default function TradeDefencePage() {
   return (
     <Shell header="compact" board="b-intel">
-      <IntelHero crumb="Trade defence tracker" title="Trade defence tracker" lede="Every anti-dumping, countervailing and safeguard case that touches wire, mesh, fencing, nails and grating — who imposes it, on whom, at what rate, and what happens next." />
+      <IntelHero here="/trade-defence/" crumb="Trade defence tracker" title="Trade defence tracker" lede="Every anti-dumping, countervailing and safeguard case that touches wire, mesh, fencing, nails and grating — who imposes it, on whom, at what rate, and what happens next." />
       <TradeDefenceBoard live={AUTH_LIVE} />
     </Shell>
   );
