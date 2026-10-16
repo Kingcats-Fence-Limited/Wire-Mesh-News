@@ -1,5 +1,6 @@
 import "server-only";
 import { clip, daysAgo, saveDrafts, type Found } from "./common";
+import { htmlToText } from "@/lib/plain-text";
 
 /* Trade-defence notices: anti-dumping, countervailing, safeguard and circumvention notices on
    wire, mesh, fencing, nails, rod and grating. Saved as drafts; the editor links each to a case.
@@ -31,7 +32,7 @@ async function federalRegister(days: number): Promise<Found[]> {
   return out;
 }
 
-const tag = (x: string, t: string) => x.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`, "i"))?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, "").replace(/<[^>]+>/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&") /* &amp; last, so "&amp;lt;" stays "&lt;" */.trim() ?? "";
+const tag = (x: string, t: string) => htmlToText(x.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`, "i"))?.[1] ?? "");
 
 async function rss(days: number): Promise<Found[]> {
   const feeds = (process.env.TRADE_RSS_FEEDS ?? "").split(/[\n,]/).map((s) => s.trim()).filter((s) => /^https:\/\//.test(s));
