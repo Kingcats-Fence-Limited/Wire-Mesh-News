@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Shell } from "@/components/shell/Shell";
 import { SimpleForm } from "@/components/boards/shared/SimpleForm";
 import { SITE } from "@/lib/site";
+import { BILLING_LIVE } from "@/lib/live";
 import "@/styles/board-adv.css";
 
 const SERVICES: { lbl: string; bg: string; fg: string; title: string; text: string; dim?: boolean }[] = [
@@ -10,7 +11,9 @@ const SERVICES: { lbl: string; bg: string; fg: string; title: string; text: stri
   { lbl: "TOPIC SPONSORSHIP", bg: "var(--ink)", fg: "var(--on-ink)", title: "Topic sponsorship", text: "Sponsor presence on an existing content topic. The sponsorship label is shown separately; the topic's editorial content is never counted as sponsored." },
   { lbl: "ADVERTISEMENT", bg: "var(--line)", fg: "var(--fg-3)", title: "Display advertising", text: "A small number of slots on the front page, section pages and article pages, each labelled Advertisement. Unsold, unscheduled or expired slots hide themselves and never cover the text." },
   { lbl: "EVENT PARTNERSHIP", bg: "var(--line)", fg: "var(--fg-3)", title: "Event media partnership", text: "Event features, on-site coverage and company interviews. What is delivered, and what counts as partner content, is written down before the quote." },
-  { lbl: "LATER PHASE", bg: "var(--st-review-bg)", fg: "var(--st-review-fg)", title: "Paid reports", text: "Enquiries only for now. Reports go on sale once there is original research to sell; nothing unfinished is pre-sold.", dim: true },
+  BILLING_LIVE
+    ? { lbl: "REPORTS", bg: "var(--ink)", fg: "var(--on-ink)", title: "Paid reports", text: "Market and trade reports are sold one by one in the Reports shop. Custom research is quoted individually." }
+    : { lbl: "LATER PHASE", bg: "var(--st-review-bg)", fg: "var(--st-review-fg)", title: "Paid reports", text: "Enquiries only for now. Reports go on sale once there is original research to sell; nothing unfinished is pre-sold.", dim: true },
   { lbl: "LATER PHASE", bg: "var(--st-review-bg)", fg: "var(--st-review-fg)", title: "Newsletter advertising", text: "Opens once the weekly brief is sending reliably and the subscriber base can be verified.", dim: true },
 ];
 const FLOW: [string, string][] = [["Enquiry", "Submit the form; an internal record is created"], ["Conversation", "A person discusses needs and feasibility"], ["Quote", "Each partnership is quoted individually"], ["Schedule", "Deliverables and dates confirmed"], ["Production", "Content produced or assets approved"], ["Editorial review", "Facts, image rights and sources checked"], ["Live", "Published or displayed as scheduled"], ["Record", "A record of what actually ran"]];
@@ -52,7 +55,7 @@ This is a newly launched publication and we do not yet publish traffic or reach 
 <section style={{ background: "var(--paper)", padding: "44px 0" }}>
 <div className="wrap">
 <h2 style={{ margin: "0 0 6px", fontSize: "30px" }} className="h">How a partnership runs</h2>
-<p style={{ margin: "0 0 22px", fontSize: "14.5px" }} className="meta">No online payment, self-serve ad booking or membership packages in this phase.</p>
+<p style={{ margin: "0 0 22px", fontSize: "14.5px" }} className="meta">{BILLING_LIVE ? <>Partnerships are quoted individually; there is no self-serve ad booking. Reader and company subscriptions are on <Link href="/pricing/" className="lnk">Plans &amp; pricing</Link>.</> : "No online payment, self-serve ad booking or membership packages in this phase."}</p>
 <div className="flow">
 {FLOW.map(([t, d], i) => <div key={t} className="fstep"><span className="n">{String(i + 1).padStart(2, "0")}</span><span style={{ fontSize: "14px", fontWeight: "800" }}>{t}</span><span style={{ lineHeight: "1.5" }} className="meta">{d}</span></div>)}
 </div>

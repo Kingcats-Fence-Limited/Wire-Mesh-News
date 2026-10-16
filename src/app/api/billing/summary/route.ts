@@ -14,7 +14,10 @@ export async function GET(req: Request) {
   if (ctx instanceof Response) return ctx;
   const ent = await entitlement(ctx.m);
   const used = ent.pro ? 0 : await meterUsed(ctx.user.id);
-  const base = { live: BILLING_LIVE, plan: ent.plan, pro: ent.pro, company: ent.company, seatOf: !!ent.seatOf, hasCompany: !!ctx.m.company_slug, trialUsed: !!ctx.m.trial_used, meter: { used, limit: FREE_PREMIUM_PER_MONTH } };
+  const bought = await dx.list<{ product: string; date_created: string }>("purchases", { filter: { member: { _eq: ctx.m.id } }, fields: ["product", "date_created"], sort: ["-date_created"], limit: 100 });
+  const titles = bought.length ? await dx.list<{ slug: string; title: string }>("reports", { filter: { slug: { _in: bought.map((b) => b.product) } }, fields: ["slug", "title"], limit: 100 }) : [];
+  const reports = bought.map((b) => ({ slug: b.product, title: titles.find((t) => t.slug === b.product)?.title ?? b.product, date: b.date_created }));
+  const base = { reports, live: BILLING_LIVE, plan: ent.plan, pro: ent.pro, company: ent.company, seatOf: !!ent.seatOf, hasCompany: !!ctx.m.company_slug, trialUsed: !!ctx.m.trial_used, meter: { used, limit: FREE_PREMIUM_PER_MONTH } };
   if (!ent.own || !BILLING_LIVE) return json({ ...base, sub: null });
   const s = ent.own;
   let card: { brand: string; last4: string; exp: string } | null = null;

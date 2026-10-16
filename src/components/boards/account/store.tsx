@@ -41,6 +41,8 @@ export type Demo = {
   follows?: { id: string; slug: string }[];
   company?: string | null;
   roles?: string[];
+  /** Live: the paid plan (free / pro / team / company). */
+  plan?: string;
 };
 
 export type BillingDetails = { name: string; company: string; email: string; country: string; address: string; taxId: string };

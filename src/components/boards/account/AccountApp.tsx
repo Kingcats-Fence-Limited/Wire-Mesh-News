@@ -115,7 +115,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
   useArrival(go);
   const hasCompany = !live || !!d.company;
   const roles = live ? (d.roles ?? ["reader"]) : ["reader", "author", "company"];
-  const plan = live ? (roles.includes("pro") ? "PRO" : "FREE") : "PRO";
+  const plan = live ? (d.plan ?? "free").toUpperCase() : "PRO";
   const unread = d.notices.filter((n) => !n.read && !n.archived).length;
   const needs = d.submissions.filter((s) => s.status === "changes_requested").length;
   const NAV: { group: string; items: { id: PanelId; label: string; count?: number | string; alert?: boolean }[] }[] = [
@@ -185,7 +185,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
           {panel === "messages" && <Messages />}
           {/* Kept mounted (just hidden) so unsent company edits survive a visit to another panel. */}
           <div hidden={panel !== "company"} style={{ display: panel === "company" ? "contents" : undefined }}>{live && ready && hasCompany ? <LiveCompany /> : hasCompany ? <><Head title="My company" sub="The directory profile you manage. Edits are reviewed before they go live; the public page keeps its current content until then." actions={<Link href={`/directory/${co.slug}/`} className="btn">View public profile</Link>} /><CompanyPanel co={co} related={related} subs0={subs0} /></> : <><Head title="My company" sub="Manage your company's directory profile: products, photos, contacts and enquiries." /><ClaimPanel /></>}</div>
-          {panel === "billing" && <><Head title="Subscription & billing" sub="Your plan, payment method and invoices. Prices are announced before paid plans open." /><BillingPanel /></>}
+          {panel === "billing" && <><Head title="Subscription & billing" sub={live ? "Your plan, trial, payment method, invoices and reports." : "Your plan, payment method and invoices. Prices are announced before paid plans open."} /><BillingPanel /></>}
           {panel === "notifications" && <Notifications />}
           {panel === "settings" && <Settings />}
           </>}

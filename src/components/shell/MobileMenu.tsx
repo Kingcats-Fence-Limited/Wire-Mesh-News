@@ -64,7 +64,7 @@ export function MobileMenu({ data }: { data: MenuData }) {
               <SocialRow size={38} />
             </div>
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "18px", fontSize: "12.5px", fontWeight: 700, color: "var(--grey-3)" }}>
-              {[["About", "/about/"], ["Contact", "/contact/"], ["Submit an Article", "/submit/"], ["Advertise", "/advertise/"]].map(([l, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ color: "var(--grey-3)" }}>{l}</Link>)}
+              {[["About", "/about/"], ["Contact", "/contact/"], ["Submit an Article", "/submit/"], ["Plans & pricing", "/pricing/"], ["Advertise", "/advertise/"]].map(([l, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ color: "var(--grey-3)" }}>{l}</Link>)}
             </div>
           </div>
         </div>

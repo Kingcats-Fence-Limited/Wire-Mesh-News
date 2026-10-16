@@ -6,6 +6,7 @@ import { auth, type SessionUser } from "@/lib/auth";
 import { SECTION } from "@/data/vocab/section";
 import { COMPANIES } from "@/lib/content/directory";
 import { initials } from "@/lib/initials";
+import { entitlement } from "./billing";
 import type { Demo, Submission, Comment, Bookmark, Message, Notice, Session, SubStatus } from "@/components/boards/account/store";
 
 /* The bridge between a signed-in user (Better Auth) and their data in Directus. Builds the
@@ -93,7 +94,7 @@ export async function sessionsFor(userId: string, currentToken?: string): Promis
   return rows.map((r) => ({ id: r.id, device: device(r.userAgent), place: maskIp(r.ipAddress), last: fmtTime(r.updatedAt.toISOString()), current: r.token === currentToken || undefined }));
 }
 
-export async function buildState(user: SessionUser, m: MemberRow, currentToken?: string): Promise<Demo & { live: true; follows: { id: string; slug: string }[]; company: string | null; roles: string[] }> {
+export async function buildState(user: SessionUser, m: MemberRow, currentToken?: string): Promise<Demo & { live: true; follows: { id: string; slug: string }[]; company: string | null; roles: string[]; plan: string }> {
   const by = { member: { _eq: m.id } };
   const [subs, coms, bms, enqs, nots, reqs, follows, sessions] = await Promise.all([
     dx.list<SubRow>("submissions", { filter: by, sort: ["-date_updated", "-date_created"], limit: 200 }),
@@ -105,6 +106,7 @@ export async function buildState(user: SessionUser, m: MemberRow, currentToken?:
     dx.list<FollowRow>("standard_follows", { filter: by, limit: 500 }),
     sessionsFor(user.id, currentToken),
   ]);
+  const ent = await entitlement(m).catch(() => null);
   const name = m.name ?? "";
   return {
     v: 6,
@@ -129,6 +131,7 @@ export async function buildState(user: SessionUser, m: MemberRow, currentToken?:
     follows: follows.map((f) => ({ id: f.id, slug: f.standard_slug })),
     company: m.company_slug,
     roles: m.roles ?? ["reader"],
+    plan: ent?.plan ?? "free",
   };
 }
 
