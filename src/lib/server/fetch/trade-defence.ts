@@ -31,7 +31,7 @@ async function federalRegister(days: number): Promise<Found[]> {
   return out;
 }
 
-const tag = (x: string, t: string) => x.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`, "i"))?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, "").replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim() ?? "";
+const tag = (x: string, t: string) => x.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`, "i"))?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, "").replace(/<[^>]+>/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&") /* &amp; last, so "&amp;lt;" stays "&lt;" */.trim() ?? "";
 
 async function rss(days: number): Promise<Found[]> {
   const feeds = (process.env.TRADE_RSS_FEEDS ?? "").split(/[\n,]/).map((s) => s.trim()).filter((s) => /^https:\/\//.test(s));
