@@ -13,6 +13,7 @@ import { CodeVerify } from "@/components/ui/CodeVerify";
 import { Turnstile } from "@/components/ui/Turnstile";
 import { AUTH_LIVE, ONE_TAP_ID } from "@/lib/live";
 import { authClient } from "@/lib/auth-client";
+import { useMe } from "@/lib/me-client";
 
 const DISPOSABLE = ["mailinator.com", "10minutemail.com", "guerrillamail.com", "tempmail.com", "yopmail.com", "trashmail.com"];
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -57,6 +58,9 @@ export function SignInForm({ next, claim, error }: { next?: string; claim?: stri
   const domain = email.split("@")[1]?.toLowerCase();
   const valid = EMAIL.test(email.trim());
   const disposable = !!domain && DISPOSABLE.includes(domain);
+  /* Already signed in (live): go straight on. */
+  const me = useMe();
+  useEffect(() => { if (AUTH_LIVE && me?.signedIn) window.location.replace(dest); }, [me, dest]);
 
   const send = async (): Promise<string | void> => {
     const res = await authClient.emailOtp.sendVerificationOtp({ email: email.trim().toLowerCase(), type: "sign-in" }, captcha ? { headers: { "x-captcha-response": captcha } } : undefined).catch(() => null);

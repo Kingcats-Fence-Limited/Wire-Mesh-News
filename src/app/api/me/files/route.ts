@@ -11,7 +11,8 @@ import { limit } from "@/lib/server/rate-limit";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const LIMITS = { avatar: 3, submission: 10, company: 10, evidence: 10 } as const; // MB
+/* Vercel caps request bodies at 4.5 MB; the browser scales big photos down before sending. */
+const LIMITS = { avatar: 4, submission: 4, company: 4, evidence: 4 } as const; // MB
 const FOLDER = { avatar: "website-avatars", submission: "website-submissions", company: "website-company", evidence: "website-company" } as const;
 type Purpose = keyof typeof LIMITS;
 

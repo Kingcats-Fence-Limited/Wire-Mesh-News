@@ -24,3 +24,11 @@
 - Billing: payment methods (card entry is the processor's page), invoice details, invoice view, monthly/annual, cancel and resume
 - Section pages: "Most read" only from ranked data
 - Favicon set from the logo pack: favicon.ico, icon.svg, apple-icon.png, web manifest 192/512
+
+## 0.4.0 — Phase 2 · accounts and Directus (branch `phase2`, 2026-10-16, not live)
+- Passwordless sign-in (Better Auth): Google, Microsoft, 6-digit email code, Google One Tap; accounts linked by verified email; Turnstile on code requests
+- Account centre on real data: state from Directus, edits saved by diff to /api/me/sync with server-side rules; uploads (photo, article files, logo, product photos, evidence) re-encoded on the server and private until approved
+- Company claim with verified work email; company edits and change requests to the directory editor; claim approval links the company automatically
+- Live public features: Save, Follow a standard, article comments, Contact a company, contact / advertising forms, newsletter double opt-in, "My account" in the header — pages stay static
+- Directus review hook (notices + emails), daily purge cron, scripts for Directus collections and sign-in tables, docs/PHASE2.md and docs/PHASE2-DIRECTUS.md
+- All of it stays off until the environment variables are set; without them the site is the Phase 1 preview

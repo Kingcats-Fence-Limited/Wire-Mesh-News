@@ -8,6 +8,8 @@ import { ReadBar } from "./ReadBar";
 import { SubscribeModal } from "@/components/boards/subscribe/SubscribeModal";
 import { SideNewsletter } from "./SideNewsletter";
 import { CopyLink } from "./CopyLink";
+import { SaveButton } from "@/components/live/SaveButton";
+import { ArticleComments, CommentCount } from "@/components/live/ArticleComments";
 import { SocialGlyph } from "@/components/ui/SocialButton";
 import { bySection, readNext } from "@/lib/content/articles";
 import { getAuthor, lettersFor } from "@/lib/content/people";
@@ -82,7 +84,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 </div>
 <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
-<Link href="/signin/" className="icobtn gh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-5-6 5z" /></svg>Save</Link>
+<SaveButton href={articleHref(a)} title={a.title} kind="article" meta={sectionByCode(a.section)?.label} className="icobtn gh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-5-6 5z" /></svg></SaveButton>
 <ShareMenu url={url} title={a.title} />
 <CopyLink url={url} variant="print" />
 </div>
@@ -269,7 +271,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 <div id="comments" style={{ marginTop: "48px", scrollMarginTop: "24px" }} className="wrap">
 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "20px", paddingBottom: "14px", borderBottom: "3px solid var(--ink)" }}>
 <div>
-<h2 style={{ margin: "0", fontSize: "28px" }} className="h">Comments <span style={{ color: "var(--red-text)", fontSize: "19px" }} className="mono">0</span></h2>
+<h2 style={{ margin: "0", fontSize: "28px" }} className="h">Comments <span style={{ color: "var(--red-text)", fontSize: "19px" }} className="mono"><CommentCount slug={a.slug} /></span></h2>
 <p style={{ margin: "6px 0 0", fontSize: "12.5px", fontWeight: "500", color: "var(--slate)" }}>Sign in to comment. Every comment is reviewed before it appears, under the <Link href="/policies/comment-policy/" style={{ color: "var(--red-text)", textDecoration: "underline" }}>Comment Policy</Link>.</p>
 </div>
 <div style={{ display: "flex", gap: "8px" }}>
@@ -278,21 +280,7 @@ export function ArticleBoard({ a }: { a: Article }) {
 </div>
 </div>
 <div className="cmt" style={{ display: "grid", gridTemplateColumns: "1fr 318px", gap: "44px", marginTop: "24px", alignItems: "start" }}>
-<div>
-<div style={{ border: "2px solid var(--ink)", borderRadius: "14px", padding: "18px 20px", marginBottom: "26px" }}>
-<div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "12px" }}>
-<span style={{ width: "34px", height: "34px", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "12.5px", fontWeight: "800" }}>?</span>
-<span style={{ fontSize: "14px", fontWeight: "800" }}>Your name</span>
-<span style={{ background: "var(--paper)", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 8px", borderRadius: "4px", color: "var(--slate)" }}>READER</span>
-</div>
-<div style={{ minHeight: "70px", border: "1px solid var(--line)", borderRadius: "10px", padding: "12px 14px", fontSize: "14px", fontWeight: "500", color: "var(--grey)" }}>Add to the record — a correction, a site experience, a standard we missed…</div>
-<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "12px", flexWrap: "wrap" }}>
-<span style={{ fontSize: "12px", fontWeight: "500", color: "var(--grey)" }}>Comments enter a review queue and are usually handled within one working day.</span>
-<Link href="/signin/" style={{ minHeight: "42px", padding: "0 22px", border: "0", borderRadius: "999px", background: "var(--ink)", color: "var(--on-ink)", fontFamily: "inherit", fontSize: "14px", fontWeight: "800", display: "inline-flex", alignItems: "center" }}>Sign in to comment</Link>
-</div>
-</div>
-<p className="meta" style={{ margin: 0 }}>No comments yet. Be the first to add to the record.</p>
-</div>
+<ArticleComments slug={a.slug} />
 <div style={{ borderLeft: "3px solid var(--red)", paddingLeft: "18px" }}>
 <div style={{ fontSize: "15px", marginBottom: "10px" }} className="h">How comments work</div>
 <ul style={{ margin: "0", paddingLeft: "18px", fontSize: "13px", fontWeight: "500", lineHeight: "1.8", color: "var(--slate)" }}>

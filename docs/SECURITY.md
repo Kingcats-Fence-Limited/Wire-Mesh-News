@@ -15,22 +15,17 @@
 - **Account preview data** (localStorage) is shape-checked on load and falls back to the sample if it does not match; a failed write (storage full) is reported, not hidden. CSV exports neutralise cells that start with = + - @.
 - **Dependencies**: sanitize-html 2.18.1 (fixes GHSA-jxwj-j7wr-gfrw); `pnpm audit --prod` clean. One dev-only advisory (braces, via eslint-config-next) has no patched release and is not shipped to the site.
 
-## Before Phase 2 (accounts, submissions, payments) goes live
-- Auth: Auth.js (or similar) with Google and Microsoft OAuth, email + password with hashed passwords (argon2/bcrypt), email verification codes sent by a real mail service, session cookies `HttpOnly; Secure; SameSite=Lax`.
-- Every form endpoint: server-side validation, CSRF protection, rate limiting (sign-in, sign-up, code entry, contact-a-company 5/day, comments), bot protection (Turnstile or hCaptcha), audit log.
-- Uploads (images, PDFs, logos): size and MIME check on the server, re-encode images, strip EXIF, store outside the web root (Vercel Blob / S3) with private access until approved; virus scan PDFs.
-- Payments: card data only on the processor's hosted page (Stripe Checkout / Customer Portal); verify webhooks by signature.
-- Data protection: export and delete endpoints that match the Privacy Policy; retention jobs (unverified accounts after five days, logs after five months).
+## Phase 2 (built on branch `phase2`, off until configured — see docs/PHASE2.md)
+- Auth: Better Auth, passwordless — Google, Microsoft and 6-digit email codes (hashed, 5 minutes, 5 tries); no passwords stored. Session cookies `HttpOnly; Secure; SameSite=Lax`, 30 days; every account API re-checks the session table, so revoking a device or deleting an account is immediate. Email change needs a recent sign-in plus a code to the new address.
+- Endpoints: same-origin check on every write, server-side validation, rate limits in Postgres (codes 3/min, sign-in 10/5 min, enquiries 5/day, comments 10/day, uploads 60/hour, contact 5/hour per IP, newsletter 10/hour per IP), Turnstile on email-code and contact forms, honeypots on public forms.
+- Roles and statuses are set only by the server and editors (Directus); the browser's copy is never trusted. Directus is reached with a narrow "Website server" token, never an admin token.
+- Uploads: type sniffed from bytes; images re-encoded to WebP (EXIF stripped), SVG rasterised, 4 MB per request; private until approved; served through /api/files/<id>/ with nosniff and a sandbox CSP.
+- Data protection: download-my-data in the account; deletion closes the account and a daily cron removes private data after 30 days.
+- Still to do before payments: card data only on the processor's hosted page; verify billing webhooks by signature.
 - Turn on Vercel deployment protection for preview URLs and keep production behind the custom domain.
 
-### Demo-only shortcuts that must not survive into Phase 2
-The /account preview runs entirely in the browser. When real accounts are wired, each of these moves to the server:
-- Verification codes are generated and shown in the browser (src/components/ui/CodeVerify.tsx) → issue, store (hashed, 10-minute expiry, 5 attempts) and check on the server; send by email.
-- Sign-in accepts any address and password, and the "provider" email is typed by hand (AuthForms.tsx, SocialSignIn.tsx) → real OAuth and password checks.
-- Changing the password does not check the current one; changing the email needs no re-authentication → require the current password (or a fresh sign-in), and email the old address about any change.
-- Roles (READER / AUTHOR / COMPANY, PRO) are hard-coded in the UI → read them from the session; never trust a role sent by the browser.
-- /account has no guard → middleware that redirects to /signin/?next=/account/ without a session.
-- Submission status, comment status and company change requests are set by the browser → only editors change status, through the CMS.
+### Preview-mode shortcuts (only when accounts are not configured)
+Without the Phase 2 variables the /account preview still runs entirely in the browser (codes shown on screen, any address accepted, sample data in localStorage). With the variables set, none of these paths are used.
 
 ## SEO (in place)
 - Every public page sets a canonical URL (query strings never canonical), Open Graph and X card tags through src/lib/seo.ts; share images are rendered at build time (/og/ and /og/<article>/).

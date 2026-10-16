@@ -77,7 +77,7 @@ export function ContactCompanyBoard({ c }: { c: Company }) {
 <div style={{ flex: "1 1 auto" }}><div style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".08em", color: "var(--grey)" }}>MESSAGE TO</div><div style={{ fontSize: "17px" }} className="h">{c.name}</div></div>
 <span style={{ background: "var(--st-withdrawn-bg)", color: "var(--slate)" }} className="st">1 recipient only</span>
 </div>
-<SimpleForm success={<>
+<SimpleForm send="enquiry" extra={{ company: c.slug }} success={<>
 <div style={{ width: "44px", height: "44px", borderRadius: "11px", background: "var(--st-current-bg)", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: "13px" }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--up)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg></div>
 <div style={{ fontSize: "19px", marginBottom: "7px" }} className="h">Message sent</div>
 <p style={{ margin: "0 0 14px", lineHeight: "1.6" }} className="meta">Sent to <b style={{ color: "var(--ink)" }}>{c.name}</b>, with a copy to your email. They reply to you directly, not through us.</p>
@@ -111,7 +111,7 @@ export function ContactCompanyBoard({ c }: { c: Company }) {
 <div className="g2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
 <div className="fld"><label htmlFor="d1">NAME *</label><input id="d1" name="name" type="text" required className="inp" autoComplete="name" /></div>
 <div className="fld"><label htmlFor="d2">WORK EMAIL *</label><input id="d2" name="email" type="email" required className="inp" autoComplete="email" /></div>
-<div className="fld"><label htmlFor="d3">COMPANY</label><input id="d3" name="company" type="text" className="inp" autoComplete="organization" /></div>
+<div className="fld"><label htmlFor="d3">COMPANY</label><input id="d3" name="company_name" type="text" className="inp" autoComplete="organization" /></div>
 <div className="fld"><label htmlFor="d4">COUNTRY *</label><div style={{ position: "relative" }}><select id="d4" name="country" required style={{ appearance: "none", paddingRight: "32px" }} className="inp" defaultValue=""><option value="" disabled>Select a country</option>{COUNTRY.filter((x) => x.dialCode).map((x) => <option key={x.alpha2} value={x.alpha2}>{x.name}</option>)}</select><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="3" strokeLinecap="round" aria-hidden="true" style={{ position: "absolute", right: "12px", top: "16px", pointerEvents: "none" }}><path d="m5 9 7 7 7-7" /></svg></div></div>
 </div>
 <label style={{ display: "flex", gap: "10px", alignItems: "flex-start", fontSize: "13px", fontWeight: "500", lineHeight: "1.55", cursor: "pointer", marginBottom: "16px" }}><input type="checkbox" required style={{ width: "18px", height: "18px", accentColor: "var(--red)", flexShrink: "0", marginTop: "1px" }} /><span>I agree to the above being sent to <b>{c.name}</b> and have read the <Link href="/policies/privacy/" style={{ color: "var(--red-text)", fontWeight: "800", textDecoration: "underline" }}>Privacy Policy</Link>.</span></label>

@@ -26,7 +26,29 @@ const Done = ({ children }: { children: React.ReactNode }) => (
   <div role="status" style={{ background: "var(--st-current-bg)", color: "var(--up)", borderRadius: "8px", padding: "9px 12px", fontSize: "12.5px", fontWeight: 700 }}>{children}</div>
 );
 
+/* Live accounts until paid plans open: every account is Free, nothing to manage yet. The
+   payment provider (Paddle or Stripe, hosted checkout) plugs in here; see docs/PHASE2.md. */
+function BillingSoon() {
+  const { d } = useDemo();
+  return (
+    <div className="mini" id="billing">
+      <div className="minihd"><span style={{ fontSize: "17px" }} className="h">Your plan</span><span style={{ background: "var(--st-current-bg)", color: "var(--up)" }} className="st">FREE</span></div>
+      <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "12px", padding: "16px 18px", display: "flex", flexDirection: "column", gap: "7px" }}>
+        <span style={{ fontSize: "19px", color: "#FFFFFF" }} className="h">Free account</span>
+        <span style={{ fontSize: "12.5px", fontWeight: 500, color: "var(--grey-3)", lineHeight: 1.55 }}>Reading, comments, submissions, bookmarks, standard alerts and a company profile are all included.</span>
+      </div>
+      <div className="note">Pro opens soon. Prices are announced before anything can be bought, and nothing is ever charged without you choosing a plan. {d.prefs.productNews ? "You will get an email when it opens." : "Turn on “Product news” under Account settings to get an email when it opens."}</div>
+      <span className="meta">Card details are never typed into this site: payments will run on the payment provider&apos;s own secure page. <Link href="/policies/terms/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Terms</Link></span>
+    </div>
+  );
+}
+
 export function BillingPanel() {
+  const { live } = useDemo();
+  return live ? <BillingSoon /> : <BillingDemo />;
+}
+
+function BillingDemo() {
   const { d, set, toast } = useDemo();
   const b = d.billing;
   const B = (fn: (b: Billing) => Billing) => set((x) => ({ ...x, billing: fn(x.billing) }));

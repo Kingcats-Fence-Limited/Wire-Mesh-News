@@ -30,6 +30,8 @@ export const ENV = {
   turnstileSecret: v("TURNSTILE_SECRET_KEY"),
   /* Scheduled clean-up (Vercel Cron sends this as a bearer token). */
   cronSecret: v("CRON_SECRET"),
+  /* Directus Flow → /api/hooks/directus sends this in the x-wmn-hook header. */
+  hookSecret: v("DIRECTUS_HOOK_SECRET"),
 };
 
 /** Accounts are live only when sign-in, its database and Directus are all configured. */

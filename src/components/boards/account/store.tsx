@@ -90,7 +90,7 @@ export function DemoProvider({ seed, go, children, live = false }: { seed: Demo;
       }
     } catch { try { localStorage.removeItem(KEY); } catch { /* storage blocked: stay on the seed */ } }
     loaded.current = true;
-  }, [seed]);
+  }, [seed, live]);
 
   const toast = useCallback((text: string, undo?: () => void) => {
     const id = Date.now() + Math.random();
@@ -108,12 +108,12 @@ export function DemoProvider({ seed, go, children, live = false }: { seed: Demo;
       if (!full.current) toast("This browser’s storage is full, so recent changes will be lost on reload. Remove some images or reset the demo data.");
       full.current = true;
     }
-  }, [d, toast]);
+  }, [d, toast, live]);
 
   /* ---- live mode: load from the server, send changes, show what the server saved ---- */
   const apply = useCallback((state: Demo) => { synced.current = state; local.current = state; setD(state); }, []);
   const reload = useCallback(async () => {
-    const res = await fetch("/api/me/state", { cache: "no-store" }).catch(() => null);
+    const res = await fetch("/api/me/state/", { cache: "no-store" }).catch(() => null);
     if (res?.status === 401) { location.assign(`/signin/?next=${encodeURIComponent(location.pathname + location.search)}`); return; }
     if (!res || !res.ok) { toast("Your account could not be loaded. Check your connection and reload."); return; }
     const j = (await res.json()) as { state: Demo };
@@ -129,7 +129,7 @@ export function DemoProvider({ seed, go, children, live = false }: { seed: Demo;
     if (!changes.length) return;
     inflight.current = true; setSaving(true);
     try {
-      const res = await fetch("/api/me/sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ changes }) });
+      const res = await fetch("/api/me/sync/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ changes }) });
       if (res.status === 401) { location.assign("/signin/?next=/account/"); return; }
       const j = (await res.json().catch(() => ({}))) as { state?: Demo; errors?: string[]; error?: string };
       if (!res.ok || !j.state) { toast(j.error ?? "Could not save. Your last change was undone."); if (synced.current) apply(synced.current); return; }
@@ -258,14 +258,33 @@ export function diff(a: Demo, b: Demo): Change[] {
   return out;
 }
 
+/* Vercel accepts request bodies up to 4.5 MB, so large photos are scaled down in the browser
+   first (the server re-encodes them anyway). PDFs must already be under the limit. */
+const MAX_UPLOAD = 4 * 1024 * 1024;
+async function fitImage(file: File): Promise<Blob> {
+  if (file.size <= MAX_UPLOAD || !/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+  const bmp = await createImageBitmap(file);
+  for (const max of [3200, 2400, 1800]) {
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext("2d")!.drawImage(bmp, 0, 0, c.width, c.height);
+    const b = await new Promise<Blob | null>((res) => c.toBlob(res, "image/jpeg", 0.88));
+    if (b && b.size <= MAX_UPLOAD) return b;
+  }
+  throw new Error("That image is too large. Use one under 4 MB.");
+}
+
 /** Live mode: upload a file for the account (photo, article image, company logo …). */
 export async function uploadFile(file: File, purpose: "avatar" | "submission" | "company" | "evidence"): Promise<{ id: string; url: string; kind: "image" | "pdf" }> {
+  const body = await fitImage(file);
+  if (body.size > MAX_UPLOAD) throw new Error("Files up to 4 MB. Compress the PDF or split it.");
   const form = new FormData();
-  form.append("file", file);
+  form.append("file", body, file.name);
   form.append("purpose", purpose);
-  const res = await fetch("/api/me/files", { method: "POST", body: form });
+  const res = await fetch("/api/me/files/", { method: "POST", body: form });
   const j = (await res.json().catch(() => ({}))) as { id?: string; url?: string; kind?: "image" | "pdf"; error?: string };
-  if (!res.ok || !j.id) throw new Error(j.error ?? "Upload failed.");
+  if (!res.ok || !j.id) throw new Error(j.error ?? (res.status === 413 ? "Files up to 4 MB." : "Upload failed."));
   return { id: j.id, url: j.url!, kind: j.kind! };
 }
 export { VERSION as DEMO_VERSION };

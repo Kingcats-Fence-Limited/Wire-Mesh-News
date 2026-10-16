@@ -7,13 +7,16 @@ import Link from "next/link";
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { DemoProvider, useDemo, type Demo } from "./store";
 import { Overview, Profile, Notifications, Settings } from "./PanelsAccount";
-import { Submissions, Comments, AuthorProfile, Bookmarks, Messages, Avatar } from "./PanelsContent";
+import { Submissions, Comments, AuthorProfile, Bookmarks, Messages, Avatar, openSubmissions } from "./PanelsContent";
 import { CompanyPanel } from "./CompanyPanel";
+import { ClaimPanel, LiveCompany } from "./ClaimPanel";
 import { BillingPanel } from "./BillingPanel";
 import { ConfirmBtn, Head } from "./ui";
 import type { Company } from "@/lib/content/types";
 import type { SubOpt } from "@/lib/vocab-geo";
 import type { EditorRefs } from "@/components/editor/draft";
+import { AUTH_LIVE } from "@/lib/live";
+import { authClient } from "@/lib/auth-client";
 
 const PANELS = ["overview", "profile", "submissions", "comments", "author", "bookmarks", "messages", "company", "billing", "notifications", "settings"] as const;
 type PanelId = (typeof PANELS)[number];
@@ -49,7 +52,7 @@ export function AccountApp(props: Props) {
 
   return (
     <Recover>
-      <DemoProvider seed={props.seed} go={go}>
+      <DemoProvider seed={props.seed} go={go} live={AUTH_LIVE}>
         <Shell {...props} panel={panel} go={go} topRef={top} />
       </DemoProvider>
     </Recover>
@@ -72,15 +75,54 @@ class Recover extends Component<{ children: ReactNode }, { failed: boolean }> {
   }
 }
 
+async function signOut() {
+  if (AUTH_LIVE) await authClient.signOut().catch(() => null);
+  window.location.assign("/");
+}
+
+/* Live accounts open on the server's data; until it arrives, a quiet placeholder (never the sample). */
+function Loading() {
+  return (
+    <div className="panel" role="status" aria-live="polite" style={{ padding: "40px 24px", display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-start" }}>
+      <b className="h" style={{ fontSize: "20px" }}>Loading your account…</b>
+      <span className="meta">This takes a second. If it does not finish, check your connection and reload the page.</span>
+    </div>
+  );
+}
+
+const ROLE_LABEL: Record<string, string> = { reader: "READER", author: "AUTHOR", company: "COMPANY", pro: "PRO", editor: "EDITOR" };
+
+/* One-time hints carried in the address: ?welcome=1 after a first sign-in, ?claim=<slug> from a
+   directory "Claim this profile" link, ?new=article|letter from the site's "Submit" links. */
+function useArrival(go: (p: string) => void) {
+  const { live, ready, d, toast } = useDemo();
+  const done = useRef(false);
+  useEffect(() => {
+    if (!ready || done.current) return;
+    done.current = true;
+    const q = new URLSearchParams(location.search);
+    if (![...q.keys()].some((k) => ["welcome", "claim", "new"].includes(k))) return;
+    const welcome = q.get("welcome"), claim = q.get("claim"), nw = q.get("new");
+    history.replaceState(null, "", location.pathname + location.hash);
+    if (welcome && live) { go("profile"); if (!d.profile.name) toast("Welcome to Wire Mesh News. Add your name so editors and companies know who they are talking to."); }
+    if (claim) { try { sessionStorage.setItem("wmn-claim", claim); } catch { /* ignore */ } go("company"); }
+    if (nw) openSubmissions(go, { fresh: nw === "letter" ? "letter" : true });
+  }, [ready, live, d.profile.name, go, toast]);
+}
+
 function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel: PanelId; go: (p: string) => void; topRef: React.RefObject<HTMLDivElement | null> }) {
-  const { d, reset, epoch } = useDemo();
+  const { d, reset, epoch, live, ready, saving } = useDemo();
+  useArrival(go);
+  const hasCompany = !live || !!d.company;
+  const roles = live ? (d.roles ?? ["reader"]) : ["reader", "author", "company"];
+  const plan = live ? (roles.includes("pro") ? "PRO" : "FREE") : "PRO";
   const unread = d.notices.filter((n) => !n.read && !n.archived).length;
   const needs = d.submissions.filter((s) => s.status === "changes_requested").length;
   const NAV: { group: string; items: { id: PanelId; label: string; count?: number | string; alert?: boolean }[] }[] = [
     { group: "", items: [{ id: "overview", label: "Overview" }] },
     { group: "YOU", items: [{ id: "profile", label: "Profile" }, { id: "author", label: "Author profile" }, { id: "settings", label: "Account settings" }] },
     { group: "CONTENT", items: [{ id: "submissions", label: "My submissions", count: needs ? `${needs} to fix` : d.submissions.length, alert: needs > 0 }, { id: "comments", label: "My comments", count: d.comments.length }, { id: "bookmarks", label: "Bookmarks", count: d.bookmarks.length }, { id: "messages", label: "My messages", count: d.messages.length }] },
-    { group: "COMPANY & BILLING", items: [{ id: "company", label: "My company", count: "Claimed" }, { id: "billing", label: "Subscription & billing" }] },
+    { group: "COMPANY & BILLING", items: [{ id: "company", label: "My company", count: hasCompany ? "Claimed" : undefined }, { id: "billing", label: "Subscription & billing" }] },
     { group: "", items: [{ id: "notifications", label: "Notifications", count: unread || undefined, alert: unread > 0 }] },
   ];
   const flat = NAV.flatMap((g) => g.items);
@@ -93,12 +135,15 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
 
   return (
     <>
-      <div className="pbar">
-        <span className="tag">PREVIEW</span>
-        <span style={{ flex: "1 1 260px" }}>Sample account with test data. Everything is editable and every button works; changes stay in this browser only.</span>
-        <ConfirmBtn label="Reset demo data" confirm="Reset" small onConfirm={reset} />
-        <Link href="/signin/" style={{ color: "#FFFFFF", textDecoration: "underline", fontWeight: 800 }}>Sign-in page</Link>
-      </div>
+      {!live && (
+        <div className="pbar">
+          <span className="tag">PREVIEW</span>
+          <span style={{ flex: "1 1 260px" }}>Sample account with test data. Everything is editable and every button works; changes stay in this browser only.</span>
+          <ConfirmBtn label="Reset demo data" confirm="Reset" small onConfirm={reset} />
+          <Link href="/signin/" style={{ color: "#FFFFFF", textDecoration: "underline", fontWeight: 800 }}>Sign-in page</Link>
+        </div>
+      )}
+      {live && <span className="sr-only" role="status" aria-live="polite">{saving ? "Saving…" : ""}</span>}
       <nav aria-label="Breadcrumb" style={{ fontSize: "12.5px", fontWeight: 500, color: "var(--slate)", marginBottom: "12px" }}><Link href="/" style={{ color: "var(--slate)" }}>Home</Link> / <span style={{ color: "var(--ink)", fontWeight: 800 }}>My account</span></nav>
 
       <h1 className="sr-only">My account</h1>
@@ -107,7 +152,7 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
           <div className="panel" style={{ padding: "18px" }}>
             <div style={{ display: "flex", gap: "12px", alignItems: "center", paddingBottom: "14px", borderBottom: "1px solid var(--line)", marginBottom: "10px" }}>
               <Avatar />
-              <div style={{ minWidth: 0 }}><div style={{ fontSize: "15px", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.profile.name}</div><div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "3px" }}><span className="rl">PRO</span><span className="meta">since {d.profile.since}</span></div></div>
+              <div style={{ minWidth: 0 }}><div style={{ fontSize: "15px", fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.profile.name || d.profile.email}</div><div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "3px" }}><span className="rl">{plan}</span><span className="meta">since {d.profile.since}</span></div></div>
             </div>
             <nav aria-label="Account" className="navlist">
               {NAV.map((g, i) => (
@@ -119,8 +164,10 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
             </nav>
             <div style={{ borderTop: "1px solid var(--line)", marginTop: "10px", paddingTop: "12px" }}>
               <div className="grp" style={{ padding: 0, marginBottom: "7px" }}>YOUR ROLES</div>
-              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}><span className="rl">READER</span><span className="rl">AUTHOR</span><span className="rl red">COMPANY</span></div>
-                            <Link href="/signin/" className="navi" style={{ color: "var(--slate)" }}>Sign out</Link>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>{roles.filter((r) => r !== "pro").map((r) => <span key={r} className={`rl${r === "company" ? " red" : ""}`}>{ROLE_LABEL[r] ?? r.toUpperCase()}</span>)}</div>
+              {live
+                ? <button type="button" onClick={() => void signOut()} className="navi" style={{ color: "var(--slate)", border: 0, background: "none", width: "100%", textAlign: "left", fontFamily: "inherit", cursor: "pointer" }}>Sign out</button>
+                : <Link href="/signin/" className="navi" style={{ color: "var(--slate)" }}>Sign out</Link>}
             </div>
           </div>
         </aside>
@@ -128,7 +175,8 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
         <div className="mobnav" role="navigation" aria-label="Account sections">{flat.map((it) => link(it, true))}</div>
 
         <div className="main" key={epoch}>
-          {panel === "overview" && <Overview companyName={co.name} />}
+          {!ready ? <Loading /> : <>
+          {panel === "overview" && <Overview companyName={hasCompany ? co.name : ""} />}
           {panel === "profile" && <Profile />}
           {panel === "submissions" && <Submissions refs={refs} />}
           {panel === "comments" && <Comments />}
@@ -136,10 +184,11 @@ function Shell({ co, related, subs0, refs, panel, go, topRef }: Props & { panel:
           {panel === "bookmarks" && <Bookmarks />}
           {panel === "messages" && <Messages />}
           {/* Kept mounted (just hidden) so unsent company edits survive a visit to another panel. */}
-          <div hidden={panel !== "company"} style={{ display: panel === "company" ? "contents" : undefined }}><Head title="My company" sub="The directory profile you manage. Edits are reviewed before they go live; the public page keeps its current content until then." actions={<Link href={`/directory/${co.slug}/`} className="btn">View public profile</Link>} /><CompanyPanel co={co} related={related} subs0={subs0} /></div>
+          <div hidden={panel !== "company"} style={{ display: panel === "company" ? "contents" : undefined }}>{live && ready && hasCompany ? <LiveCompany /> : hasCompany ? <><Head title="My company" sub="The directory profile you manage. Edits are reviewed before they go live; the public page keeps its current content until then." actions={<Link href={`/directory/${co.slug}/`} className="btn">View public profile</Link>} /><CompanyPanel co={co} related={related} subs0={subs0} /></> : <><Head title="My company" sub="Manage your company's directory profile: products, photos, contacts and enquiries." /><ClaimPanel /></>}</div>
           {panel === "billing" && <><Head title="Subscription & billing" sub="Your plan, payment method and invoices. Prices are announced before paid plans open." /><BillingPanel /></>}
           {panel === "notifications" && <Notifications />}
           {panel === "settings" && <Settings />}
+          </>}
         </div>
       </div>
     </>

@@ -3,6 +3,7 @@
 /* Letters & Opinion index. The page is static; the browser applies tab, filters, sort and
    paging from the address bar. Letters and columns are small, so they are imported directly. */
 import Link from "next/link";
+import { AUTH_LIVE } from "@/lib/live";
 import { DropMenu } from "@/components/boards/shared/DropMenu";
 import { LETTERS, COLUMNS } from "@/lib/content/people";
 import { EDITORIAL_SECTIONS, sectionByCode, fmtDate } from "@/lib/site";
@@ -27,7 +28,7 @@ function WriteCard() {
 <li>Letters may be shortened. We never change the point you make.</li>
 <li>No product promotion, no price quotes, nothing about a named competitor.</li>
 </ul>
-<Link href="/signin/?next=/letters/" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "100%", boxSizing: "border-box", minHeight: "46px", borderRadius: "999px", background: "var(--red)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }}>Send a letter</Link>
+<Link href={AUTH_LIVE ? "/account/?new=letter#submissions" : "/signin/?next=/letters/"} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "100%", boxSizing: "border-box", minHeight: "46px", borderRadius: "999px", background: "var(--red)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }}>Send a letter</Link>
 <p style={{ margin: "11px 0 0", fontSize: "11px", fontWeight: "500", lineHeight: "1.55", color: "var(--grey-5)" }}>By sending a letter you grant Wire Mesh News a non-exclusive licence to publish and edit it. See the <Link href="/policies/comment-policy/" style={{ color: "var(--grey-3)", textDecoration: "underline" }}>Letters policy</Link>.</p>
     </div>
   );

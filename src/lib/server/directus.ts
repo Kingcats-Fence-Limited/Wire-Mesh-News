@@ -45,6 +45,7 @@ export const dx = {
   upload: (form: FormData) => call<{ id: string; type: string; filesize: string }>("POST", "/files", form),
   file: (id: string) => call<{ id: string; type: string; owner_member: string | null; visibility: string; filename_download: string }>("GET", `/files/${encodeURIComponent(id)}?fields=id,type,owner_member,visibility,filename_download`),
   updateFile: (id: string, data: Record<string, unknown>) => call<unknown>("PATCH", `/files/${encodeURIComponent(id)}`, data),
+  files: <T>(q?: Query) => call<T[]>("GET", `/files?${qs(q)}`),
   removeFile: (id: string) => call<void>("DELETE", `/files/${encodeURIComponent(id)}`),
   asset: (id: string, transform?: string) => call<Response>("GET", `/assets/${encodeURIComponent(id)}${transform ? `?${transform}` : ""}`, undefined, true),
   folders: () => call<{ id: string; name: string }[]>("GET", "/folders?limit=-1"),

@@ -3,8 +3,10 @@
 /* Account panels about the person and the account: overview, profile, notifications,
    settings. */
 import Link from "next/link";
-import { useState } from "react";
-import { useDemo, download, today, type Notice } from "./store";
+import { useEffect, useState } from "react";
+import { useDemo, download, today, uploadFile, type Notice } from "./store";
+import { authClient } from "@/lib/auth-client";
+import { AUTH_GOOGLE, AUTH_MICROSOFT } from "@/lib/live";
 import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, Toggle } from "./ui";
 import { Avatar, openSubmissions } from "./PanelsContent";
 import { CodeVerify } from "@/components/ui/CodeVerify";
@@ -26,7 +28,7 @@ export function Overview({ companyName }: { companyName: string }) {
   );
   return (
     <>
-      <Head title={`Welcome back, ${d.profile.name.split(" ")[0]}`} sub={`Member since ${d.profile.since}. Here is what needs you, and what changed since your last visit.`} />
+      <Head title={d.profile.name ? `Welcome back, ${d.profile.name.split(" ")[0]}` : "Welcome to Wire Mesh News"} sub={`Member since ${d.profile.since}. Here is what needs you, and what changed since your last visit.`} />
       <div className="stats">
         <Stat n={pending} label="In review" to="submissions" f="pending" />
         <Stat n={published} label="Published" to="submissions" f="published" />
@@ -36,7 +38,8 @@ export function Overview({ companyName }: { companyName: string }) {
       <div className="g2f" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "16px", alignItems: "start" }}>
         <Card>
           <span style={{ fontSize: "17px" }} className="h">Needs your attention</span>
-          {action.length === 0 && unread.length === 0 && <Empty>Nothing waiting on you.</Empty>}
+          {!d.profile.name && <button type="button" onClick={() => go("profile")} className="todo"><Pill tone="red">ADD YOUR NAME</Pill><span style={{ fontWeight: 800 }}>Your name appears on comments, letters and submissions.</span><span className="meta">It takes a few seconds in Profile.</span></button>}
+          {d.profile.name && action.length === 0 && unread.length === 0 && <Empty>Nothing waiting on you.</Empty>}
           {action.map((s) => (
             <button key={s.id} type="button" onClick={() => openSubmissions(go, { f: "changes_requested" })} className="todo"><Pill tone="red">CHANGES REQUESTED</Pill><span style={{ fontWeight: 800 }}>{s.title}</span><span className="meta">{s.note}</span></button>
           ))}
@@ -55,7 +58,7 @@ export function Overview({ companyName }: { companyName: string }) {
             <span style={{ fontSize: "17px" }} className="h">Quick actions</span>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <button type="button" className="btn dark" style={{ justifyContent: "flex-start" }} onClick={() => openSubmissions(go, { fresh: true })}>Write a new submission</button>
-              <button type="button" className="btn" style={{ justifyContent: "flex-start" }} onClick={() => go("company")}>Update {companyName}</button>
+              <button type="button" className="btn" style={{ justifyContent: "flex-start" }} onClick={() => go("company")}>{companyName ? `Update ${companyName}` : "Claim your company profile"}</button>
               <button type="button" className="btn" style={{ justifyContent: "flex-start" }} onClick={() => go("billing")}>Subscription &amp; invoices</button>
             </div>
           </Card>
@@ -67,14 +70,22 @@ export function Overview({ companyName }: { companyName: string }) {
 
 /* --------------------------------- Profile --------------------------------- */
 export function Profile() {
-  const { d, set, toast } = useDemo();
+  const { d, set, toast, live } = useDemo();
   const [p, setP] = useState(d.profile);
   const [err, setErr] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const dirty = JSON.stringify(p) !== JSON.stringify(d.profile);
-  const onAvatar = (file?: File) => {
+  const onAvatar = async (file?: File) => {
     if (!file) return;
     if (!/^image\/(png|jpeg|webp)$/.test(file.type) || file.size > 3 * 1024 * 1024) { setErr("PNG, JPG or WebP up to 3 MB."); return; }
     setErr(null);
+    if (live) {
+      /* Uploaded and resized on the server; the profile keeps the file's address. */
+      setUploading(true);
+      try { const r = await uploadFile(file, "avatar"); setP((x) => ({ ...x, avatar: r.url })); } catch (e) { setErr((e as Error).message); }
+      setUploading(false);
+      return;
+    }
     const r = new FileReader();
     r.onload = () => setP((x) => ({ ...x, avatar: String(r.result) }));
     r.readAsDataURL(file);
@@ -91,7 +102,7 @@ export function Profile() {
           </span>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              <label className="btn" style={{ position: "relative", cursor: "pointer" }}>{p.avatar ? "Change photo" : "Upload photo"}<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => { onAvatar(e.target.files?.[0]); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
+              <label className="btn" style={{ position: "relative", cursor: "pointer" }}>{uploading ? "Uploading…" : p.avatar ? "Change photo" : "Upload photo"}<input type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={(e) => { void onAvatar(e.target.files?.[0]); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
               {p.avatar && <button type="button" className="btn" onClick={() => setP({ ...p, avatar: null })}>Remove</button>}
             </div>
             <span className="meta">Square, PNG / JPG / WebP, up to 3 MB. Initials are used when there is no photo.</span>
@@ -161,15 +172,60 @@ export function Notifications() {
 }
 
 /* --------------------------------- Settings -------------------------------- */
-const strength = (p: string) => [p.length >= 10, /[A-Z]/.test(p) && /[a-z]/.test(p), /\d/.test(p), /[^A-Za-z0-9]/.test(p)].filter(Boolean).length;
+
+const authErr = (e?: { message?: string; status?: number } | null) =>
+  !e ? "Something went wrong. Try again." : e.status === 429 ? "Too many tries. Wait a minute, then try again." : /fresh/i.test(e.message ?? "") ? "For your security, sign out and sign in again, then change the email." : /same/i.test(e.message ?? "") ? "That is already your sign-in email." : /invalid otp|invalid code/i.test(e.message ?? "") ? "That code is not right. Check the latest email we sent." : /expired/i.test(e.message ?? "") ? "That code has expired. Send a new one." : e.message || "Something went wrong. Try again.";
+
+/* Google / Microsoft linked to this account (live). Linking needs the provider's own sign-in. */
+function SignInMethods() {
+  const { live, toast, d } = useDemo();
+  const [linked, setLinked] = useState<string[] | null>(live ? null : ["email-otp", "google"]);
+  useEffect(() => {
+    if (!live) return;
+    authClient.listAccounts().then((r) => setLinked((r.data ?? []).map((a: { providerId: string }) => a.providerId))).catch(() => setLinked([]));
+  }, [live]);
+  const link = async (provider: "google" | "microsoft") => {
+    if (!live) { toast("In the live site this opens the provider's sign-in to link the account."); return; }
+    const r = await authClient.linkSocial({ provider, callbackURL: "/account/#settings" }).catch(() => null);
+    if (!r || r.error) toast(authErr(r?.error));
+  };
+  const rows = [
+    { id: "email-otp", name: "Email code", on: true, note: `A 6-digit code sent to ${d.profile.email}` },
+    ...(AUTH_GOOGLE || !live ? [{ id: "google", name: "Google", on: !!linked?.includes("google"), note: "One click with your Google account" }] : []),
+    ...(AUTH_MICROSOFT || !live ? [{ id: "microsoft", name: "Microsoft", on: !!linked?.includes("microsoft"), note: "Outlook, Microsoft 365 or a work account" }] : []),
+  ];
+  return (
+    <Card>
+      <span style={{ fontSize: "17px" }} className="h">Sign-in methods</span>
+      <span className="meta" style={{ marginTop: "-8px" }}>There is no password. Each method signs you in to this same account.</span>
+      {rows.map((r) => (
+        <div key={r.id} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 0", borderTop: "1px solid var(--line)", flexWrap: "wrap" }}>
+          <span style={{ flex: "1 1 auto", minWidth: 0 }}><span style={{ fontSize: "14px", fontWeight: 800, display: "block" }}>{r.name}</span><span className="meta">{r.note}</span></span>
+          {linked === null ? <span className="meta">…</span> : r.on ? <Pill tone="green">ON</Pill> : <button type="button" className="btn sm" onClick={() => void link(r.id as "google" | "microsoft")}>Link {r.name}</button>}
+        </div>
+      ))}
+    </Card>
+  );
+}
 
 export function Settings() {
-  const { d, set, toast, reset } = useDemo();
+  const { d, set, toast, reset, live } = useDemo();
   const [email, setEmail] = useState("");
-  const [pw, setPw] = useState({ cur: "", next: "", again: "" });
-  const [pwOpen, setPwOpen] = useState(false);
   const [del, setDel] = useState("");
-  const s = strength(pw.next);
+  /* Live: the new address is only held here until its code is entered (then the server switches it). */
+  const [livePending, setLivePending] = useState<string | null>(null);
+  const [emailErr, setEmailErr] = useState<string | null>(null);
+  const [emailBusy, setEmailBusy] = useState(false);
+  const pendingEmail = live ? livePending : d.profile.pendingEmail;
+  const startChange = async () => {
+    const next = email.trim().toLowerCase();
+    if (!live) { set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: next } })); setEmail(""); toast("Code sent to the new address. Your current address gets a notice too, so a change you didn’t make can be stopped."); return; }
+    setEmailBusy(true); setEmailErr(null);
+    const r = await authClient.emailOtp.requestEmailChange({ newEmail: next }).catch(() => null);
+    setEmailBusy(false);
+    if (!r || r.error) { setEmailErr(authErr(r?.error)); return; }
+    setLivePending(next); setEmail("");
+  };
   const pref = (k: keyof typeof d.prefs, v: boolean) => { set((x) => ({ ...x, prefs: { ...x.prefs, [k]: v } })); toast(v ? "Turned on." : "Turned off."); };
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   return (
@@ -178,37 +234,28 @@ export function Settings() {
       <Card>
         <span style={{ fontSize: "17px" }} className="h">Sign-in email</span>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}><b style={{ fontSize: "14px" }}>{d.profile.email}</b><Pill tone="green">VERIFIED</Pill></div>
-        {d.profile.pendingEmail ? (
+        {pendingEmail ? (
           <div className="compose">
-            <CodeVerify compact email={d.profile.pendingEmail} purpose="confirm the new sign-in address" onVerified={() => { set((x) => ({ ...x, profile: { ...x.profile, email: x.profile.pendingEmail!, pendingEmail: null } })); toast("Email verified and changed. Use it next time you sign in."); }} />
-            <span className="meta">Until you enter the code you keep signing in with the address above.</span>
-            <div><button type="button" className="btn sm" onClick={() => set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: null } }))}>Cancel change</button></div>
+            <CodeVerify compact email={pendingEmail} purpose="confirm the new sign-in address"
+              live={live ? {
+                alreadySent: true,
+                send: async () => { const r = await authClient.emailOtp.requestEmailChange({ newEmail: pendingEmail }).catch(() => null); if (!r || r.error) return authErr(r?.error); },
+                verify: async (otp) => { const r = await authClient.emailOtp.changeEmail({ newEmail: pendingEmail, otp }).catch(() => null); if (!r || r.error) return authErr(r?.error); },
+              } : undefined}
+              onVerified={() => { if (live) { setLivePending(null); set((x) => ({ ...x, profile: { ...x.profile, email: pendingEmail } })); } else set((x) => ({ ...x, profile: { ...x.profile, email: x.profile.pendingEmail!, pendingEmail: null } })); toast("Email verified and changed. Use it next time you sign in."); }} />
+            <span className="meta">Until you enter the code you keep signing in with the address above.{live ? " If the new address already has an account, no code is sent." : ""}</span>
+            <div><button type="button" className="btn sm" onClick={() => (live ? setLivePending(null) : set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: null } })))}>Cancel change</button></div>
           </div>
         ) : (
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
-            <div style={{ flex: "1 1 240px" }}><Field id="se-new" label="NEW EMAIL"><input id="se-new" type="email" className="inp" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" /></Field></div>
-            <button type="button" className="btn dark" disabled={!emailOk || email.trim().toLowerCase() === d.profile.email.toLowerCase()} onClick={() => { set((x) => ({ ...x, profile: { ...x.profile, pendingEmail: email.trim().toLowerCase() } })); setEmail(""); toast("Code sent to the new address. Your current address gets a notice too, so a change you didn’t make can be stopped."); }}>Change email</button>
+            <div style={{ flex: "1 1 240px" }}><Field id="se-new" label="NEW EMAIL"><input id="se-new" type="email" className="inp" value={email} onChange={(e) => { setEmail(e.target.value); setEmailErr(null); }} placeholder="you@company.com" /></Field></div>
+            <button type="button" className="btn dark" disabled={emailBusy || !emailOk || email.trim().toLowerCase() === d.profile.email.toLowerCase()} onClick={() => void startChange()}>{emailBusy ? "Sending…" : "Change email"}</button>
           </div>
         )}
+        {emailErr && <span className="meta" role="alert" style={{ color: "var(--red-text)", fontWeight: 800 }}>{emailErr}</span>}
       </Card>
 
-      <Card>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", flexWrap: "wrap" }}><span style={{ fontSize: "17px" }} className="h">Password</span>{!pwOpen && <button type="button" className="btn" onClick={() => setPwOpen(true)}>Change password</button>}</div>
-        {!pwOpen ? <span className="meta">Last changed 14 Mar 2026.</span> : (
-          <>
-            <div className="g2f" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
-              <Field id="pw-c" label="CURRENT"><input id="pw-c" type="password" autoComplete="current-password" className="inp" value={pw.cur} onChange={(e) => setPw({ ...pw, cur: e.target.value })} /></Field>
-              <Field id="pw-n" label="NEW" hint={pw.next ? ["Too weak", "Weak", "Fair", "Good", "Strong"][s] : "10+ characters, mixed case, a number and a symbol"}><input id="pw-n" type="password" autoComplete="new-password" className="inp" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} /></Field>
-              <Field id="pw-a" label="REPEAT NEW" hint={pw.again && pw.again !== pw.next ? <span style={{ color: "var(--red-text)" }}>Does not match</span> : undefined}><input id="pw-a" type="password" autoComplete="new-password" className="inp" value={pw.again} onChange={(e) => setPw({ ...pw, again: e.target.value })} /></Field>
-            </div>
-            <div style={{ display: "flex", gap: "4px" }}>{[0, 1, 2, 3].map((i) => <span key={i} style={{ flex: 1, height: "5px", borderRadius: "999px", background: i < s ? (s >= 3 ? "var(--up)" : "var(--st-review-fg)") : "var(--line)" }} />)}</div>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button type="button" className="btn dark" disabled={!pw.cur || s < 3 || pw.next !== pw.again || pw.next === pw.cur} onClick={() => { setPw({ cur: "", next: "", again: "" }); setPwOpen(false); toast("Password changed. Other devices were signed out."); set((x) => ({ ...x, sessions: x.sessions.filter((y) => y.current) })); }}>Update password</button>
-              <button type="button" className="btn" onClick={() => { setPw({ cur: "", next: "", again: "" }); setPwOpen(false); }}>Cancel</button>
-            </div>
-          </>
-        )}
-      </Card>
+      <SignInMethods />
 
       <Card>
         <span style={{ fontSize: "17px" }} className="h">Email preferences</span>
@@ -252,17 +299,17 @@ export function Settings() {
             <span className="meta">Closes the account, ends any subscription at the end of its period and removes your private data after 30 days. Published work keeps its by-line.</span>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
               <div style={{ flex: "1 1 220px" }}><Field id="del" label='TYPE "DELETE" TO CONFIRM'><input id="del" className="inp" value={del} onChange={(e) => setDel(e.target.value)} autoComplete="off" /></Field></div>
-              <button type="button" className="btn danger-solid" disabled={del !== "DELETE"} onClick={() => { set((x) => ({ ...x, deactivated: true, billing: { ...x.billing, cancelled: true, nextCycle: null } })); setDel(""); toast("Account deletion scheduled (demo). The subscription will not renew."); }}>Delete my account</button>
+              <button type="button" className="btn danger-solid" disabled={del !== "DELETE"} onClick={() => { set((x) => ({ ...x, deactivated: true, billing: { ...x.billing, cancelled: true, nextCycle: null } })); setDel(""); toast(live ? "Account deletion scheduled. Sign in within 30 days to cancel it." : "Account deletion scheduled (demo). The subscription will not renew."); }}>Delete my account</button>
             </div>
           </>
         )}
       </Card>
 
-      <Card style={{ background: "var(--paper)" }}>
+      {!live && <Card style={{ background: "var(--paper)" }}>
         <span style={{ fontSize: "15px" }} className="h">Preview tools</span>
         <span className="meta">Your edits to this sample account are kept in this browser so you can review them. Reset to start from the original sample data.</span>
         <div><ConfirmBtn label="Reset demo data" confirm="Reset everything" danger onConfirm={reset} /></div>
-      </Card>
+      </Card>}
     </>
   );
 }

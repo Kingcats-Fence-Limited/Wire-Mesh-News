@@ -59,7 +59,7 @@ export function ContactBoard({ subject }: { subject?: string }) {
 <div id="form" style={{ border: "1px solid var(--line)", borderRadius: "16px", padding: "26px" }}>
 <div style={{ fontSize: "22px", marginBottom: "6px" }} className="h">Send a message</div>
 <p style={{ margin: "0 0 18px", lineHeight: "1.55" }} className="meta">Not sure who to write to? Use this form.</p>
-<SimpleForm success={<><div className="h" style={{ fontSize: "22px", marginBottom: "8px" }}>Message sent.</div><p className="meta" style={{ fontSize: "14px", margin: 0 }}>Thank you. We reply by email, usually within two working days.</p></>}>
+<SimpleForm send="contact" success={<><div className="h" style={{ fontSize: "22px", marginBottom: "8px" }}>Message sent.</div><p className="meta" style={{ fontSize: "14px", margin: 0 }}>Thank you. We reply by email, usually within two working days.</p></>}>
 <div className="g2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
 <div className="fld"><label htmlFor="c1">NAME *</label><input id="c1" name="name" type="text" required className="inp" /></div>
 <div className="fld"><label htmlFor="c2">EMAIL *</label><input id="c2" name="email" type="email" required placeholder="you@company.com" className="inp" /></div>

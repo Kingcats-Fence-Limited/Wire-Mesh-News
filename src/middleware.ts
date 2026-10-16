@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-/* When accounts are live, /account and /submit need a session. This is a fast cookie check
+/* When accounts are live, /account needs a session (/submit stays public: it links into the account). This is a fast cookie check
    only (no database call); every account API checks the session properly on the server.
    In preview mode (accounts not live) nothing is protected and the demo works as before. */
 const LIVE = process.env.NEXT_PUBLIC_AUTH_LIVE === "1";
@@ -16,4 +16,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
-export const config = { matcher: ["/account/:path*", "/submit/:path*"] };
+export const config = { matcher: ["/account/:path*"] };

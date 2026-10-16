@@ -64,7 +64,7 @@ This is a newly launched publication and we do not yet publish traffic or reach 
 <div>
 <h2 style={{ margin: "0 0 6px", fontSize: "30px" }} className="h">Enquiry form</h2>
 <p style={{ margin: "0 0 22px", fontSize: "14.5px" }} className="meta">We reply by email. Contact details and attachments are never published or shared with other users.</p>
-<SimpleForm success={<><div className="h" style={{ fontSize: "24px", marginBottom: "8px" }}>Enquiry received.</div><p className="meta" style={{ fontSize: "14.5px", margin: 0 }}>Thank you — we will reply by email, usually within two working days. If it is urgent, write to {SITE.email}.</p></>}>
+<SimpleForm send="advertise" success={<><div className="h" style={{ fontSize: "24px", marginBottom: "8px" }}>Enquiry received.</div><p className="meta" style={{ fontSize: "14.5px", margin: 0 }}>Thank you — we will reply by email, usually within two working days. If it is urgent, write to {SITE.email}.</p></>}>
 <div className="g2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px", marginBottom: "18px" }}>
 <div className="fld"><label htmlFor="a1">COMPANY *</label><input id="a1" name="company" type="text" required className="inp" /></div>
 <div className="fld"><label htmlFor="a2">CONTACT NAME *</label><input id="a2" name="name" type="text" required className="inp" /></div>

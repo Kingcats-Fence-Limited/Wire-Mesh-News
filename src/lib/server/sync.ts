@@ -243,7 +243,14 @@ async function companyReqs(c: Change, { m }: Ctx) {
   const kind = s(c.id, 40, "Field", true)!;
   if (!["orgType", "categories", "applications", "coverage", "notes", "cert"].includes(kind)) no("Unknown field.");
   const d = c.data ?? {};
-  await dx.create("company_change_requests", { id: randomUUID(), member: m.id, company_slug: m.company_slug, kind, changes: { from: s(d.from, 2000, "Current"), to: s(d.to, 2000, "Requested", true) }, reason: s(d.reason, 2000, "Reason"), status: "pending" });
+  /* Evidence is an upload of this member's (the panel uploads first and sends the file id). */
+  let evidence: string | null = null;
+  if (typeof d.file === "string" && /^[0-9a-f-]{36}$/.test(d.file)) {
+    const f = await dx.file(d.file).catch(() => null);
+    if (!f || f.owner_member !== m.id) no("The evidence file could not be found. Attach it again.");
+    evidence = d.file;
+  }
+  await dx.create("company_change_requests", { id: randomUUID(), member: m.id, company_slug: m.company_slug, kind, changes: { from: s(d.from, 2000, "Current"), to: s(d.to, 2000, "Requested", true) }, reason: s(d.reason, 2000, "Reason"), evidence, status: "pending" });
   await notify(m.id, "company", "Your change request was sent to the directory editor.");
 }
 

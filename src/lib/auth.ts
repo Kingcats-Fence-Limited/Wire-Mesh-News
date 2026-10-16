@@ -88,9 +88,11 @@ export function auth() {
 
 export type SessionUser = { id: string; email: string; name: string; image?: string | null; emailVerified: boolean };
 
-/** The signed-in user for this request, or null. Works in route handlers and server components. */
+/** The signed-in user for this request, or null. Works in route handlers and server components.
+    Always checks the session table (not the 5-minute cookie cache), so a signed-out device,
+    a revoked session or a deleted account stops working at once. */
 export async function currentUser(h?: Headers): Promise<SessionUser | null> {
   if (!AUTH_LIVE) return null;
-  const res = await auth().api.getSession({ headers: h ?? (await nextHeaders()) });
+  const res = await auth().api.getSession({ headers: h ?? (await nextHeaders()), query: { disableCookieCache: true } });
   return (res?.user as SessionUser | undefined) ?? null;
 }
