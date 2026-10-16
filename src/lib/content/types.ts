@@ -93,6 +93,8 @@ export type Company = {
   founded?: number;
   employees?: string;
   claimed: boolean;
+  /** Pays for the Company plan (preview data; live from Stripe). Shown as a PAID MEMBER mark only — never changes order or placement. */
+  paidMember?: boolean;
   verifiedAt?: string;
   summary: string;
   website?: string;

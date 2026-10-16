@@ -1,9 +1,9 @@
 "use client";
 
-/* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. The sponsored block is physically separated from the editorial list and always labelled. */
+/* Ported 1:1 from canvas board Directory-D. Primary axis = application area (same vocabulary as the Applications section); secondary = product category. Paying companies are not pinned or placed apart: same list, same order, marked PAID MEMBER on the card. */
 import Link from "next/link";
 import { FilterBar } from "./FilterBar";
-import type { Sponsored } from "@/lib/content/directory";
+import { usePaidMembers } from "@/lib/paid-members";
 import { useFlatParams } from "@/lib/use-flat-params";
 import { MATERIAL_GROUP } from "@/data/vocab/material_group";
 import { APPLICATION_AREA, APPLICATION_AREA_BY_CODE } from "@/data/vocab/application_area";
@@ -38,7 +38,7 @@ const PER = 12;
 export const vals = (v?: string) => (v ? v.split(",").filter(Boolean) : []);
 type Facet = "app" | "category" | "product" | "region" | "material";
 /** Everything the directory needs, prepared on the server so article bodies never reach the browser. */
-export type DirData = { companies: Company[]; sponsored: Sponsored[]; artCounts: Record<string, number> };
+export type DirData = { companies: Company[]; artCounts: Record<string, number> };
 export function matches(c: Company, sp: DirParams, skip: Facet | undefined, artCount: (c: Company) => number) {
   const q = (sp.q ?? "").toLowerCase();
   const any = (f: Facet, test: (v: string) => boolean) => skip === f || vals(sp[f]).length === 0 || vals(sp[f]).some(test);
@@ -62,7 +62,8 @@ export function DirectoryFromUrl({ data }: { data: DirData }) {
 }
 
 export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
-  const COMPANIES = data.companies, SPONSORED = data.sponsored;
+  const COMPANIES = data.companies;
+  const paid = usePaidMembers(COMPANIES);
   const list = filterCompanies(sp, data);
   const page = Math.max(1, parseInt(sp.page ?? "1") || 1);
   const pages = Math.max(1, Math.ceil(list.length / PER));
@@ -177,62 +178,11 @@ export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
 </div>
 )}
 </FilterBar>
-{/* 付费展示位：独立成块，不进自然列表，不影响排序 */}
-{SPONSORED.length > 0 && (
-<div style={{ marginTop: "26px", border: "2px dashed var(--line-2)", borderRadius: "16px", padding: "18px 20px", background: "var(--paper-2)" }}>
-<div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "14px" }}>
-<span style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--ink)", color: "var(--on-ink)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".14em", padding: "5px 10px", borderRadius: "4px" }} className="badge">SPONSORED LISTING</span>
-<span style={{ fontSize: "12px" }} className="meta">Paid placement · kept apart from the editorial list and never affects its order</span>
-<Link href="/policies/directory-listing-policy/" style={{ marginLeft: "auto", fontSize: "11.5px", fontWeight: "800", letterSpacing: ".08em", color: "var(--red-text)" }}>WHY AM I SEEING THIS? &#8594;</Link>
+{/* Paying companies are not pinned or placed apart: they sit in the same list, in the same order, with a PAID MEMBER mark on their card. */}
+<div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "18px", padding: "12px 16px", border: "1px solid var(--line)", borderRadius: "12px", background: "var(--paper-2)" }}>
+<span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)", flexShrink: 0 }} className="cert">PAID MEMBER</span>
+<p style={{ margin: "0", fontSize: "12px", lineHeight: "1.6" }} className="meta">Every company is listed free, in the same order for everyone: alphabetical, by coverage or by update date. Companies that pay for the Company plan carry a <b style={{ color: "var(--ink)" }}>PAID MEMBER</b> mark; paying never moves a company up, pins it or hides others. <Link href="/policies/directory-listing-policy/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Listing policy</Link></p>
 </div>
-<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px" }} className="g3">
-{SPONSORED.map((sx) => (
-<a key={sx.name} href={sx.url} rel={sx.open ? undefined : "sponsored noopener"} target={sx.open ? undefined : "_blank"} style={{ borderColor: "var(--line-2)" }} className="card">
-<span className="band spon" aria-hidden="true" />
-<div className="cbody">
-<div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-<span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "var(--paper)", border: "1px dashed var(--line-2)" }} className="logo"><span style={{ fontSize: "9px", fontWeight: "800", letterSpacing: ".08em", color: "var(--grey)" }} className="mono">LOGO</span></span>
-<span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{sx.role.toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{sx.name}</span></span>
-<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{sx.country}</span><span style={{ background: "var(--st-withdrawn-bg)", color: "var(--slate)" }} className="cert">SPONSOR</span></span>
-</div>
-<p style={{ margin: "0", fontSize: "13.5px", fontWeight: "500", lineHeight: "1.6", color: "var(--slate)" }}>{sx.blurb}</p>
-<div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>{sx.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
-<div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--line-soft)", paddingTop: "13px" }}>
-<span style={{ fontSize: "11.5px", fontWeight: "800", color: "var(--grey)" }} className="mono">{sx.open ? "ENQUIRE →" : "PAID PLACEMENT"}</span>
-<span className="go"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
-</div>
-</div>
-</a>
-))}
-<div style={{ gridColumn: `span ${Math.max(1, 3 - SPONSORED.length)}`, display: "grid", gridTemplateColumns: SPONSORED.length >= 2 ? "1fr" : "1fr 1fr", gap: "18px" }} className="g2">
-<div style={{ borderLeft: "4px solid var(--up)", padding: "18px 20px", display: "block" }} className="card">
-<div style={{ fontSize: "15px", marginBottom: "10px" }} className="h">Free, for every company</div>
-<ul style={{ margin: "0", paddingLeft: "17px", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.8", color: "var(--fg-3)" }}>
-<li>Listed, and shown in the list and in search</li>
-<li>After claiming: your own profile text, product photos and contact details</li>
-<li>Certification badges (certificate copy submitted and checked)</li>
-<li>Links to and from our reporting</li>
-<li><b>Position</b>: alphabetical, by coverage or by update date — never by payment</li>
-</ul>
-</div>
-<div style={{ borderLeft: "4px solid var(--slate)", padding: "18px 20px", display: "block" }} className="card">
-<div style={{ fontSize: "15px", marginBottom: "10px" }} className="h">What a sponsorship buys</div>
-<ul style={{ margin: "0", paddingLeft: "17px", fontSize: "12.5px", fontWeight: "500", lineHeight: "1.8", color: "var(--fg-3)" }}>
-<li>This <b>separate placement</b>, always marked SPONSORED</li>
-<li>Your own wording and one outbound button</li>
-<li>Extra product-photo and video slots</li>
-<li>A fixed slot on the directory page and the related section pages</li>
-<li><b>Not for sale</b>: list order, editorial coverage, certification badges, removal of competitors</li>
-</ul>
-</div>
-</div>
-</div>
-<div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "14px", paddingTop: "13px", borderTop: "1px solid var(--line)" }}>
-<span style={{ color: "var(--red-text)", fontWeight: "800", flexShrink: "0" }}>!</span>
-<p style={{ margin: "0", fontSize: "11.5px", lineHeight: "1.65" }} className="meta">Three rules: <b style={{ color: "var(--ink)" }}>paid placements sit apart from the editorial list</b>, never mixed in or queued ahead; <b style={{ color: "var(--ink)" }}>the SPONSORED mark is always shown</b> and cannot be hidden; <b style={{ color: "var(--ink)" }}>payment changes no editorial order</b> and triggers no coverage. Placements are capped per page; when they are sold, no more are added. Enquiries: <Link href="/advertise/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Advertise &amp; Partner</Link>.</p>
-</div>
-</div>
-)}
 {/* 企业卡片：全部等宽 */}
 <div id="apps" style={{ display: "flex", alignItems: "center", gap: "12px", margin: "26px 0 14px" }}>
 <span style={{ fontSize: "10.5px", fontWeight: "800", letterSpacing: ".14em", color: "var(--grey)" }} className="mono">ALL COMPANIES &#183; {sort === "az" ? "A–Z" : sort === "covered" ? "MOST COVERED" : "RECENTLY UPDATED"}</span>
@@ -252,7 +202,7 @@ export function DirectoryBoard({ sp, data }: { sp: DirParams; data: DirData }) {
 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
 <span style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center" }} className="logo"><img src={logoSrc(c.slug)} alt="" width="52" height="52" style={{ display: "block", width: "52px", height: "52px" }} /></span>
 <span style={{ display: "flex", flexDirection: "column", gap: "5px", minWidth: "0", flex: "1 1 auto" }}><span className="role">{(ORGANISATION_TYPE_BY_CODE[c.orgType]?.labelEn ?? c.orgType).toUpperCase()}</span><span style={{ fontSize: "19px" }} className="h">{c.name}</span></span>
-<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{c.country}</span>{c.claimed && <span style={{ background: "var(--ink)", color: "var(--on-ink)" }} className="cert">&#9679; CLAIMED</span>}</span>
+<span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "7px", flexShrink: "0" }}><span className="cc">{c.country}</span>{c.claimed && <span style={{ background: "var(--ink)", color: "var(--on-ink)" }} className="cert">&#9679; CLAIMED</span>}{paid.has(c.slug) && <span style={{ background: "var(--st-review-bg)", color: "var(--st-review-fg)" }} className="cert" title="Pays for the Company plan. Payment does not change its place in the list.">PAID MEMBER</span>}</span>
 </div>
 {photos > 0 && (
 <div style={{ display: "flex", gap: "6px" }}>

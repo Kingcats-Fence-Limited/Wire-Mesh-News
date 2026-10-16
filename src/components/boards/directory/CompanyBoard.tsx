@@ -1,6 +1,7 @@
 /* Ported 1:1 from canvas board Company-E. */
 import Link from "next/link";
 import { SaveButton } from "@/components/live/SaveButton";
+import { PaidMark } from "@/components/live/PaidMark";
 import { Shell } from "@/components/shell/Shell";
 import { COMPANIES } from "@/lib/content/directory";
 import { upcomingEvents } from "@/lib/content/source";
@@ -51,6 +52,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ display: "flex", alignItems: "center", gap: "11px", flexWrap: "wrap" }}>
 <h1 style={{ margin: "0", fontSize: "42px", letterSpacing: "-.05em", color: "#FFFFFF", lineHeight: "1.02" }} className="h">{c.name}</h1>
 {c.claimed ? <span style={{ background: "#1E6B35", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 10px", borderRadius: "4px" }}>CLAIMED</span> : <span style={{ border: "1px solid var(--line-dark)", color: "var(--grey-3)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 10px", borderRadius: "4px" }}>UNCLAIMED</span>}
+<PaidMark slug={c.slug} paidMember={c.paidMember} />
 </div>
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 11px", borderRadius: "5px" }}>{orgType.toUpperCase()}</span>

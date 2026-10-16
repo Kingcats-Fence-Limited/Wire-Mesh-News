@@ -45,6 +45,7 @@ export const FEATURES: Feature[] = [
   { group: "Tools", label: "Specification templates & checklists", free: "2 samples", pro: "Full library", team: "Full library", company: "Full library" },
   { group: "Tools", label: "Mesh weight & cost calculator", free: true, pro: true, team: true, company: true },
   { group: "Your company", label: "Claim and edit your Directory profile", hint: "Always free; paying never changes order or placement", free: true, pro: true, team: true, company: true },
+  { group: "Your company", label: "PAID MEMBER mark on your card and profile", hint: "Readers see who supports us; your place in the list stays exactly the same", free: false, pro: false, team: false, company: true },
   { group: "Your company", label: "Profile analytics", hint: "Views, enquiries and where they come from", free: false, pro: false, team: false, company: true },
   { group: "Your company", label: "Catalogue PDF, video and extra contacts on your profile", free: false, pro: false, team: false, company: true },
   { group: "Account", label: "People included", free: "1", pro: "1", team: "5 (+US$15/month each)", company: "1" },

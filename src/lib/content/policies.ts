@@ -93,6 +93,7 @@ export const POLICIES: Policy[] = [
       "Claiming a profile. A company may claim its profile using an email address at its own domain. Claimed companies can maintain their description, product range, photos and contact details; changes are reviewed before they go live. Company type, related coverage and editorial notes remain under our control. Certification details are locked after submission and can only be changed by contacting us.",
       "What we will not publish: capacity, market share or performance figures without a verifiable third-party source; claims about competitors; promotional copy.",
       "Removal and corrections. Write to hello@wiremeshnews.com. We do not remove companies because they dislike our coverage. We correct factual errors under our Corrections Policy.",
+      "Paid Company plan. Companies may pay for the Company plan (profile analytics, a catalogue, video and extra contacts on their profile). They stay in the same list, in the same order as every other company, and are never pinned, placed apart or ranked higher. Their card and profile carry a PAID MEMBER mark so readers can always see who pays us. Paying does not buy coverage, certification badges or the removal of anyone else.",
       "Related companies. Companies related to our publisher carry a visible relationship label and are listed under the same rules as everyone else."
     ],
     "sections": [],
