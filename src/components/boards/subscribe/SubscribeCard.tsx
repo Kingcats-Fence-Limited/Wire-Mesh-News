@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSubscribe } from "@/lib/subscribe";
 import Link from "next/link";
 import "@/styles/board-ads.css";
 import { PageHeadArt, HEAD_ART } from "@/components/shell/PageHeadArt";
@@ -18,7 +19,15 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
   /* On /subscribe/ this is the page heading; inside the modal it sits under the page's own h1. */
   const H = modal ? "h2" : "h1";
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const { sent, err, busy, submit } = useSubscribe(modal ? "subscribe-modal" : "subscribe-page");
+  /* Result of the confirmation / unsubscribe links (the page itself stays static). */
+  const [back, setBack] = useState<string | null>(null);
+  useEffect(() => {
+    if (modal) return;
+    const q = new URLSearchParams(location.search);
+    const msg = q.get("confirmed") === "1" ? "You are subscribed. The first brief arrives on Monday." : q.get("confirmed") === "0" ? "That confirmation link has expired or was already used. Sign up again below." : q.get("unsubscribed") === "1" ? "You are unsubscribed. No more emails will be sent." : q.get("unsubscribed") === "0" ? "That unsubscribe link is not valid. Use the link in the latest email, or write to us." : null;
+    if (msg) { setBack(msg); history.replaceState(null, "", location.pathname); }
+  }, [modal]);
   return (
     <div className="subcard">
       <div style={{ padding: "30px 32px 28px", position: "relative" }}>
@@ -35,16 +44,18 @@ export function SubscribeCard({ modal, onClose, pill }: { modal?: boolean; onClo
         )}
         <H className="h" id="sub-title" style={{ margin: "0 0 12px", fontSize: "34px", letterSpacing: "-.05em", lineHeight: 1.04, maxWidth: "390px" }}>Mondays, one email,<br />the whole week’s <span style={{ color: "var(--red-text)" }}>mesh</span>.</H>
         <p style={{ margin: "0 0 20px", fontSize: "15px", fontWeight: 500, lineHeight: 1.6, color: "var(--slate)", maxWidth: "400px" }}>News, price moves and standards updates on one page. Written for people who make decisions, not for the algorithm.</p>
+        {back && <div role="status" style={{ background: "var(--paper)", borderRadius: "12px", padding: "12px 16px", marginBottom: "16px", fontSize: "14px", fontWeight: 700 }}>{back}</div>}
         {sent ? (
           <div style={{ border: "1.5px solid var(--ink)", borderRadius: "14px", padding: "16px 18px", marginBottom: "16px", fontSize: "14px", fontWeight: 700, lineHeight: 1.5 }}>
             Check your inbox for a confirmation link. Nothing is sent until you click it.
           </div>
         ) : (
-          <form noValidate onSubmit={(e) => { e.preventDefault(); if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) setSent(true); }} style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
+          <form noValidate onSubmit={(e) => { e.preventDefault(); void submit(email); }} style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
             <label htmlFor="mnl" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)" }}>Email address</label>
             <input id="mnl" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-            <button type="submit">Subscribe<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
-          </form>
+            <button type="submit" disabled={busy}>Subscribe<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
+          {err && <p role="alert" style={{ margin: "8px 0 0", fontSize: "12.5px", fontWeight: 800, color: "var(--red-text)", flexBasis: "100%" }}>{err}</p>}
+</form>
         )}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px", flexWrap: "wrap", paddingTop: "16px", borderTop: "1px solid var(--line)" }}>
           {modal ? (

@@ -60,7 +60,9 @@ export function articleLd(a: Article) {
     inLanguage: "en-GB",
     articleSection: sectionByCode(a.section)?.label,
     keywords: a.tags.join(", ") || undefined,
-    isAccessibleForFree: true,
+    isAccessibleForFree: !a.premium,
+    /* Pro articles: Google's paywalled-content markup. The rest of the body is served only to entitled readers. */
+    ...(a.premium ? { hasPart: { "@type": "WebPageElement", isAccessibleForFree: false, cssSelector: ".paywall" } } : {}),
     author: au ? { "@type": "Person", name: au.name, url: abs(`/authors/${au.slug}/`), jobTitle: au.role } : { "@type": "Organization", name: SITE.name },
     publisher: { "@id": ORG_ID, "@type": "NewsMediaOrganization", name: SITE.name, logo: { "@type": "ImageObject", url: abs("/icons/icon-512.png") } },
     ...(a.type === "sponsored" && a.sponsor ? { sponsor: { "@type": "Organization", name: a.sponsor } } : {}),

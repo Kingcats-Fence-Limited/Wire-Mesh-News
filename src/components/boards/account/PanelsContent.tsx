@@ -4,7 +4,7 @@
    bookmarks and messages. All actions change the demo store. */
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useDemo, download, today, uid, type SubStatus, type Submission, type CommentStatus, type Bookmark, type MsgStatus, type Message } from "./store";
+import { useDemo, download, today, uid, uploadFile, type SubStatus, type Submission, type CommentStatus, type Bookmark, type MsgStatus, type Message } from "./store";
 import { Head, Card, Field, Pill, Chips, ConfirmBtn, Empty, type Tone } from "./ui";
 import { ENQUIRY_SUBJECT } from "@/data/vocab/enquiry_subject";
 import { SECTION } from "@/data/vocab/section";
@@ -28,11 +28,11 @@ const SUB: Record<SubStatus, [string, Tone]> = {
 type SubFilter = "all" | SubStatus;
 
 /* Lets other panels open My submissions on a filter, or straight into a new draft. */
-let intent: { f?: SubFilter; fresh?: boolean; open?: string } = {};
+let intent: { f?: SubFilter; fresh?: boolean | "letter"; open?: string } = {};
 export const openSubmissions = (go: (p: string) => void, next: typeof intent) => { intent = next; go("submissions"); };
 
 export function Submissions({ refs }: { refs: EditorRefs }) {
-  const { d, set, toast } = useDemo();
+  const { d, set, toast, live } = useDemo();
   const [f, setF] = useState<SubFilter>(() => intent.f ?? "all");
   const [open, setOpen] = useState<string | null>(() => intent.open ?? null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -52,13 +52,15 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
     toast(`Draft “${s.title}” deleted.`, () => set((x) => x.submissions.some((y) => y.id === s.id) ? x : ({ ...x, submissions: [...x.submissions.slice(0, at), s, ...x.submissions.slice(at)] })));
   };
   const startEdit = (s: Submission) => { setEditing(s.id); window.scrollTo({ top: 0 }); };
-  const newDraft = () => {
-    const s: Submission = { id: uid(), title: "Untitled draft", status: "draft", section: "—", updated: today(), excerpt: "", words: 0, draft: emptyDraft(`${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`) };
+  const newDraft = (letter = false) => {
+    const s: Submission = letter
+      ? { id: uid(), title: "Letter to the editor", status: "draft", section: "Letters", updated: today(), excerpt: "", words: 0 }
+      : { id: uid(), title: "Untitled draft", status: "draft", section: "—", updated: today(), excerpt: "", words: 0, draft: emptyDraft(`${d.profile.name} · ${d.profile.jobTitle}${d.profile.company ? ` · ${d.profile.company}` : ""}`) };
     setFresh(s); setF("all"); startEdit(s);
   };
   useEffect(() => {
     const i = intent; intent = {};
-    if (i.fresh) newDraft();
+    if (i.fresh) newDraft(i.fresh === "letter");
     // Runs once on open; newDraft is recreated every render but only its first version matters here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -79,7 +81,7 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
             <div style={{ fontSize: "13.5px", fontWeight: 500, lineHeight: 1.6, color: "var(--fg-3)" }}>{cur.note}</div>
           </div>
         )}
-        <ArticleEditor key={cur.id} refs={refs} initial={toDraft(cur, byline)}
+        <ArticleEditor key={cur.id} refs={refs} initial={toDraft(cur, byline)} upload={live ? (f) => uploadFile(f, "submission") : undefined}
           submitLabel={cur.status === "changes_requested" ? "Resubmit for review" : cur.status === "published" ? "Send edit for review" : "Submit for review"}
           note={cur.status === "published" ? "the live article stays as it is until the edit is approved" : undefined}
           onSave={(dr) => {
@@ -100,7 +102,7 @@ export function Submissions({ refs }: { refs: EditorRefs }) {
 
   return (
     <>
-      <Head title="My submissions" sub="Everything you have sent to the editors, with where it stands. Drafts are visible to you only." actions={<><button type="button" className="btn dark" onClick={newDraft}>+ New submission</button></>} />
+      <Head title="My submissions" sub="Everything you have sent to the editors, with where it stands. Drafts are visible to you only." actions={<><button type="button" className="btn dark" onClick={() => newDraft()}>+ New submission</button></>} />
       <Chips label="Filter by status" value={f} onChange={setF} items={[
         { k: "all", label: "All", n: d.submissions.length }, { k: "draft", label: "Draft", n: n("draft") }, { k: "pending", label: "Pending", n: n("pending") },
         { k: "changes_requested", label: "Changes requested", n: n("changes_requested") }, { k: "published", label: "Published", n: n("published") }, { k: "rejected", label: "Not accepted", n: n("rejected") },

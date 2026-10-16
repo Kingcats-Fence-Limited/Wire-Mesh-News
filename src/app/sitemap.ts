@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const newest = (list: typeof ed) => list.reduce<string | undefined>((m, a) => { const d = a.updated ?? a.date; return !m || d > m ? d : m; }, undefined);
   return [
     u("/", newest(ed)), u("/directory/"), u("/events/"), u("/standards/"), u("/market-data/"), u("/market-data/methodology/"),
-    u("/topics/"), u("/letters/"), u("/about/"), u("/contact/"), u("/advertise/"), u("/subscribe/"),
+    u("/topics/"), u("/letters/"), u("/about/"), u("/contact/"), u("/advertise/"), u("/subscribe/"), u("/pricing/"),
     ...EDITORIAL_SECTIONS.flatMap((s) => [
       u(`/${s.slug}/`, newest(ed.filter((a) => a.section === s.code))),
       ...subsectionsOf(s.code as SectionCode).filter((x) => ed.some((a) => a.section === s.code && a.subsection === x.code)).map((x) => u(`/${s.slug}/${subsectionSlug(x.code)}/`, newest(ed.filter((a) => a.section === s.code && a.subsection === x.code)))),

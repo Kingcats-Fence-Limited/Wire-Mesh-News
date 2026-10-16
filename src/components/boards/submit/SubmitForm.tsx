@@ -5,10 +5,26 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArticleEditor, emptyDraft, normalizeDraft, type ArticleDraft, type EditorRefs } from "@/components/editor/ArticleEditor";
+import { AUTH_LIVE } from "@/lib/live";
+
+/* Live accounts: articles are written in the account, where drafts are saved to the server. */
+function LiveStart() {
+  return (
+    <div className="sec" style={{ textAlign: "center", padding: "48px 26px" }}>
+      <div className="h" style={{ fontSize: "26px", marginBottom: "10px" }}>Write your article in your account</div>
+      <p className="meta" style={{ fontSize: "14.5px", maxWidth: "540px", margin: "0 auto 18px" }}>Drafts save automatically and you can follow the review under My submissions. Sign-in takes one click with Google or Microsoft, or a code by email.</p>
+      <Link href="/account/?new=1#submissions" style={{ background: "var(--ink)", color: "var(--on-ink)", fontWeight: 800, fontSize: "14px", padding: "0 22px", minHeight: "46px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Start a submission</Link>
+    </div>
+  );
+}
 
 const KEY = "wmn-draft-v2";
 
 export function SubmitForm({ refs }: { refs: EditorRefs }) {
+  return AUTH_LIVE ? <LiveStart /> : <LocalSubmit refs={refs} />;
+}
+
+function LocalSubmit({ refs }: { refs: EditorRefs }) {
   const [initial, setInitial] = useState<ArticleDraft | null>(null);
   const [done, setDone] = useState<ArticleDraft | null>(null);
   useEffect(() => {

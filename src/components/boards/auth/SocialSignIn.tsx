@@ -1,13 +1,14 @@
 "use client";
 
-/* Sign in / sign up with Google or Microsoft (personal or work accounts). Each provider confirms the
-   email address itself, so accounts created this way start verified. Phase 1 has no auth
-   backend: the button opens a clearly marked preview step instead of the provider's own
-   window, and continues into the sample account. No provider SDK is loaded. */
-import Link from "next/link";
+/* One-click sign-in with Google or Microsoft (personal or work accounts). Each provider confirms
+   the email address itself, so accounts created this way start verified, and the first sign-in
+   creates the account. Live mode sends the browser to the provider; preview mode opens a
+   clearly marked stand-in step and continues into the sample account. */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { safeNext } from "@/lib/safe-redirect";
+import { AUTH_LIVE, AUTH_GOOGLE, AUTH_MICROSOFT } from "@/lib/live";
+import { authClient } from "@/lib/auth-client";
 
 type P = "google" | "microsoft";
 const NAME: Record<P, string> = { google: "Google", microsoft: "Microsoft" };
@@ -24,19 +25,30 @@ export function SocialSignIn({ mode, next }: { mode: "signin" | "register"; next
   const router = useRouter();
   const [p, setP] = useState<P | null>(null);
   const [email, setEmail] = useState("");
-  const [terms, setTerms] = useState(false);
-  const verb = mode === "register" ? "Sign up" : "Continue";
+  const verb = "Continue";
+  void mode;
+  const [busy, setBusy] = useState<P | null>(null);
+  const [err, setErr] = useState<string | null>(null);
   const go = () => router.push(safeNext(next));
+  const providers = (["google", "microsoft"] as P[]).filter((k) => !AUTH_LIVE || (k === "google" ? AUTH_GOOGLE : AUTH_MICROSOFT));
+  const live = async (k: P) => {
+    setBusy(k); setErr(null);
+    const dest = safeNext(next);
+    const res = await authClient.signIn.social({ provider: k, callbackURL: dest, newUserCallbackURL: `/account/?welcome=1${dest !== "/account/" ? `&next=${encodeURIComponent(dest)}` : ""}#profile`, errorCallbackURL: "/signin/?error=social" }).catch(() => null);
+    if (!res || res.error) { setBusy(null); setErr(`${NAME[k]} sign-in could not start. Try again, or use an email code.`); }
+  };
+  if (AUTH_LIVE && providers.length === 0) return null;
   return (
     <div style={{ marginBottom: "18px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }} className="sso">
-        {(["google", "microsoft"] as P[]).map((k) => (
-          <button key={k} type="button" aria-pressed={p === k} onClick={() => { setP(p === k ? null : k); setEmail(SAMPLE[k]); }} className={`ssob${p === k ? " on" : ""}`}>
-            <Logo p={k} /><span>{verb} with {NAME[k]}</span>
+      <div style={{ display: "grid", gridTemplateColumns: providers.length > 1 ? "1fr 1fr" : "1fr", gap: "8px" }} className="sso">
+        {providers.map((k) => (
+          <button key={k} type="button" aria-pressed={AUTH_LIVE ? undefined : p === k} disabled={busy !== null} onClick={() => { if (AUTH_LIVE) { void live(k); return; } setP(p === k ? null : k); setEmail(SAMPLE[k]); }} className={`ssob${p === k ? " on" : ""}`}>
+            <Logo p={k} /><span>{busy === k ? `Opening ${NAME[k]}…` : `${verb} with ${NAME[k]}`}</span>
           </button>
         ))}
       </div>
-      {p && (
+      {err && <p role="alert" style={{ margin: "8px 0 0", fontSize: "12.5px", fontWeight: 700, color: "var(--red-text)" }}>{err}</p>}
+      {!AUTH_LIVE && p && (
         <div className="ssop" role="region" aria-label={`${NAME[p]} sign-in preview`}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "9px", fontWeight: 800, letterSpacing: ".14em", padding: "2px 6px", borderRadius: "3px" }}>PREVIEW</span>
@@ -48,9 +60,8 @@ export function SocialSignIn({ mode, next }: { mode: "signin" | "register"; next
             <input id="sso-e" type="email" className="inp" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="ok" style={{ margin: 0 }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--up)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0, marginTop: "2px" }}><path d="m5 12.5 4.5 4.5L19 7.5" /></svg><span>{NAME[p]} has already confirmed this address, so no verification email is needed. We receive only your name and email — never your {NAME[p]} password or contacts.</span></div>
-          {mode === "register" && <label style={{ display: "flex", gap: "10px", alignItems: "flex-start", fontSize: "13px", fontWeight: 500, lineHeight: 1.55, cursor: "pointer" }}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} style={{ width: "17px", height: "17px", accentColor: "var(--red)", flexShrink: 0, marginTop: "1px" }} /><span>I agree to the <Link href="/policies/terms/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Terms</Link> and the <Link href="/policies/privacy/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Privacy Policy</Link>.</span></label>}
           <div style={{ display: "flex", gap: "8px" }}>
-            <button type="button" className="btn" style={{ minHeight: "44px", fontSize: "14px" }} disabled={!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || (mode === "register" && !terms)} onClick={go}>{mode === "register" ? "Create account" : "Continue"} as {email.split("@")[0] || "…"}</button>
+            <button type="button" className="btn" style={{ minHeight: "44px", fontSize: "14px" }} disabled={!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)} onClick={go}>Continue as {email.split("@")[0] || "…"}</button>
             <button type="button" onClick={() => setP(null)} style={{ minHeight: "44px", padding: "0 16px", border: "1px solid var(--line)", borderRadius: "999px", background: "var(--card)", fontFamily: "inherit", fontSize: "13.5px", fontWeight: 800, cursor: "pointer", color: "var(--ink)", flexShrink: 0 }}>Cancel</button>
           </div>
         </div>

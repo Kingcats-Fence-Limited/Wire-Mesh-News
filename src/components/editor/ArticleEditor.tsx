@@ -119,8 +119,10 @@ function Picker({ id, label, hint, value, onChange, options, max }: { id: string
   );
 }
 
-export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submitLabel = "Submit for review", note }: {
+export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submitLabel = "Submit for review", note, upload }: {
   initial: ArticleDraft; refs: EditorRefs; onSave: (d: ArticleDraft) => void; onSubmit: (d: ArticleDraft) => void; onClose?: () => void; submitLabel?: string; note?: React.ReactNode;
+  /** Live accounts: send each file to the server (private until the article is approved). Without it, images stay in the draft as small data URLs. */
+  upload?: (f: File) => Promise<{ url: string; kind: "image" | "pdf" }>;
 }) {
   const [d, setD] = useState<ArticleDraft>(initial);
   const [view, setView] = useState<"edit" | "preview">("edit");
@@ -167,13 +169,14 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
   const addFiles = async (list: FileList | File[]) => {
     const arr = Array.from(list);
     const room = MAX_FILES - d.files.length;
-    const ok = arr.filter((f) => /^image\/(jpeg|png|webp)$/.test(f.type) || f.type === "application/pdf").filter((f) => f.size <= 10 * 1024 * 1024);
+    const ok = arr.filter((f) => /^image\/(jpeg|png|webp)$/.test(f.type) || f.type === "application/pdf").filter((f) => f.size <= (upload && f.type === "application/pdf" ? 4 : 10) * 1024 * 1024);
     const msgs: string[] = [];
-    if (ok.length < arr.length) msgs.push(`${arr.length - ok.length} skipped: JPG, PNG, WebP or PDF up to 10 MB.`);
+    if (ok.length < arr.length) msgs.push(`${arr.length - ok.length} skipped: JPG, PNG or WebP up to 10 MB, PDF up to ${upload ? 4 : 10} MB.`);
     if (ok.length > room) msgs.push(`Up to ${MAX_FILES} files per article.`);
     const take = ok.slice(0, Math.max(0, room));
     const made: EditorFile[] = [];
     for (const f of take) {
+      if (upload) { try { const r = await upload(f); made.push({ id: uid(), name: f.name, kind: r.kind, url: r.url, caption: "", credit: "", licence: "" }); } catch (e) { msgs.push(`${f.name}: ${(e as Error).message}`); } continue; }
       if (f.type === "application/pdf") made.push({ id: uid(), name: f.name, kind: "pdf", caption: "", credit: "", licence: "" });
       else { try { made.push({ id: uid(), name: f.name, kind: "image", url: await shrink(f), caption: "", credit: "", licence: "" }); } catch { msgs.push(`${f.name} could not be read.`); } }
     }
@@ -288,7 +291,7 @@ export function ArticleEditor({ initial, refs, onSave, onSubmit, onClose, submit
             <label className={`aed-drop${drag ? " on" : ""}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }}>
               <input type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }} />
               <b>Drag files here, or <u>choose files</u></b>
-              <span className="aed-hint">JPG, PNG, WebP or PDF, up to 10 MB each and {MAX_FILES} per article. Your own images or ones you have the right to publish; no AI-generated images presented as real projects.</span>
+              <span className="aed-hint">JPG, PNG or WebP up to 10 MB, PDF up to {upload ? 4 : 10} MB; {MAX_FILES} files per article. Your own images or ones you have the right to publish; no AI-generated images presented as real projects.</span>
             </label>
             {fileErr && <span role="alert" className="aed-err">{fileErr}</span>}
             {d.files.map((f) => {

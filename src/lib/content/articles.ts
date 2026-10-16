@@ -242,7 +242,7 @@ export const ARTICLES: Article[] = seeds
     // generic bodies all weigh the same; spread read times deterministically 5–9 min
     const hash = [...s.slug].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7);
     const readMin = s.readMin ?? (generic ? 5 + (hash % 5) : wordsToMin(body));
-    return { ...s, body, readMin, facets: s.facets ?? facetsFor(s.tags) } as Article;
+    return { ...s, body, readMin, facets: s.facets ?? facetsFor(s.tags), premium: (s as { premium?: boolean }).premium ?? s.type === "analysis" } as Article;
   })
   .sort((a, b) => (a.date < b.date ? 1 : -1));
 
@@ -250,6 +250,19 @@ export const ARTICLES: Article[] = seeds
 /* Queries                                                             */
 /* ------------------------------------------------------------------ */
 export const editorial = (a: Article) => a.type !== "sponsored";
+
+/** The part of a Pro article everyone sees: blocks up to (not including) the second heading, at most three paragraphs. */
+export function previewBlocks(body: Block[]): Block[] {
+  const out: Block[] = [];
+  let paras = 0, heads = 0;
+  for (const b of body) {
+    if (b.type === "h2" && ++heads >= 2) break;
+    if (b.type === "p") { if (paras >= 3) break; paras++; }
+    if (b.type === "ad") continue;
+    out.push(b);
+  }
+  return out.filter((b, i, all) => !(b.type === "h2" && i === all.length - 1));
+}
 
 export function getArticle(slug: string) {
   return ARTICLES.find((a) => a.slug === slug);

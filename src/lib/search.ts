@@ -1,4 +1,4 @@
-import { ARTICLES, editorial } from "./content/articles";
+import { ARTICLES, editorial, previewBlocks } from "./content/articles";
 import { LETTERS, COLUMNS } from "./content/people";
 import { COMPANIES, EVENTS } from "./content/directory";
 import { STANDARDS } from "./content/standards";
@@ -15,7 +15,8 @@ export function buildSearchIndex(): SearchDoc[] {
   const docs: SearchDoc[] = [];
   for (const a of ARTICLES) {
     if (!editorial(a)) continue;
-    const plain = a.body.map((b) => ("html" in b ? b.html.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;/g, "'").replace(/&amp;/g, "&") : "text" in b ? String(b.text) : "")).join(" ");
+    /* Pro articles: only the free opening is searchable (and shipped in the index). */
+    const plain = (a.premium ? previewBlocks(a.body) : a.body).map((b) => ("html" in b ? b.html.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;/g, "'").replace(/&amp;/g, "&") : "text" in b ? String(b.text) : "")).join(" ");
     docs.push({
       id: `a:${a.slug}`,
       type: "article",

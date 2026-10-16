@@ -1,5 +1,7 @@
 /* Ported 1:1 from canvas board Company-E. */
 import Link from "next/link";
+import { SaveButton } from "@/components/live/SaveButton";
+import { PaidMark } from "@/components/live/PaidMark";
 import { Shell } from "@/components/shell/Shell";
 import { COMPANIES } from "@/lib/content/directory";
 import { upcomingEvents } from "@/lib/content/source";
@@ -50,6 +52,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 <div style={{ display: "flex", alignItems: "center", gap: "11px", flexWrap: "wrap" }}>
 <h1 style={{ margin: "0", fontSize: "42px", letterSpacing: "-.05em", color: "#FFFFFF", lineHeight: "1.02" }} className="h">{c.name}</h1>
 {c.claimed ? <span style={{ background: "#1E6B35", color: "#FFFFFF", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 10px", borderRadius: "4px" }}>CLAIMED</span> : <span style={{ border: "1px solid var(--line-dark)", color: "var(--grey-3)", fontSize: "9.5px", fontWeight: "800", letterSpacing: ".1em", padding: "4px 10px", borderRadius: "4px" }}>UNCLAIMED</span>}
+<PaidMark slug={c.slug} paidMember={c.paidMember} />
 </div>
 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
 <span style={{ background: "var(--red)", color: "#FFFFFF", fontSize: "10.5px", fontWeight: "800", letterSpacing: ".1em", padding: "5px 11px", borderRadius: "5px" }}>{orgType.toUpperCase()}</span>
@@ -63,7 +66,7 @@ export function CompanyBoard({ c }: { c: Company }) {
 </div>
 <div style={{ display: "flex", flexDirection: "column", gap: "10px", flexShrink: "0", minWidth: "216px" }}>
 {c.website && <a href={c.website} rel="nofollow noopener noreferrer" target="_blank" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--card)", color: "var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M14 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7L12.5 18" /><path d="M10 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7L11.5 6" /></svg>Company website</a>}
-<Link href="/signin/" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", border: "1px solid var(--line-dark)", background: "transparent", color: "#FFFFFF", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4.2-6 4.2z" /></svg>Save to my list</Link>
+<SaveButton href={`/directory/${c.slug}/`} title={c.name} kind="company" meta={c.city} label="Save to my list" savedLabel="Saved to my list" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", border: "1px solid var(--line-dark)", background: "transparent", color: "#FFFFFF", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "48px", borderRadius: "999px" }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4.2-6 4.2z" /></svg></SaveButton>
 <span style={{ textAlign: "center", color: "var(--grey-5)" }} className="meta">{c.claimed ? "Maintained by the company" : "Compiled by editors"} &#183; {c.verifiedAt ? `verified ${fmtDate(c.verifiedAt)}` : `updated ${fmtDate(c.updated)}`}</span>
 </div>
 </div>

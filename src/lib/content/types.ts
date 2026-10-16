@@ -52,6 +52,8 @@ export type Article = {
   hero?: 1 | 2 | 3;
   series?: { slug: string; part: number };
   marketSeries?: string[]; // market series codes this article explains
+  /** Pro analysis: the page shows the opening only; the rest is served to Pro readers (and Free readers within their monthly allowance). Defaults to true for type "analysis". */
+  premium?: boolean;
 };
 
 export type Letter = {
@@ -93,6 +95,8 @@ export type Company = {
   founded?: number;
   employees?: string;
   claimed: boolean;
+  /** Pays for the Company plan (preview data; live from Stripe). Shown as a PAID MEMBER mark only — never changes order or placement. */
+  paidMember?: boolean;
   verifiedAt?: string;
   summary: string;
   website?: string;

@@ -20,7 +20,7 @@ import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
 import { demoBg } from "@/lib/demo";
 import type { Company } from "@/lib/content/types";
 import type { SubOpt } from "@/lib/vocab-geo";
-import { useDemo, today } from "./store";
+import { useDemo, today, uploadFile } from "./store";
 import { CodeVerify } from "@/components/ui/CodeVerify";
 
 const FREE_MAIL = ["gmail.com", "googlemail.com", "outlook.com", "hotmail.com", "live.com", "yahoo.com", "icloud.com", "me.com", "aol.com", "proton.me", "protonmail.com", "qq.com", "163.com", "126.com", "sina.com", "foxmail.com", "yandex.ru", "mail.ru", "gmx.com"];
@@ -63,12 +63,35 @@ const Field = ({ id, label, children, aside }: { id: string; label: string; chil
   </div>
 );
 type Req = { id: string; field: string; from: string; to: string; reason: string; file?: string; date: string };
+export type HistItem = { date: string; field: string; change: string; status: "review" | "approved" | "declined"; note?: string };
+
+/* Live mode: the code for a second inbox is sent and checked by /api/me/email-code. */
+export const liveCode = (email: string, purpose: "claim" | "company-email") => {
+  const post = async (body: Record<string, string>) => {
+    const r = await fetch("/api/me/email-code/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, purpose, ...body }) }).catch(() => null);
+    if (!r) return "Check your connection and try again.";
+    if (!r.ok) return ((await r.json().catch(() => ({}))) as { error?: string }).error ?? "Something went wrong. Try again.";
+  };
+  return { send: () => post({}), verify: (code: string) => post({ code }) };
+};
 type ReqKind = "orgType" | "categories" | "applications" | "coverage" | "notes" | "cert";
 
 /* A field the editors keep. It was set when the profile was listed or claimed; after that the
    company asks for a change instead of editing it, and the editor decides. */
 function Locked({ label, value, note, kind, current, pending, onRequest, onWithdraw }: { label: string; value: React.ReactNode; note: string; kind: ReqKind; current: string[]; pending?: Req; onRequest: (r: Omit<Req, "id" | "date">) => void; onWithdraw: () => void }) {
+  const { live } = useDemo();
   const [open, setOpen] = useState(false);
+  const [fileId, setFileId] = useState<string | null>(null);
+  const [upErr, setUpErr] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const attach = async (f?: File) => {
+    if (!f) return;
+    setUpErr(null); setFile(f.name); setFileId(null);
+    if (!live) return;
+    setUploading(true);
+    try { setFileId((await uploadFile(f, "evidence")).id); } catch (e) { setFile(""); setUpErr((e as Error).message); }
+    setUploading(false);
+  };
   const [pick, setPick] = useState<string[]>(current);
   const [text, setText] = useState("");
   const [reason, setReason] = useState("");
@@ -110,11 +133,12 @@ function Locked({ label, value, note, kind, current, pending, onRequest, onWithd
           )}
           <Field id={`rq-r-${kind}`} label="REASON *" aside={<span className="meta">{reason.trim().length < 10 ? "at least 10 characters" : ""}</span>}><textarea id={`rq-r-${kind}`} rows={2} className="inp" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Why the current value is wrong, and where the editor can check" /></Field>
           <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-            <label className="btn" style={{ position: "relative", minHeight: "34px", fontSize: "12px", cursor: "pointer" }}>{file ? "Replace document" : "Attach evidence (PDF / image)"}<input type="file" accept="application/pdf,image/*" onChange={(e) => { setFile(e.target.files?.[0]?.name ?? ""); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
-            {file && <span className="meta">{file}</span>}
+            <label className="btn" style={{ position: "relative", minHeight: "34px", fontSize: "12px", cursor: "pointer" }}>{file ? "Replace document" : "Attach evidence (PDF / image)"}<input type="file" accept="application/pdf,image/*" onChange={(e) => { void attach(e.target.files?.[0]); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
+            {file && <span className="meta">{uploading ? `Uploading ${file}…` : file}</span>}
+            {upErr && <span className="meta" role="alert" style={{ color: "var(--red-text)" }}>{upErr}</span>}
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <button type="button" className="btn dark" disabled={!ok} onClick={() => { onRequest({ field: label.charAt(0) + label.slice(1).toLowerCase(), from: typeof value === "string" ? value : current.join(" · ") || "—", to: opts.length ? lbl(pick) : text.trim(), reason: reason.trim(), file: file || undefined }); setOpen(false); setText(""); setReason(""); setFile(""); }}>Send request</button>
+            <button type="button" className="btn dark" disabled={!ok || uploading} onClick={() => { onRequest({ field: label.charAt(0) + label.slice(1).toLowerCase(), from: typeof value === "string" ? value : current.join(" · ") || "—", to: opts.length ? lbl(pick) : text.trim(), reason: reason.trim(), file: (live ? fileId : file) || undefined }); setOpen(false); setText(""); setReason(""); setFile(""); setFileId(null); }}>Send request</button>
             <button type="button" className="btn" onClick={() => { setOpen(false); setPick(current); }}>Cancel</button>
           </div>
         </div>
@@ -123,16 +147,18 @@ function Locked({ label, value, note, kind, current, pending, onRequest, onWithd
   );
 }
 
-const HISTORY: { date: string; field: string; change: string; status: "review" | "approved" | "declined"; note?: string }[] = [
+const HISTORY: HistItem[] = [
   { date: "11 Oct 2026", field: "Product range", change: `Added “${PRODUCT_BY_CODE[PENDING_ADD]?.labelEn}”`, status: "review", note: "With the directory editor. The public page keeps the previous range until this is approved." },
   { date: "3 Oct 2026", field: "Description", change: "Rewrote the summary; removed “leading supplier” wording", status: "approved", note: "Approved 4 Oct · live" },
   { date: "1 Oct 2026", field: "Description", change: "“The leading 358 mesh supplier in northern China”", status: "declined", note: "Not accepted: an unsourced market-position claim. Directory Policy — what we will not publish." },
   { date: "30 Sep 2026", field: "Claim", change: "Profile claimed with a company-domain email", status: "approved", note: "Verified by the directory editor" },
 ];
 
-export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Related[]; subs0: SubOpt[] }) {
+export function CompanyPanel({ co, related, subs0, history }: { co: Company; related: Related[]; subs0: SubOpt[]; history?: HistItem[] }) {
   const [mode, setMode] = useState<Mode>("view");
-  const { d, set: setDemo, toast } = useDemo();
+  const { d, set: setDemo, toast, live } = useDemo();
+  const [sending, setSending] = useState(false);
+  const [sendErr, setSendErr] = useState<string | null>(null);
   const reqs: Record<string, Req> = d.companyReqs ?? {};
   const request = (key: string) => (r: Omit<Req, "id" | "date">) => { setDemo((x) => ({ ...x, companyReqs: { ...(x.companyReqs ?? {}), [key]: { ...r, id: key, date: today() } } })); toast("Request sent to the directory editor. You will get an email with the decision."); };
   const withdraw = (key: string) => () => { setDemo((x) => { const y = { ...(x.companyReqs ?? {}) }; delete y[key]; return { ...x, companyReqs: y }; }); toast("Request withdrawn."); };
@@ -185,13 +211,18 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
   const toggle = (k: "products" | "markets", code: string) => set(k, f[k].includes(code) ? f[k].filter((c) => c !== code) : [...f[k], code]);
 
   const [logo, setLogo] = useState<string | null>(null);
+  const [logoId, setLogoId] = useState<string | null>(null);
   const [logoErr, setLogoErr] = useState<string | null>(null);
-  const onLogo = (file?: File) => {
+  const onLogo = async (file?: File) => {
     if (!file) return;
     if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 2 * 1024 * 1024) { setLogoErr("PNG, JPG, WebP or SVG, up to 2 MB."); return; }
     setLogoErr(null);
     if (logo) URL.revokeObjectURL(logo);
     setLogo(URL.createObjectURL(file));
+    setLogoId(null);
+    if (live) {
+      try { setLogoId((await uploadFile(file, "company")).id); } catch (e) { setLogo(null); setLogoErr((e as Error).message); }
+    }
   };
   const changed = [
     (f.name !== initial.name || f.legalName !== initial.legalName) && "Company name",
@@ -209,6 +240,22 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
   const certProblem = newCert.type ? (!newCert.issuer || !newCert.no.trim() || !newCert.expires ? "Complete the issuer, number and expiry date of the new certificate (or clear its type)." : newCert.expires <= todayStr ? "The new certificate has already expired." : null) : null;
   const webBad = !!f.website && !/^https?:\/\/[^\s/]+\.[^\s]{2,}/.test(f.website);
   const phoneBad = !!f.phone && !/^[\d\s()+-]{5,20}$/.test(f.phone);
+  const uploadingAny = (live && !!logo && !logoId && !logoErr) || cards.some((c) => c.added.some((p) => live && !p.fileId));
+  const submit = async () => {
+    if (!live) { setMode("sent"); return; }
+    setSending(true); setSendErr(null);
+    const body = {
+      changed,
+      values: f,
+      logo: logoId,
+      cards: cards.map((c) => ({ product: c.product, name: c.name, spec: c.spec, keep: c.live, photos: c.added.map((p) => p.fileId).filter(Boolean) })),
+      cert: newCert.type ? newCert : null,
+    };
+    const r = await fetch("/api/me/company/changes/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).catch(() => null);
+    setSending(false);
+    if (!r || !r.ok) { setSendErr(((await r?.json().catch(() => ({}))) as { error?: string } | undefined)?.error ?? "Could not send. Check your connection and try again."); return; }
+    setMode("sent");
+  };
   /* Closing or reloading the tab with unsent edits asks first. */
   const editingNow = mode === "edit" && changed.length > 0;
   useEffect(() => {
@@ -236,9 +283,9 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
       <div className="mini" id="company" style={{ gridColumn: "1 / -1" }}>
         {head}
         <div role="status" style={{ background: "var(--st-current-bg)", borderLeft: "4px solid var(--up)", borderRadius: "0 10px 10px 0", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "6px" }}>
-          <span style={{ fontSize: "15px", color: "var(--up)" }} className="h">Sent for review (preview)</span>
-          <span style={{ fontSize: "13.5px", fontWeight: 500, lineHeight: 1.6 }}>In the live version this goes to the directory editor. Changed: <b>{changed.join(", ") || "nothing"}</b>. The public profile keeps its current content until each change is approved, and you get an email with the result.</span>
-          <span className="meta">This is the preview account — nothing was saved.</span>
+          <span style={{ fontSize: "15px", color: "var(--up)" }} className="h">{live ? "Sent for review" : "Sent for review (preview)"}</span>
+          <span style={{ fontSize: "13.5px", fontWeight: 500, lineHeight: 1.6 }}>{live ? "The directory editor has it." : "In the live version this goes to the directory editor."} Changed: <b>{changed.join(", ") || "nothing"}</b>. The public profile keeps its current content until each change is approved, and you get an email with the result.</span>
+          {!live && <span className="meta">This is the preview account — nothing was saved.</span>}
         </div>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <button type="button" className="btn dark" onClick={() => setMode("edit")}>Back to the editor</button>
@@ -258,11 +305,11 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13.5px", fontWeight: 500, paddingTop: "12px", borderTop: "1px solid var(--line)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Claim approved</span><b>{co.verifiedAt ?? "—"}</b></div>
               <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Verified by</span><b>Company-domain email</b></div>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Edits and requests in review</span><b style={{ color: "var(--st-review-fg)" }}>{1 + Object.keys(reqs).length}</b></div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}><span style={{ color: "var(--slate)" }}>Edits and requests in review</span><b style={{ color: "var(--st-review-fg)" }}>{(live ? (history ?? []).filter((h) => h.status === "review").length : 1) + Object.keys(reqs).length}</b></div>
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div className="note">Your change to <b>Product range</b> (adding “{PRODUCT_BY_CODE[PENDING_ADD]?.labelEn}”) is in review. The public page keeps the previous content until it is approved.</div>
+            {!live && <div className="note">Your change to <b>Product range</b> (adding “{PRODUCT_BY_CODE[PENDING_ADD]?.labelEn}”) is in review. The public page keeps the previous content until it is approved.</div>}
             <div style={{ fontSize: "13px", fontWeight: 500, lineHeight: 1.6 }}>
               <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: ".1em", color: "var(--slate)", marginBottom: "4px" }}>YOU CAN EDIT</div>
               Name and logo · Description · Product range · Product cards and photos · Contact details · Registered address (a country change is re-verified) · Employees and export markets (shown as self-reported) · New certificates
@@ -275,7 +322,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
           <button type="button" className="btn dark" onClick={() => setMode("edit")}>Edit company profile</button>
           <button type="button" className="btn" aria-expanded={showHistory} aria-controls="co-history" onClick={() => setShowHistory((v) => !v)}>{showHistory ? "Hide change history" : "Change history"}</button>
         </div>
-        {showHistory && <History extra={Object.values(reqs)} />}
+        {showHistory && <History extra={Object.values(reqs)} base={live ? history ?? [] : HISTORY} />}
       </div>
     );
   }
@@ -295,7 +342,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
         <div style={{ display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gap: "16px", alignItems: "start" }} className="identity">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
             <LogoMark src={logo} name={f.name || co.name} size={88} />
-            <label className="btn" style={{ position: "relative", minHeight: "32px", fontSize: "12px", cursor: "pointer" }}>{logo ? "Replace logo" : "Upload logo"}<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(e) => { onLogo(e.target.files?.[0]); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
+            <label className="btn" style={{ position: "relative", minHeight: "32px", fontSize: "12px", cursor: "pointer" }}>{logo ? "Replace logo" : "Upload logo"}<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(e) => { void onLogo(e.target.files?.[0]); e.target.value = ""; }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} /></label>
             {logo && <button type="button" className="btn" style={{ minHeight: "28px", fontSize: "11.5px" }} onClick={() => { URL.revokeObjectURL(logo); setLogo(null); }}>Remove</button>}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", minWidth: 0 }}>
@@ -328,7 +375,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
             </Field>
             {mailFree && <span className="meta" style={{ color: "var(--red-text)", display: "block", marginTop: "5px" }}>Free mailboxes ({mailDomain}) are not accepted for a company. Use an address at your company&apos;s own domain{siteDomain ? ` (${siteDomain})` : ""}.</span>}
             {mailOffDomain && <span className="meta" style={{ display: "block", marginTop: "5px" }}>This is not at {siteDomain}, the domain of your website. The editor will ask how the two are related before it goes live.</span>}
-            {verifying && !mailVerified && <div className="compose" style={{ marginTop: "8px" }}><CodeVerify compact email={f.email} purpose="that this inbox belongs to the company" onVerified={() => { setVerifiedEmail(f.email); setVerifying(false); toast("Enquiry email verified."); }} /></div>}
+            {verifying && !mailVerified && <div className="compose" style={{ marginTop: "8px" }}><CodeVerify compact email={f.email} purpose="confirm that this inbox belongs to the company" live={live ? liveCode(f.email.toLowerCase(), "company-email") : undefined} onVerified={() => { setVerifiedEmail(f.email); setVerifying(false); toast("Enquiry email verified."); }} /></div>}
             {f.email && !mailVerified && !verifying && !mailFree && <span className="meta" style={{ display: "block", marginTop: "5px" }}>Until this address is verified, the “Contact this company” button stays hidden on your profile.</span>}
             {!f.email && <span className="meta" style={{ display: "block", marginTop: "5px" }}>No enquiry email: the “Contact this company” button is hidden.</span>}
             </div>
@@ -381,7 +428,7 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
               <label key={p.code} style={{ display: "flex", alignItems: "center", gap: "9px", minHeight: "36px", fontSize: "13.5px", fontWeight: on ? 700 : 500, cursor: "pointer" }}>
                 <input type="checkbox" checked={on} onChange={() => toggle("products", p.code)} style={{ width: "17px", height: "17px", accentColor: "var(--red)", flexShrink: 0 }} />
                 {p.labelEn}
-                {p.code === PENDING_ADD && !initial.products.includes(p.code) && <Tag kind="review">IN REVIEW</Tag>}
+                {!live && p.code === PENDING_ADD && !initial.products.includes(p.code) && <Tag kind="review">IN REVIEW</Tag>}
               </label>
             );
           })}
@@ -448,21 +495,23 @@ export function CompanyPanel({ co, related, subs0 }: { co: Company; related: Rel
       </Group>
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", borderTop: "2px solid var(--ink)", paddingTop: "14px" }}>
-        <button type="button" className="btn dark" disabled={changed.length === 0 || (!!f.email && !mailVerified) || !!certProblem || webBad || phoneBad} onClick={() => setMode("sent")}>Submit for review</button>
+        <button type="button" className="btn dark" disabled={sending || uploadingAny || changed.length === 0 || (!!f.email && !mailVerified) || !!certProblem || webBad || phoneBad} onClick={() => void submit()}>{sending ? "Sending…" : "Submit for review"}</button>
         <button type="button" className="btn" onClick={() => { setF(initial); setVerifiedEmail(initial.email); setVerifying(false); setLogo(null); setCards(initialCards); setNewCert({ type: "", issuer: "", no: "", expires: "" }); setMode("view"); }}>Cancel</button>
-        <span className="meta">{f.email && !mailVerified ? <b style={{ color: "var(--red-text)" }}>Verify the enquiry email (or clear it) before submitting.</b> : certProblem ? <b style={{ color: "var(--red-text)" }}>{certProblem}</b> : webBad ? <b style={{ color: "var(--red-text)" }}>The website must be a full address starting with https://</b> : phoneBad ? <b style={{ color: "var(--red-text)" }}>Check the phone number: digits, spaces and brackets only.</b> : changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
+        {sendErr && <span className="meta" role="alert" style={{ color: "var(--red-text)", fontWeight: 800 }}>{sendErr}</span>}
+        <span className="meta">{uploadingAny ? "Waiting for uploads to finish…" : f.email && !mailVerified ? <b style={{ color: "var(--red-text)" }}>Verify the enquiry email (or clear it) before submitting.</b> : certProblem ? <b style={{ color: "var(--red-text)" }}>{certProblem}</b> : webBad ? <b style={{ color: "var(--red-text)" }}>The website must be a full address starting with https://</b> : phoneBad ? <b style={{ color: "var(--red-text)" }}>Check the phone number: digits, spaces and brackets only.</b> : changed.length ? <>Changed: <b style={{ color: "var(--ink)" }}>{changed.join(", ")}</b></> : "No changes yet."}</span>
       </div>
     </div>
   );
 }
 
-type Photo = { id: string; url: string; name: string };
+type Photo = { id: string; url: string; name: string; fileId?: string };
 type Card = { id: string; product: string; name: string; spec: string; live: number; added: Photo[]; existing: boolean };
 
 /* Product cards: one per product line, each with up to six photos. Photos picked here are
    previewed from the device only (object URLs); in the live version they upload and wait
    for an editor's check. */
 function ProductCards({ ranged, cards, setCards }: { ranged: string[]; cards: Card[]; setCards: React.Dispatch<React.SetStateAction<Card[]>> }) {
+  const { live } = useDemo();
   const [err, setErr] = useState<string | null>(null);
   const urls = useRef(new Set<string>());
   useEffect(() => { const u = urls.current; return () => u.forEach((x) => URL.revokeObjectURL(x)); }, []);
@@ -479,6 +528,12 @@ function ProductCards({ ranged, cards, setCards }: { ranged: string[]; cards: Ca
     setErr(msgs.length ? msgs.join(" ") : null);
     const added = take.map((x, i) => { const url = URL.createObjectURL(x); urls.current.add(url); return { id: `${Date.now()}-${i}`, url, name: x.name }; });
     upd(c.id, { added: [...c.added, ...added] });
+    /* Live: each photo uploads straight away (private until an editor approves the edit). */
+    if (live) take.forEach((x, i) => {
+      const ph = added[i];
+      uploadFile(x, "company").then((r) => setCards((cs) => cs.map((cc) => (cc.id === c.id ? { ...cc, added: cc.added.map((p) => (p.id === ph.id ? { ...p, fileId: r.id } : p)) } : cc))))
+        .catch((e: Error) => { setErr(`${x.name}: ${e.message}`); setCards((cs) => cs.map((cc) => (cc.id === c.id ? { ...cc, added: cc.added.filter((p) => p.id !== ph.id) } : cc))); });
+    });
   };
   const unpick = (c: Card, ph: Photo) => { URL.revokeObjectURL(ph.url); urls.current.delete(ph.url); upd(c.id, { added: c.added.filter((x) => x.id !== ph.id) }); };
   const thumb: React.CSSProperties = { position: "relative", width: "84px", height: "64px", borderRadius: "8px", overflow: "hidden", flexShrink: 0, background: "var(--line)" };
@@ -520,7 +575,7 @@ function ProductCards({ ranged, cards, setCards }: { ranged: string[]; cards: Ca
                 <span key={ph.id} style={thumb} title={ph.name}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={ph.url} alt={ph.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                  <span style={{ ...pill, background: "var(--st-review-bg)", color: "var(--st-review-fg)" }}>TO CHECK</span>
+                  <span style={{ ...pill, background: "var(--st-review-bg)", color: "var(--st-review-fg)" }}>{live && !ph.fileId ? "UPLOADING" : "TO CHECK"}</span>
                   <button type="button" aria-label={`Remove ${ph.name}`} onClick={() => unpick(c, ph)} className="phx">×</button>
                 </span>
               ))}
@@ -541,17 +596,17 @@ function ProductCards({ ranged, cards, setCards }: { ranged: string[]; cards: Ca
       {err && <span role="alert" className="meta" style={{ color: "var(--red-text)" }}>{err}</span>}
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
         <button type="button" className="btn dark" onClick={() => add(uncovered[0] ?? "")}>+ Add a product card</button>
-        <span className="meta">Photos picked here stay on this device in the preview; nothing is uploaded.</span>
+        <span className="meta">{live ? "New photos upload now and stay private until the edit is approved." : "Photos picked here stay on this device in the preview; nothing is uploaded."}</span>
       </div>
     </Group>
   );
 }
 
-function History({ extra = [] }: { extra?: Req[] }) {
+function History({ extra = [], base }: { extra?: Req[]; base: HistItem[] }) {
   const m = { review: ["IN REVIEW", "var(--st-review-bg)", "var(--st-review-fg)"], approved: ["APPROVED", "var(--st-current-bg)", "var(--up)"], declined: ["NOT ACCEPTED", "var(--line)", "var(--slate)"] } as const;
   return (
     <ol id="co-history" style={{ listStyle: "none", margin: 0, padding: 0, borderTop: "1px solid var(--line)" }}>
-      {[...extra.map((r) => ({ date: r.date, field: r.field, change: `Change requested: ${r.from} → ${r.to}`, status: "review" as const, note: `Reason: ${r.reason}${r.file ? ` · evidence: ${r.file}` : ""}` })), ...HISTORY].map((h, i) => (
+      {[...extra.map((r) => ({ date: r.date, field: r.field, change: `Change requested: ${r.from} → ${r.to}`, status: "review" as const, note: `Reason: ${r.reason}${r.file ? " · evidence attached" : ""}` })), ...base].map((h, i) => (
         <li key={i} style={{ display: "grid", gridTemplateColumns: "104px minmax(0,1fr)", gap: "4px 14px", padding: "12px 0", borderBottom: "1px solid var(--line)" }} className="lockrow">
           <span className="meta" style={{ fontWeight: 700 }}>{h.date}</span>
           <span style={{ display: "flex", flexDirection: "column", gap: "4px", minWidth: 0 }}>

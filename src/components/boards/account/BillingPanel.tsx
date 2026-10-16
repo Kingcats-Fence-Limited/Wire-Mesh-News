@@ -7,7 +7,8 @@
    our systems). Cancellation follows the Terms: it stops the next renewal and access runs to
    the end of the paid period; it can be undone until then. */
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { PLAN, TRIAL_DAYS, usd, type Cycle, type PaidPlan, type PlanId } from "@/lib/plans";
 import { COUNTRY, COUNTRY_BY_CODE } from "@/data/vocab/country";
 import { useDemo, type Billing, type BillingDetails } from "./store";
 type Open = null | "payment" | "details" | "cancel" | `inv-${string}`;
@@ -26,7 +27,184 @@ const Done = ({ children }: { children: React.ReactNode }) => (
   <div role="status" style={{ background: "var(--st-current-bg)", color: "var(--up)", borderRadius: "8px", padding: "9px 12px", fontSize: "12.5px", fontWeight: 700 }}>{children}</div>
 );
 
+/* Live accounts: plan, trial, card and invoices from Stripe (through /api/billing/summary).
+   Changes to the card, plan or cancellation happen in Stripe's own customer portal. */
+type Summary = {
+  live: boolean; plan: PlanId; pro: boolean; company: boolean; seatOf: boolean; hasCompany: boolean; trialUsed: boolean;
+  meter: { used: number; limit: number };
+  reports: { slug: string; title: string; date: string }[];
+  sub: null | { plan: PaidPlan; cycle: Cycle; status: string; trialEnd: string | null; periodEnd: string | null; cancelAtPeriodEnd: boolean; seats: number };
+  card?: { brand: string; last4: string; exp: string } | null;
+  invoices?: { no: string; date: string; amount: string; status: string; url: string | null; pdf: string | null }[];
+  team?: { id: string; email: string }[];
+};
+const longDate = (iso: string | null | undefined) => (iso ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso)) : "—");
+const daysLeft = (iso: string | null) => (iso ? Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000)) : 0);
+
+function BillingLive() {
+  const { toast } = useDemo();
+  const [s, setS] = useState<Summary | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [cycle, setCycle] = useState<Cycle>("yearly");
+  const [email, setEmail] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const r = await fetch("/api/billing/summary/", { cache: "no-store" }).catch(() => null);
+    if (!r || !r.ok) { setFailed(true); return null; }
+    const j = (await r.json()) as Summary;
+    setS(j); setFailed(false);
+    return j;
+  }, []);
+  useEffect(() => {
+    void (async () => {
+      const first = await load();
+      /* Back from Stripe: the webhook may take a few seconds; check again until the plan shows. */
+      const q = new URLSearchParams(location.search);
+      const back = q.get("billing");
+      if (!back) return;
+      history.replaceState(null, "", location.pathname + location.hash);
+      if (back === "report") { toast("Thank you. Your report will appear below in a moment."); }
+      else toast("Thank you. Your plan is being set up.");
+      let tries = 0, cur = first;
+      while (tries++ < 8 && (back === "report" ? (cur?.reports.length ?? 0) === (first?.reports.length ?? 0) : !cur?.sub)) { await new Promise((res) => setTimeout(res, 2500)); cur = await load(); }
+    })();
+  }, [load, toast]);
+
+  const go = async (key: string, url: string, body?: unknown) => {
+    setBusy(key); setErr(null);
+    const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body ?? {}) }).catch(() => null);
+    const j = (await r?.json().catch(() => ({}))) as { url?: string; error?: string } | undefined;
+    if (r?.ok && j?.url) { location.assign(j.url); return; }
+    setBusy(null); setErr(j?.error ?? "Something went wrong. Try again.");
+  };
+  const addSeat = async () => {
+    setBusy("seat"); setErr(null);
+    const r = await fetch("/api/billing/team/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }).catch(() => null);
+    setBusy(null);
+    if (!r?.ok) { setErr(((await r?.json().catch(() => ({}))) as { error?: string } | undefined)?.error ?? "Could not add. Try again."); return; }
+    setEmail(""); toast("Added. We emailed them how to sign in."); void load();
+  };
+  const removeSeat = async (id: string) => {
+    const r = await fetch(`/api/billing/team/?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => null);
+    if (r?.ok) { toast("Removed from the team."); void load(); } else toast("Could not remove. Try again.");
+  };
+
+  if (failed) return <div className="mini" role="alert">Billing could not be loaded. Reload the page to try again.</div>;
+  if (!s) return <div className="mini" role="status">Loading your plan…</div>;
+  const sub = s.sub;
+  const plan = PLAN[s.plan];
+  const status = !sub ? null : sub.status === "trialing" ? { t: `FREE TRIAL · ${daysLeft(sub.trialEnd)} DAYS LEFT`, bg: "var(--st-review-bg)", fg: "var(--st-review-fg)" } : sub.status === "past_due" || sub.status === "unpaid" ? { t: "PAYMENT DUE", bg: "var(--st-red-bg)", fg: "var(--red-deep)" } : sub.cancelAtPeriodEnd ? { t: `ENDS ${longDate(sub.periodEnd).toUpperCase()}`, bg: "var(--st-review-bg)", fg: "var(--st-review-fg)" } : { t: "ACTIVE", bg: "var(--st-current-bg)", fg: "var(--up)" };
+
+  return (
+    <div className="mini" id="billing" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="minihd"><span style={{ fontSize: "17px" }} className="h">Your plan</span>{status ? <span style={{ background: status.bg, color: status.fg }} className="st">{status.t}</span> : <span style={{ background: "var(--line)", color: "var(--slate)" }} className="st">{s.seatOf ? "TEAM MEMBER" : "FREE"}</span>}</div>
+
+      <div style={{ background: "var(--surface-dark)", color: "#FFFFFF", borderRadius: "12px", padding: "16px 18px", display: "flex", flexDirection: "column", gap: "6px" }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "19px", color: "#FFFFFF" }} className="h">{plan.name}{sub ? ` · ${sub.cycle === "yearly" ? "Yearly" : "Monthly"}` : ""}</span>
+          {sub && plan.price && <span style={{ fontSize: "15px", fontWeight: 800 }}>{usd(sub.cycle === "yearly" ? plan.price.yearly : plan.price.monthly)} / {sub.cycle === "yearly" ? "year" : "month"}</span>}
+        </div>
+        <span style={{ fontSize: "12.5px", fontWeight: 500, color: "var(--grey-3)", lineHeight: 1.55 }}>
+          {!sub && s.seatOf && "Your access comes from a Team plan. The team owner manages billing."}
+          {!sub && !s.seatOf && `Free account. ${s.meter.used} of ${s.meter.limit} Pro articles read this month.`}
+          {sub?.status === "trialing" && `Trial ends ${longDate(sub.trialEnd)}. ${sub.cancelAtPeriodEnd ? "It will not renew; nothing is charged." : `Then your card${s.card ? ` (${s.card.brand} ···· ${s.card.last4})` : ""} is charged unless you cancel before.`}`}
+          {sub && sub.status !== "trialing" && (sub.cancelAtPeriodEnd ? `Cancelled — access continues until ${longDate(sub.periodEnd)}.` : `Renews ${longDate(sub.periodEnd)}${s.card ? ` · ${s.card.brand} ···· ${s.card.last4}` : ""}.`)}
+          {sub?.plan === "team" && ` ${sub.seats} people included.`}
+        </span>
+      </div>
+
+      {sub ? (
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button type="button" className="btn dark" disabled={!!busy} onClick={() => void go("portal", "/api/billing/portal/")}>{busy === "portal" ? "Opening…" : "Manage billing"}</button>
+          <span className="meta" style={{ alignSelf: "center" }}>Change card or plan, download invoices, cancel or resume — on Stripe&apos;s secure page.</span>
+        </div>
+      ) : !s.seatOf && (
+        s.live ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+              <span className="lbl">BILLING</span>
+              <button type="button" className={`btn sm${cycle === "monthly" ? " dark" : ""}`} aria-pressed={cycle === "monthly"} onClick={() => setCycle("monthly")}>Monthly</button>
+              <button type="button" className={`btn sm${cycle === "yearly" ? " dark" : ""}`} aria-pressed={cycle === "yearly"} onClick={() => setCycle("yearly")}>Yearly · 2 months free</button>
+            </div>
+            <div className="g3f" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: "10px" }}>
+              {(["pro", "team", "company"] as PaidPlan[]).map((id) => {
+                const p = PLAN[id];
+                const off = id === "company" && !s.hasCompany;
+                return (
+                  <div key={id} style={{ border: id === "pro" ? "2px solid var(--ink)" : "1px solid var(--line)", borderRadius: "12px", padding: "14px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <b style={{ fontSize: "15px" }}>{p.name}</b>
+                    <span style={{ fontSize: "20px", fontWeight: 800 }}>{usd(cycle === "yearly" ? p.price!.yearly : p.price!.monthly)}<span className="meta" style={{ fontWeight: 600 }}> / {cycle === "yearly" ? "year" : "month"}</span></span>
+                    <span className="meta" style={{ minHeight: "36px" }}>{p.tagline}</span>
+                    {off ? <Link href="/account/#company" className="btn sm">Claim your company first</Link> : <button type="button" className={`btn sm${id === "pro" ? " dark" : ""}`} disabled={!!busy} onClick={() => void go(id, "/api/billing/checkout/", { plan: id, cycle })}>{busy === id ? "Opening checkout…" : s.trialUsed ? "Subscribe" : `Start ${TRIAL_DAYS}-day free trial`}</button>}
+                  </div>
+                );
+              })}
+            </div>
+            <span className="meta">{s.trialUsed ? "" : "Nothing is charged during the trial; we remind you 3 days before it ends. "}<Link href="/pricing/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Compare all plans</Link></span>
+          </div>
+        ) : (
+          <div className="note">Paid plans open soon. See what they include on <Link href="/pricing/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Plans &amp; pricing</Link>; nothing is ever charged without you choosing a plan.</div>
+        )
+      )}
+      {err && <p role="alert" style={{ margin: 0, fontSize: "13px", fontWeight: 800, color: "var(--red-text)" }}>{err}</p>}
+
+      {sub?.plan === "team" && (
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "14px", display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}><span style={{ fontSize: "15px" }} className="h">Your team</span><span className="meta">{1 + (s.team?.length ?? 0)} of {sub.seats} seats used (you included)</span></div>
+          {(s.team ?? []).map((t) => (
+            <div key={t.id} style={{ display: "flex", alignItems: "center", gap: "10px", borderTop: "1px solid var(--line)", paddingTop: "8px" }}>
+              <span style={{ flex: "1 1 auto", fontSize: "14px", fontWeight: 700, overflowWrap: "anywhere" }}>{t.email}</span>
+              <button type="button" className="btn sm" onClick={() => void removeSeat(t.id)}>Remove</button>
+            </div>
+          ))}
+          {1 + (s.team?.length ?? 0) < sub.seats ? (
+            <form onSubmit={(e) => { e.preventDefault(); void addSeat(); }} style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <label htmlFor="seat-email" className="sr-only">Email of the person to add</label>
+              <input id="seat-email" type="email" className="inp" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="colleague@company.com" style={{ flex: "1 1 220px" }} />
+              <button type="submit" className="btn dark" disabled={busy === "seat"}>{busy === "seat" ? "Adding…" : "Add to team"}</button>
+            </form>
+          ) : <span className="meta">All seats are used. Add seats from Manage billing, or remove someone first.</span>}
+          <span className="meta">People you add sign in with that email address (Google, Microsoft or an email code) and get Pro straight away.</span>
+        </div>
+      )}
+
+      {(s.invoices?.length ?? 0) > 0 && (
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "14px" }}>
+          <span style={{ fontSize: "15px" }} className="h">Invoices</span>
+          {s.invoices!.map((i) => (
+            <div key={i.no} style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", padding: "8px 0", borderBottom: "1px solid var(--line)", fontSize: "13.5px" }}>
+              <span style={{ fontWeight: 800 }}>{i.no}</span><span className="meta">{longDate(i.date)}</span><span style={{ marginLeft: "auto", fontWeight: 700 }}>{i.amount}</span>
+              <span className="st" style={{ background: i.status === "paid" ? "var(--st-current-bg)" : "var(--st-review-bg)", color: i.status === "paid" ? "var(--up)" : "var(--st-review-fg)" }}>{i.status.toUpperCase()}</span>
+              {i.pdf && <a href={i.pdf} className="btn sm" target="_blank" rel="noopener noreferrer">PDF</a>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {s.reports.length > 0 && (
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "14px" }}>
+          <span style={{ fontSize: "15px" }} className="h">Reports</span>
+          {s.reports.map((r) => (
+            <div key={r.slug} style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", padding: "8px 0", borderBottom: "1px solid var(--line)" }}>
+              <span style={{ fontWeight: 800, fontSize: "14px", flex: "1 1 auto" }}>{r.title}</span><span className="meta">bought {longDate(r.date)}</span>
+              <a href={`/api/billing/download/?slug=${encodeURIComponent(r.slug)}`} className="btn sm dark">Download PDF</a>
+            </div>
+          ))}
+        </div>
+      )}
+      <span className="meta">Card details never reach this site: payments run on Stripe&apos;s secure pages. <Link href="/policies/terms/" style={{ color: "var(--red-text)", fontWeight: 800 }}>Terms</Link></span>
+    </div>
+  );
+}
+
 export function BillingPanel() {
+  const { live } = useDemo();
+  return live ? <BillingLive /> : <BillingDemo />;
+}
+
+function BillingDemo() {
   const { d, set, toast } = useDemo();
   const b = d.billing;
   const B = (fn: (b: Billing) => Billing) => set((x) => ({ ...x, billing: fn(x.billing) }));

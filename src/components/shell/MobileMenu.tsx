@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AccountLink } from "@/components/live/AccountLink";
 import { useEffect, useState } from "react";
 import type { MenuData } from "./MegaNav";
 import { SocialRow } from "@/components/ui/SocialButton";
@@ -56,14 +57,14 @@ export function MobileMenu({ data }: { data: MenuData }) {
             </div>
             <div style={{ display: "flex", gap: "9px", marginTop: "16px" }}>
               <Link href="/subscribe/" onClick={() => setOpen(false)} style={{ flex: "1 1 0", display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "44px", borderRadius: "999px", background: "var(--red)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }}>Subscribe free</Link>
-              <Link href="/signin/" onClick={() => setOpen(false)} style={{ flex: "1 1 0", display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "44px", borderRadius: "999px", background: "transparent", border: "1.5px solid var(--line-dark)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }}>Sign In</Link>
+              <AccountLink onClick={() => setOpen(false)} style={{ flex: "1 1 0", display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "44px", borderRadius: "999px", background: "transparent", border: "1.5px solid var(--line-dark)", color: "#FFFFFF", fontSize: "14px", fontWeight: "800" }} />
             </div>
             <div style={{ marginTop: "22px" }}>
               <div className="mono" style={{ fontSize: "9.5px", fontWeight: 800, letterSpacing: ".14em", color: "var(--grey-5)", marginBottom: "10px" }}>FOLLOW</div>
               <SocialRow size={38} />
             </div>
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "18px", fontSize: "12.5px", fontWeight: 700, color: "var(--grey-3)" }}>
-              {[["About", "/about/"], ["Contact", "/contact/"], ["Submit an Article", "/submit/"], ["Advertise", "/advertise/"]].map(([l, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ color: "var(--grey-3)" }}>{l}</Link>)}
+              {[["About", "/about/"], ["Contact", "/contact/"], ["Submit an Article", "/submit/"], ["Plans & pricing", "/pricing/"], ["Advertise", "/advertise/"]].map(([l, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ color: "var(--grey-3)" }}>{l}</Link>)}
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AccountLink } from "@/components/live/AccountLink";
 import { MegaNav, type MenuData } from "./MegaNav";
 import { MastheadDateClocks, ClockLine, MobileDateLine } from "./Clocks";
 import { ThemeSwitch } from "./ThemeSwitch";
@@ -76,7 +77,7 @@ function UtilityBar({ live }: { live?: { title: string; href: string } }) {
         <span className="utillive" style={{ background: "var(--red)", fontSize: "10px", fontWeight: "800", letterSpacing: ".14em", padding: "3px 8px", borderRadius: "3px", flexShrink: "0" }}>LIVE</span>
         {live && <Link href={live.href} style={{ color: "#FFFFFF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: "0" }}>{live.title}</Link>}
         <div className="util" style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "14px", flexShrink: "0" }}>
-          <Link href="/subscribe/" style={{ color: "var(--grey-3)" }}>Newsletter</Link><a href="/feed.xml" style={{ color: "var(--grey-3)" }}>RSS</a>
+          <Link href="/pricing/" style={{ color: "#FFFFFF", fontWeight: 800 }}>Pro</Link><Link href="/subscribe/" style={{ color: "var(--grey-3)" }}>Newsletter</Link><a href="/feed.xml" style={{ color: "var(--grey-3)" }}>RSS</a>
           <span style={{ width: "1px", height: "14px", background: "var(--line-dark)" }}></span>
           <ThemeSwitch />
         </div>
@@ -105,7 +106,7 @@ export function Header({ variant = "compact", active }: { variant?: "full" | "co
               </Link>
               <div className="mastright" style={{ display: "flex", alignItems: "center", gap: "9px", justifyContent: "flex-end" }}>
                 <SearchButton size={42} border="1.5px solid var(--line)" />
-                <Link href="/signin/" className="mastbtn hdbtn" style={{ border: "1.5px solid var(--line)" }}>Sign In</Link>
+                <AccountLink className="mastbtn hdbtn" style={{ border: "1.5px solid var(--line)" }} />
                 <Link href="/subscribe/" className="mastbtn hdbtn" style={{ background: "var(--red)", color: "#FFFFFF" }}>Subscribe free</Link>
               </div>
             </div>
@@ -135,7 +136,7 @@ export function Header({ variant = "compact", active }: { variant?: "full" | "co
               <SearchButton size={44} border="1px solid var(--line)" />
               <Link href="/submit/" style={{ border: "2px solid var(--ink)", fontWeight: "800", fontSize: "14px", padding: "0 18px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }} className="hdbtn">Submit an Article</Link>
               <Link href="/subscribe/" className="hdbtn" style={{ background: "var(--red)", color: "#FFFFFF", fontWeight: "800", fontSize: "14px", padding: "0 20px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Subscribe</Link>
-              <Link href="/signin/" className="hdbtn" style={{ border: "1px solid var(--line)", fontWeight: "800", fontSize: "14px", padding: "0 18px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }}>Sign In</Link>
+              <AccountLink className="hdbtn" style={{ border: "1px solid var(--line)", fontWeight: "800", fontSize: "14px", padding: "0 18px", minHeight: "44px", borderRadius: "999px", display: "inline-flex", alignItems: "center" }} />
             </div>
           </div>
         </header>

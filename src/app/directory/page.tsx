@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { pageMeta } from "@/lib/seo";
 import { Shell } from "@/components/shell/Shell";
 import { DirectoryBoard, DirectoryFromUrl, type DirData } from "@/components/boards/directory/DirectoryBoard";
-import { COMPANIES, SPONSORED } from "@/lib/content/directory";
+import { COMPANIES } from "@/lib/content/directory";
 import { ARTICLES } from "@/lib/content/articles";
 
 export const metadata: Metadata = pageMeta({ title: "Company Directory", description: "Manufacturers, fabricators, distributors, machinery makers and test labs in wire mesh, classified by editors. Listing and order are never paid for.", path: "/directory/" });
@@ -13,7 +13,6 @@ export const metadata: Metadata = pageMeta({ title: "Company Directory", descrip
 export default function DirectoryPage() {
   const data: DirData = {
     companies: COMPANIES,
-    sponsored: SPONSORED,
     artCounts: Object.fromEntries(COMPANIES.map((c) => [c.slug, ARTICLES.filter((a) => a.companies?.includes(c.slug)).length])),
   };
   return (
