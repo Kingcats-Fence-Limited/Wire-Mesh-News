@@ -1,8 +1,10 @@
 import "server-only";
-import { ENV } from "./env";
+import { AUTH_LIVE, ENV } from "./env";
 
 /* Cloudflare Turnstile check for anonymous forms (contact, newsletter). When no secret is
    configured the check is skipped, so forms keep working in testing. */
+if (AUTH_LIVE && !ENV.turnstileSecret)
+  console.warn("Turnstile is not configured (TURNSTILE_SECRET_KEY unset); bot protection on public forms is disabled.");
 export async function humanCheck(token: string | null | undefined, ip?: string): Promise<boolean> {
   if (!ENV.turnstileSecret) return true;
   if (!token) return false;
