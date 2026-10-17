@@ -15,7 +15,7 @@ const KIND = { specification: "SPECIFICATION", checklist: "CHECKLIST", record: "
 export default function ToolsPage() {
   return (
     <Shell header="compact" board="b-intel">
-      <IntelHero crumb="Templates & tools" title="Templates and tools" lede="Specifications, inspection checklists and test records you can fill in and send, plus a calculator for welded mesh weight and cost." />
+      <IntelHero here="/tools/" crumb="Templates & tools" title="Templates and tools" lede="Specifications, inspection checklists and test records you can fill in and send, plus a calculator for welded mesh weight and cost." />
       <section id="calculator" style={{ paddingTop: "34px", paddingBottom: "20px" }} className="wrap">
         <h2 style={{ margin: "0 0 6px", fontSize: "28px" }} className="h">Welded mesh panel calculator</h2>
         <p style={{ margin: "0 0 18px" }} className="meta">Free for everyone. Change any figure; results update as you type.</p>

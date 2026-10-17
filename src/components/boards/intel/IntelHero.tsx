@@ -1,7 +1,8 @@
 /* Shared dark hero for the intelligence pages. */
 import Link from "next/link";
+import { INTEL_TABS } from "@/lib/site";
 
-export function IntelHero({ crumb, title, lede, children }: { crumb: string; title: string; lede: string; children?: React.ReactNode }) {
+export function IntelHero({ crumb, title, lede, here, children }: { crumb: string; title: string; lede: string; here?: string; children?: React.ReactNode }) {
   return (
     <section style={{ background: "var(--surface-dark)", color: "#FFFFFF", position: "relative", overflow: "hidden" }}>
       <svg width="460" height="460" viewBox="0 0 120 120" style={{ position: "absolute", right: "-70px", top: "-110px", color: "var(--mesh-dark)" }} aria-hidden="true"><use href="#w2" width="120" height="120" /></svg>
@@ -10,6 +11,11 @@ export function IntelHero({ crumb, title, lede, children }: { crumb: string; tit
         <h1 style={{ margin: "0 0 12px", fontSize: "48px", letterSpacing: "-.05em", lineHeight: 1.03, maxWidth: "780px", color: "#FFFFFF" }} className="h">{title}<span style={{ color: "var(--red-text)" }}>.</span></h1>
         <p style={{ margin: 0, fontSize: "17px", fontWeight: 500, lineHeight: 1.55, maxWidth: "680px", color: "var(--on-dark-2)" }}>{lede}</p>
         {children}
+        {here && (
+          <nav aria-label="Intelligence" className="itabs">
+            {INTEL_TABS.map((t) => <Link key={t.href} href={t.href} aria-current={t.href === here ? "page" : undefined}>{t.label}</Link>)}
+          </nav>
+        )}
       </div>
     </section>
   );

@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMeta({ title: "Trade statistics", descript
 export default function TradeDataPage() {
   return (
     <Shell header="compact" board="b-intel">
-      <IntelHero crumb="Trade statistics" title="Who is buying, and from whom" lede="Official import and export statistics for wire, mesh and fencing products by HS code — where the volume goes, who supplies it, and at what average unit value." />
+      <IntelHero here="/trade-data/" crumb="Trade statistics" title="Who is buying, and from whom" lede="Official import and export statistics for wire, mesh and fencing products by HS code — where the volume goes, who supplies it, and at what average unit value." />
       <TradeDataBoard live={AUTH_LIVE} />
     </Shell>
   );

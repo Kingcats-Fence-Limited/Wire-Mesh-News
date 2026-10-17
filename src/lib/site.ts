@@ -53,6 +53,16 @@ export const NAV_RESOURCES = [
   { label: "Standards", href: "/standards/" },
 ];
 
+/* The intelligence pages link to each other through tabs under their hero (IntelHero), so
+   the header and footer need only one entry ("Tenders"). */
+export const INTEL_TABS = [
+  { label: "Tenders", href: "/tenders/" },
+  { label: "Trade defence", href: "/trade-defence/" },
+  { label: "Trade statistics", href: "/trade-data/" },
+  { label: "Templates & tools", href: "/tools/" },
+  { label: "Reports", href: "/reports/" },
+];
+
 export const FOOTER_COLUMNS = [
   { title: "Sections", links: [...EDITORIAL_SECTIONS.map((s) => ({ label: s.label, href: `/${s.slug}/` })), { label: "Opinion & Letters", href: "/letters/" }] },
   {
@@ -63,12 +73,7 @@ export const FOOTER_COLUMNS = [
       { label: "Topics", href: "/topics/" },
       { label: "Market data", href: "/market-data/" },
       { label: "Standards Index", href: "/standards/" },
-      { label: "Tenders & projects", href: "/tenders/" },
-      { label: "Trade defence tracker", href: "/trade-defence/" },
-      { label: "Trade statistics", href: "/trade-data/" },
-      { label: "Templates & tools", href: "/tools/" },
-      { label: "Reports", href: "/reports/" },
-      { label: "Plans & pricing", href: "/pricing/" },
+      { label: "Tenders & trade data", href: "/tenders/" },
       { label: "RSS feed", href: "/feed.xml" },
     ],
   },

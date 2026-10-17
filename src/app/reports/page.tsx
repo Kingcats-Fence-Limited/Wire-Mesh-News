@@ -14,7 +14,7 @@ export default async function ReportsPage() {
   const reports = await getReports();
   return (
     <Shell header="compact" board="b-intel">
-      <IntelHero crumb="Reports" title="Reports" lede="In-depth market and buyer reports, bought one at a time. Each comes as a PDF with an invoice." />
+      <IntelHero here="/reports/" crumb="Reports" title="Reports" lede="In-depth market and buyer reports, bought one at a time. Each comes as a PDF with an invoice." />
       <section style={{ paddingTop: "30px", paddingBottom: "56px" }} className="wrap">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: "16px" }} className="cols">
           {reports.map((r) => (
