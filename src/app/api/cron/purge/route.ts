@@ -1,4 +1,4 @@
-import { AUTH_LIVE, ENV } from "@/lib/server/env";
+import { cronAllowed } from "@/lib/server/cron-auth";
 import { dx } from "@/lib/server/directus";
 import { pool } from "@/lib/server/db";
 
@@ -11,8 +11,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function GET(req: Request) {
-  if (!AUTH_LIVE || !ENV.cronSecret) return new Response("Not found", { status: 404 });
-  if (req.headers.get("authorization") !== `Bearer ${ENV.cronSecret}`) return new Response("Forbidden", { status: 403 });
+  if (!cronAllowed(req)) return new Response("Not found", { status: 404 });
   const cutoff = new Date(Date.now() - 30 * 86400_000).toISOString();
   const gone = await dx.list<{ id: string; auth_user_id: string; avatar: string | null }>("members", { filter: { deletion_requested_at: { _lte: cutoff }, auth_user_id: { _nstarts_with: "deleted:" } }, fields: ["id", "auth_user_id", "avatar"], limit: 100 });
   for (const m of gone) {

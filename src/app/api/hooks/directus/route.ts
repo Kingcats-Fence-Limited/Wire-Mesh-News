@@ -15,6 +15,9 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const ok = (a: string, b: string) => a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
+/* Only these collections may be acted on from the hook; anything else is refused so a leaked
+   hook secret cannot read or write arbitrary collections the website token can reach. */
+const COLLECTIONS = new Set(["submissions", "comments", "company_claims", "company_extras", "company_change_requests", "tenders", "trade_case_updates"]);
 type Member = Pick<MemberRow, "id" | "email" | "name" | "prefs" | "roles" | "company_slug">;
 const MEMBER_FIELDS = ["member.id", "member.email", "member.name", "member.prefs", "member.roles", "member.company_slug"];
 
@@ -29,6 +32,7 @@ export async function POST(req: Request) {
   if (!AUTH_LIVE || !ENV.hookSecret) return new Response("Not found", { status: 404 });
   if (!ok(req.headers.get("x-wmn-hook") ?? "", ENV.hookSecret)) return new Response("Forbidden", { status: 403 });
   const b = (await req.json().catch(() => ({}))) as { collection?: string; keys?: string[]; key?: string };
+  if (!b.collection || !COLLECTIONS.has(b.collection)) return new Response("Not found", { status: 404 });
   const keys = (b.keys ?? (b.key ? [b.key] : [])).filter((k) => typeof k === "string").slice(0, 50);
 
   for (const id of keys) {
